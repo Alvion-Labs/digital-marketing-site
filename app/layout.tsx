@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import '@/styles/globals.css';
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://alviondigital.com'),
   title: 'Alvion Digital Marketing — Crafting Digital Presence That Works',
   description:
     'Alvion Digital Marketing is a full-service digital marketing agency specializing in Social Media Management, Content Strategy, Google & Meta Ads, and SEO.',
