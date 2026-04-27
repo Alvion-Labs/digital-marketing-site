@@ -1,10 +1,8 @@
 // @ts-ignore - nodemailer types issue
 import nodemailer from 'nodemailer';
 
-type EmailProvider = 'gmail' | 'smtp';
-
 interface EmailConfig {
-  provider: EmailProvider;
+  provider: 'gmail' | 'smtp';
   from: string;
   smtpHost?: string;
   smtpPort?: number;
@@ -14,25 +12,33 @@ interface EmailConfig {
   gmailPassword?: string;
 }
 
+function env(key: string): string | undefined {
+  return process.env[key];
+}
+
 function getEmailConfig(): EmailConfig {
-  const provider = (process.env.EMAIL_PROVIDER as EmailProvider) || 'smtp';
+  const providerFromEnv = env('EMAIL_PROVIDER')?.toLowerCase();
+  const hasGmailCreds = Boolean(env('GMAIL_USER') && env('GMAIL_APP_PASSWORD'));
+  const provider: 'gmail' | 'smtp' = providerFromEnv === 'gmail' || (hasGmailCreds && !env('SMTP_HOST'))
+    ? 'gmail'
+    : 'smtp';
 
   if (provider === 'gmail') {
     return {
       provider: 'gmail',
-      from: process.env.EMAIL_FROM || '',
-      gmailUser: process.env.GMAIL_USER,
-      gmailPassword: process.env.GMAIL_APP_PASSWORD,
+      from: env('EMAIL_FROM') || '',
+      gmailUser: env('GMAIL_USER'),
+      gmailPassword: env('GMAIL_APP_PASSWORD'),
     };
   }
 
   return {
     provider: 'smtp',
-    from: process.env.EMAIL_FROM || '',
-    smtpHost: process.env.SMTP_HOST,
-    smtpPort: parseInt(process.env.SMTP_PORT || '587', 10),
-    smtpUser: process.env.SMTP_USER,
-    smtpPassword: process.env.SMTP_PASSWORD,
+    from: env('EMAIL_FROM') || '',
+    smtpHost: env('SMTP_HOST'),
+    smtpPort: parseInt(env('SMTP_PORT') || '587', 10),
+    smtpUser: env('SMTP_USER'),
+    smtpPassword: env('SMTP_PASSWORD'),
   };
 }
 
