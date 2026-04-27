@@ -2,7 +2,8 @@ import Navbar from '@/components/global/Navbar';
 import Footer from '@/components/global/Footer';
 import Hero from '@/components/pages/home/Hero';
 import Services from '@/components/pages/home/Services';
-import SocialGallery from '@/components/pages/home/SocialGallery';
+import BlogSection from '@/components/pages/home/Blog';
+import Pricing from '@/components/pages/home/Pricing';
 import Contact from '@/components/pages/home/Contact';
 
 export default function Home() {
@@ -12,7 +13,8 @@ export default function Home() {
       <main>
         <Hero />
         <Services />
-        <SocialGallery />
+        <BlogSection />
+        <Pricing />
         <Contact />
       </main>
       <Footer />

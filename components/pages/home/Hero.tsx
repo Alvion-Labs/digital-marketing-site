@@ -14,13 +14,13 @@ export default function Hero() {
       id="home"
       className="relative min-h-screen flex items-center justify-center overflow-hidden bg-primary"
     >
-      <div className="absolute top-1/4 -left-32 w-96 h-96 bg-[#1E6BFF]/20 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-1/4 -right-32 w-96 h-96 bg-[#00A3FF]/20 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#1E6BFF]/5 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-1/4 -left-32 w-96 h-96 bg-accent-from/20 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-1/4 -right-32 w-96 h-96 bg-accent-to/20 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-accent-from/5 rounded-full blur-3xl pointer-events-none" />
 
       <Container className="relative z-10 text-center py-24 pt-32">
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-[#1E6BFF]/40 bg-[#1E6BFF]/10 text-[#00A3FF] text-sm font-medium mb-8">
-          <span className="w-2 h-2 rounded-full bg-[#00A3FF] animate-pulse" />
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-accent-from/40 bg-accent-from/10 text-accent-to text-sm font-medium mb-8">
+          <span className="w-2 h-2 rounded-full bg-accent-to animate-pulse" />
           Digital Marketing Agency
         </div>
 

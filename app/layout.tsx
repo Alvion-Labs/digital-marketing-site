@@ -7,6 +7,10 @@ export const metadata: Metadata = {
   description:
     'Alvion Digital Marketing is a full-service digital marketing agency specializing in Social Media Management, Content Strategy, Google & Meta Ads, and SEO.',
   keywords: ['digital marketing', 'social media management', 'SEO', 'Google Ads', 'Meta Ads', 'content strategy', 'Alvion'],
+  icons: {
+    icon: '/AlvionLogo.png',
+    apple: '/AlvionLogo.png',
+  },
   openGraph: {
     title: 'Alvion Digital Marketing',
     description: 'Crafting digital presence that actually works.',

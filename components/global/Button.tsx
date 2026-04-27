@@ -24,9 +24,9 @@ export default function Button({
 
   const variants = {
     primary:
-      'bg-gradient-to-r from-[#1E6BFF] to-[#00A3FF] text-white hover:opacity-90 hover:scale-105 focus:ring-[#1E6BFF] shadow-lg shadow-blue-500/25',
+      'bg-linear-to-r from-accent-from to-accent-to text-white hover:opacity-90 hover:scale-105 focus:ring-accent-from shadow-lg shadow-blue-500/25',
     secondary:
-      'border border-[#1E6BFF] text-[#1E6BFF] hover:bg-[#1E6BFF]/10 hover:scale-105 focus:ring-[#1E6BFF]',
+      'border border-accent-from text-accent-from hover:bg-accent-from/10 hover:scale-105 focus:ring-accent-from',
   };
 
   if (href) {
