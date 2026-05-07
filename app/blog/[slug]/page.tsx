@@ -59,7 +59,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
         }
       ] : [
         {
-          url: 'https://alviondigital.com/og-image.png',
+          url: 'https://alviondigital.com/opengraph-image',
           width: 1200,
           height: 630,
           alt: post.title,
@@ -72,7 +72,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
       title: post.title,
       description: post.excerpt,
       creator: '@alviondigital',
-      images: post.thumbnail ? [`https://alviondigital.com${post.thumbnail}`] : ['https://alviondigital.com/og-image.png'],
+      images: post.thumbnail ? [`https://alviondigital.com${post.thumbnail}`] : ['https://alviondigital.com/twitter-image'],
     },
     alternates: {
       canonical: `https://alviondigital.com/blog/${post.slug}`,

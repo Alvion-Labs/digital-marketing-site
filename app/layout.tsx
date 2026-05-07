@@ -6,7 +6,7 @@ import { getOrganizationSchema, getWebsiteSchema, getLocalBusinessSchema } from 
 export const metadata: Metadata = {
   metadataBase: new URL('https://alviondigital.com'),
   title: {
-    default: 'Alvion Digital Marketing — Expert Social Media, SEO & Ads Agency',
+    default: 'Alvion Digital Marketing ( Social Media Expert, SEO & Ads Agency )',
     template: '%s | Alvion Digital Marketing',
   },
   description:
@@ -35,20 +35,20 @@ export const metadata: Metadata = {
     telephone: false,
   },
   icons: {
-    icon: '/AlvionLogo.png',
-    apple: '/AlvionLogo.png',
-    shortcut: '/AlvionLogo.png',
+    icon: '/Croped%20SIngle%20%22A%22%20Logo.png',
+    apple: '/Croped%20SIngle%20%22A%22%20Logo.png',
+    shortcut: '/Croped%20SIngle%20%22A%22%20Logo.png',
   },
   openGraph: {
     type: 'website',
     locale: 'en_IN',
     url: 'https://alviondigital.com',
     siteName: 'Alvion Digital Marketing',
-    title: 'Alvion Digital Marketing — Expert Social Media, SEO & Ads Agency',
+    title: 'Alvion Digital Marketing  ( Social Media Expert, SEO & Ads Agency )',
     description: 'Leading digital marketing agency specializing in social media management, SEO, and paid advertising. Grow your business with proven strategies.',
     images: [
       {
-        url: '/og-image.png',
+        url: '/opengraph-image',
         width: 1200,
         height: 630,
         alt: 'Alvion Digital Marketing - Social Media, SEO & Ads Agency',
@@ -57,9 +57,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Alvion Digital Marketing — Expert Social Media, SEO & Ads Agency',
+    title: 'Alvion Digital Marketing  ( Social Media Expert, SEO & Ads Agency )',
     description: 'Leading digital marketing agency specializing in social media management, SEO, and paid advertising.',
-    images: ['/og-image.png'],
+    images: ['/twitter-image'],
     creator: '@alviondigital',
   },
   robots: {

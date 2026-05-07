@@ -23,7 +23,7 @@ export default function LogoLink({ children, onClick }: LogoLinkProps) {
   };
 
   return (
-    <Link href="/" onClick={handleClick}>
+    <Link href="/" onClick={handleClick} aria-label="Alvion Digital Marketing">
       {children}
     </Link>
   );

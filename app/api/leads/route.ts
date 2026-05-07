@@ -75,7 +75,7 @@ export async function POST(request: Request) {
         submittedAt,
       });
 
-      const logoPath = join(process.cwd(), 'public', 'AlvionLogo.png');
+      const logoPath = join(process.cwd(), 'public', 'Alvion Logo landsacpe.png');
       const logoBuffer = await readFile(logoPath);
 
       try {

@@ -56,7 +56,7 @@ export default function BlogPost({ post }: BlogPostProps) {
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-white p-1.5 border border-gray-200 shadow-sm">
                   <Image
-                    src="/AlvionLogo.png"
+                    src="/Alvion%20Logo%20landsacpe.png"
                     alt="Alvion Digital Marketing"
                     width={40}
                     height={40}

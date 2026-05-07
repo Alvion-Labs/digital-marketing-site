@@ -42,16 +42,14 @@ export default function Footer() {
           <div>
             <LogoLink>
               <div className="inline-flex items-center gap-3 mb-4">
-                <span className="inline-flex h-10 w-10 items-center justify-center rounded-full overflow-hidden ring-1 ring-white/20 bg-white/10 shrink-0">
-                  <Image
-                    src="/AlvionLogo.png"
-                    alt="Alvion Digital Marketing"
-                    width={40}
-                    height={40}
-                    className="h-full w-full object-cover"
-                  />
-                </span>
-                <span className="text-xl font-bold gradient-text whitespace-nowrap">Alvion Digital</span>
+                <Image
+                  src="/Alvion%20Logo%20landsacpe.png"
+                  alt="Alvion Digital Marketing"
+                  width={128}
+                  height={56}
+                  sizes="(max-width: 768px) 96px, 144px"
+                  className="h-auto w-24 md:w-36 object-contain shrink-0"
+                />
               </div>
             </LogoLink>
             <p className="text-gray-700 text-sm leading-relaxed max-w-xs">

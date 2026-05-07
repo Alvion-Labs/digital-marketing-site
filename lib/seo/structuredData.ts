@@ -6,7 +6,7 @@ export function getOrganizationSchema() {
     '@type': 'Organization',
     name: 'Alvion Digital Marketing',
     url: 'https://alviondigital.com',
-    logo: 'https://alviondigital.com/AlvionLogo.png',
+    logo: 'https://alviondigital.com/Alvion%20Logo%20landsacpe.png',
     description: 'Full-service digital marketing agency specializing in Social Media Management, Content Strategy, Google & Meta Ads, and SEO.',
     address: {
       '@type': 'PostalAddress',
@@ -51,7 +51,7 @@ export function getLocalBusinessSchema() {
     '@type': 'LocalBusiness',
     '@id': 'https://alviondigital.com',
     name: 'Alvion Digital Marketing',
-    image: 'https://alviondigital.com/AlvionLogo.png',
+    image: 'https://alviondigital.com/Alvion%20Logo%20landsacpe.png',
     url: 'https://alviondigital.com',
     telephone: '+91-6230930041',
     email: 'thakursureshkumar118@gmail.com',
@@ -153,7 +153,7 @@ export function getBlogPostSchema(post: BlogPost) {
       name: 'Alvion Digital Marketing',
       logo: {
         '@type': 'ImageObject',
-        url: 'https://alviondigital.com/AlvionLogo.png',
+        url: 'https://alviondigital.com/Alvion%20Logo%20landsacpe.png',
       },
     },
     mainEntityOfPage: {

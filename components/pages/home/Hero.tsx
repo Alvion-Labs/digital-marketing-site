@@ -112,7 +112,7 @@ export default function Hero() {
 
         <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold leading-tight mb-6 tracking-tight text-black">
           Crafting digital presence{' '}
-          <span className="gradient-text typing-text">that actually works</span>
+          <span className="gradient-text typing-text">That actually works</span>
         </h1>
 
         <p className="text-gray-600 text-base sm:text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed">
