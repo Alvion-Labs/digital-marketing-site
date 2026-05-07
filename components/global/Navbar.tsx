@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { usePathname, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Container from './Container';
 import { Bars3Icon, XMarkIcon } from './icons';
@@ -10,21 +11,70 @@ import LogoLink from './LogoLink';
 const navLinks = [
   { label: 'Home', href: '/#home' },
   { label: 'Services', href: '/#services' },
-  { label: 'Gallery', href: '/#gallery' },
   { label: 'Pricing', href: '/#pricing' },
-  { label: 'Blog', href: '/blog' },
+  { label: 'Blogs', href: '/#blog' },
   { label: 'Contact', href: '/#contact' },
 ];
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const pathname = usePathname();
+  const router = useRouter();
+
+  const handleSectionClick = (href: string) => {
+    const hash = href.split('#')[1];
+    if (!hash) return;
+
+    setMenuOpen(false);
+
+    if (pathname !== '/') {
+      router.push(href, { scroll: false });
+      return;
+    }
+
+    const target = document.getElementById(hash);
+    if (target) {
+      const headerOffset = 88;
+      const targetPosition = target.getBoundingClientRect().top + window.scrollY - headerOffset;
+      window.scrollTo({ top: targetPosition, behavior: 'smooth' });
+      history.replaceState(null, '', `#${hash}`);
+    }
+  };
+
+  const handleNavClick = (href: string) => {
+    // Close mobile menu first
+    setMenuOpen(false);
+
+    // If it's a hash link, reuse the section handler (it handles navigation/scroll)
+    if (href.includes('#')) {
+      handleSectionClick(href);
+      return;
+    }
+
+    // Otherwise navigate normally
+    router.push(href);
+  };
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  useEffect(() => {
+    if (pathname !== '/') return;
+
+    const hash = window.location.hash.slice(1);
+    if (!hash) return;
+
+    const target = document.getElementById(hash);
+    if (!target) return;
+
+    const headerOffset = 88;
+    const targetPosition = target.getBoundingClientRect().top + window.scrollY - headerOffset;
+    window.scrollTo({ top: targetPosition, behavior: 'smooth' });
+  }, [pathname]);
 
   return (
     <header
@@ -36,7 +86,7 @@ export default function Navbar() {
         <nav className="flex items-center justify-between h-16 md:h-20">
           <LogoLink onClick={() => setMenuOpen(false)}>
             <div className="flex items-center gap-3">
-              <span className="inline-flex h-9 w-9 md:h-10 md:w-10 items-center justify-center rounded-full overflow-hidden ring-1 ring-white/20 bg-white/10 shrink-0">
+              <span className="inline-flex h-9 w-9 md:h-10 md:w-10 items-center justify-center rounded-full overflow-hidden ring-1 ring-gray-300 bg-gray-100 shrink-0">
                 <Image
                   src="/AlvionLogo.png"
                   alt="Alvion Digital Marketing"
@@ -55,26 +105,26 @@ export default function Navbar() {
           <ul className="hidden md:flex items-center gap-8">
             {navLinks.map((link) => (
               <li key={link.label}>
-                <Link
-                  href={link.href}
-                  onClick={() => setMenuOpen(false)}
-                  className="text-sm font-medium text-slate-300 hover:text-white transition-colors duration-200 relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-px after:bg-linear-to-r after:from-accent-from after:to-accent-to hover:after:w-full after:transition-all after:duration-300"
+                <button
+                  type="button"
+                  onClick={() => (link.href.includes('#') ? handleSectionClick(link.href) : router.push(link.href))}
+                  className="cursor-pointer text-sm font-medium text-gray-700 hover:text-black transition-colors duration-200 relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-px after:bg-linear-to-r after:from-accent-from after:to-accent-to hover:after:w-full after:transition-all after:duration-300"
                 >
                   {link.label}
-                </Link>
+                </button>
               </li>
             ))}
           </ul>
 
           <Link
             href="/#contact"
-            className="hidden md:inline-flex items-center justify-center px-5 py-2 rounded-lg font-semibold text-sm bg-linear-to-r from-accent-from to-accent-to text-white hover:opacity-90 transition-all duration-200 shadow-lg shadow-blue-500/25"
+            className="hidden md:inline-flex cursor-pointer items-center justify-center px-5 py-2 rounded-full font-semibold text-sm bg-linear-to-r from-accent-from to-accent-to text-white hover:opacity-90 transition-all duration-200 shadow-lg shadow-blue-500/25"
           >
             Get Started
           </Link>
 
           <button
-            className="md:hidden p-2 text-slate-300 hover:text-white"
+            className="md:hidden p-2 text-gray-700 hover:text-black"
             onClick={() => setMenuOpen(!menuOpen)}
             aria-label="Toggle menu"
           >
@@ -87,34 +137,42 @@ export default function Navbar() {
         </nav>
       </Container>
 
-      {menuOpen && (
-        <div className="md:hidden glass border-t border-white/10">
-          <Container>
-            <ul className="py-4 flex flex-col gap-4">
-              {navLinks.map((link) => (
-                <li key={link.label}>
-                  <Link
-                    href={link.href}
-                    onClick={() => setMenuOpen(false)}
-                    className="block text-sm font-medium text-slate-300 hover:text-white transition-colors py-1"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-              <li>
-                <Link
-                  href="/#contact"
-                  onClick={() => setMenuOpen(false)}
-                  className="inline-flex items-center justify-center px-5 py-2 rounded-lg font-semibold text-sm bg-linear-to-r from-accent-from to-accent-to text-white"
+      <div
+        className="md:hidden glass border-t border-gray-200"
+        aria-hidden={!menuOpen}
+        style={{
+          maxHeight: menuOpen ? '420px' : '0px',
+          opacity: menuOpen ? 1 : 0,
+          transform: menuOpen ? 'translateY(0)' : 'translateY(-6px)',
+          transition: 'max-height 320ms ease, opacity 240ms ease, transform 240ms ease',
+          overflow: 'hidden',
+        }}
+      >
+        <Container>
+          <ul className="py-4 flex flex-col gap-4">
+            {navLinks.map((link) => (
+              <li key={link.label}>
+                <button
+                  type="button"
+                  onClick={() => handleNavClick(link.href)}
+                  className="block cursor-pointer text-sm font-medium text-gray-700 hover:text-black transition-colors py-1"
                 >
-                  Get Started
-                </Link>
+                  {link.label}
+                </button>
               </li>
-            </ul>
-          </Container>
-        </div>
-      )}
+            ))}
+            <li>
+              <Link
+                href="/#contact"
+                onClick={() => setMenuOpen(false)}
+                className="inline-flex cursor-pointer items-center justify-center px-5 py-2 rounded-full font-semibold text-sm bg-linear-to-r from-accent-from to-accent-to text-white"
+              >
+                Get Started
+              </Link>
+            </li>
+          </ul>
+        </Container>
+      </div>
     </header>
   );
 }

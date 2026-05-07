@@ -2,29 +2,28 @@ import Link from 'next/link';
 import Image from 'next/image';
 import Container from './Container';
 import LogoLink from './LogoLink';
-import { EnvelopeIcon, FacebookIcon, InstagramIcon, LinkedInIcon, WhatsAppIcon, XTwitterIcon } from './icons';
 import { CONTACT_INFO, GMAIL_COMPOSE_LINK, WHATSAPP_LINK } from '@/lib/contact';
 
 const socialLinks = [
   {
     label: 'Instagram',
     href: 'https://www.instagram.com/alviondigitalmarketing/',
-    icon: <InstagramIcon className="w-5 h-5" />,
+    icon: '/logos/insta filled.svg',
   },
   {
     label: 'Facebook',
     href: 'https://www.facebook.com/profile.php?id=61562935378228',
-    icon: <FacebookIcon className="w-5 h-5" />,
+    icon: '/logos/facebook filled.svg',
   },
   {
     label: 'LinkedIn',
     href: 'https://linkedin.com',
-    icon: <LinkedInIcon className="w-5 h-5" />,
+    icon: '/logos/linkedInFilled.svg',
   },
   {
     label: 'Twitter',
     href: 'https://twitter.com',
-    icon: <XTwitterIcon className="w-5 h-5" />,
+    icon: '/logos/X-twitter filled.svg',
   },
 ];
 
@@ -37,7 +36,7 @@ const quickLinks = [
 
 export default function Footer() {
   return (
-    <footer className="bg-[#061c2e] border-t border-white/10 py-12">
+    <footer className="bg-white border-t border-gray-200 py-12">
       <Container>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
           <div>
@@ -55,7 +54,7 @@ export default function Footer() {
                 <span className="text-xl font-bold gradient-text whitespace-nowrap">Alvion Digital</span>
               </div>
             </LogoLink>
-            <p className="text-slate-400 text-sm leading-relaxed max-w-xs">
+            <p className="text-gray-700 text-sm leading-relaxed max-w-xs">
               Crafting powerful digital experiences that grow your brand and drive real results.
             </p>
             <div className="flex items-center gap-4 mt-5">
@@ -66,22 +65,22 @@ export default function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={s.label}
-                  className="text-slate-400 hover:text-accent-to transition-colors duration-200"
+                  className="text-gray-600 hover:text-accent-to transition transform duration-200 hover:scale-110 hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-accent-to rounded"
                 >
-                  {s.icon}
+                  <img src={s.icon} alt={s.label} className="w-7 h-7" />
                 </a>
               ))}
             </div>
           </div>
 
           <div>
-            <h4 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">Quick Links</h4>
+            <h4 className="text-sm font-semibold text-black uppercase tracking-wider mb-4">Quick Links</h4>
             <ul className="space-y-2">
               {quickLinks.map((link) => (
                 <li key={link.label}>
                   <Link
                     href={link.href}
-                    className="text-slate-400 text-sm hover:text-white transition-colors duration-200"
+                    className="text-gray-600 text-sm hover:text-black transition-colors duration-200"
                   >
                     {link.label}
                   </Link>
@@ -91,18 +90,16 @@ export default function Footer() {
           </div>
 
           <div>
-            <h4 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">Contact</h4>
-            <ul className="space-y-2 text-sm text-slate-400">
+            <h4 className="text-sm font-semibold text-black uppercase tracking-wider mb-4">Contact</h4>
+            <ul className="space-y-2 text-sm text-gray-600">
               <li>
                 <a
                   href={GMAIL_COMPOSE_LINK}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 hover:text-white transition-colors"
+                  className="inline-flex items-center gap-2 hover:text-black transition-colors"
                 >
-                  <span className="w-7 h-7 rounded-lg bg-accent-from/20 flex items-center justify-center text-accent-to">
-                    <EnvelopeIcon className="w-4 h-4" />
-                  </span>
+                  <img src="/logos/Mail .svg" alt="Email" className="w-7 h-7" />
                   {CONTACT_INFO.emailAddress}
                 </a>
               </li>
@@ -111,11 +108,9 @@ export default function Footer() {
                   href={WHATSAPP_LINK}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 hover:text-white transition-colors"
+                  className="inline-flex items-center gap-2 hover:text-accent-to transition-colors"
                 >
-                  <span className="w-7 h-7 rounded-lg bg-green-500/20 flex items-center justify-center text-green-400">
-                    <WhatsAppIcon className="w-4 h-4" />
-                  </span>
+                  <img src="/logos/whatsapp filled.svg" alt="WhatsApp" className="w-7 h-7" />
                   {CONTACT_INFO.whatsappSubtitle}
                 </a>
               </li>
@@ -123,7 +118,7 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-10 pt-6 border-t border-white/10 text-center text-sm text-slate-500">
+        <div className="mt-10 pt-6 border-t border-gray-200 text-center text-sm text-gray-500">
           &copy; {new Date().getFullYear()} Alvion Digital Marketing. All rights reserved.
         </div>
       </Container>

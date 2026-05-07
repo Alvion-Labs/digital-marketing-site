@@ -10,12 +10,20 @@ export default function Home() {
   return (
     <>
       <Navbar />
-      <main>
+      <main className="bg-white">
         <Hero />
-        <Services />
-        <BlogSection />
-        <Pricing />
-        <Contact />
+        <div className="border-t border-gray-100 bg-linear-to-b from-gray-50/70 to-white">
+          <Services />
+        </div>
+        <div className="border-t border-gray-100 bg-white">
+          <BlogSection />
+        </div>
+        <div className="border-t border-gray-100 bg-linear-to-b from-gray-50/70 to-white">
+          <Pricing />
+        </div>
+        <div className="border-t border-gray-100 bg-white">
+          <Contact />
+        </div>
       </main>
       <Footer />
     </>

@@ -8,22 +8,26 @@ export default function BlogSection() {
   const posts = getFeaturedBlogPosts(3);
 
   return (
-    <section id="blog" className="py-24 bg-[#061c2e]">
+    <section id="blog" className="py-24 bg-transparent">
       <Container>
         <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between mb-14">
           <div className="max-w-2xl">
-            <span className="text-accent-to text-sm font-semibold uppercase tracking-widest">Insights</span>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white mt-3 mb-4">
+            <div className="inline-block mb-4">
+              <span className="px-4 py-2 rounded-full bg-accent-from/10 border border-accent-from/30 text-accent-to text-xs font-semibold uppercase tracking-widest">
+                Insights
+              </span>
+            </div>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-black mt-3 mb-4">
               Latest blog articles
             </h2>
-            <p className="text-slate-400 text-base sm:text-lg leading-relaxed">
+            <p className="text-gray-600 text-base sm:text-lg leading-relaxed">
               Practical marketing advice, content ideas, and performance insights for growing brands.
             </p>
           </div>
 
           <Link
             href="/blog"
-            className="inline-flex items-center justify-center rounded-lg border border-accent-from/40 bg-accent-from/10 px-5 py-3 text-sm font-semibold text-accent-to transition-colors hover:bg-accent-from/20 hover:text-white"
+            className="inline-flex items-center justify-center rounded-full border border-accent-from px-6 py-3 text-sm font-semibold text-accent-from transition-all duration-300 hover:bg-accent-from/10 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-accent-from"
           >
             View all posts
           </Link>

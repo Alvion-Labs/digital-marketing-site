@@ -17,6 +17,7 @@ export interface BlogPost {
   summary: string;
   sections: BlogSection[];
   takeaways: string[];
+  thumbnail?: string;
 }
 
 export const blogPosts: BlogPost[] = [
@@ -31,6 +32,7 @@ export const blogPosts: BlogPost[] = [
     author: 'Alvion Digital Team',
     accentFrom: '#1E6BFF',
     accentTo: '#00A3FF',
+    thumbnail: '/Content Images/content Calender.png',
     summary:
       'A strong content calendar keeps your messaging clear, reduces last-minute publishing, and helps every post support a measurable marketing goal.',
     sections: [
@@ -74,6 +76,7 @@ export const blogPosts: BlogPost[] = [
     author: 'Alvion Digital Team',
     accentFrom: '#0EA5E9',
     accentTo: '#22C55E',
+    thumbnail: '/Content Images/SEO-Optimization-For-Website.webp',
     summary:
       'Meta Ads are powerful for reach and demand generation, but they become much more efficient when SEO sharpens your positioning and landing page relevance.',
     sections: [
@@ -117,6 +120,7 @@ export const blogPosts: BlogPost[] = [
     author: 'Alvion Digital Team',
     accentFrom: '#8B5CF6',
     accentTo: '#EC4899',
+    thumbnail: '/Content Images/instagram-.webp',
     summary:
       'Reels work when they feel fast, specific, and useful. The format rewards clarity, pacing, and repeatable creative systems more than one-off viral attempts.',
     sections: [
@@ -159,6 +163,7 @@ export const blogPosts: BlogPost[] = [
     author: 'Alvion Digital Team',
     accentFrom: '#F59E0B',
     accentTo: '#EF4444',
+    thumbnail: '/Content Images/SEO-Optimization-For-Website.webp',
     summary:
       'Local SEO is about consistency across your website, Google Business Profile, citations, and reviews so nearby customers can find and trust you quickly.',
     sections: [

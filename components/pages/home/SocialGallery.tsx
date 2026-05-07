@@ -4,14 +4,14 @@ import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Container from '@/components/global/Container';
 import Button from '@/components/global/Button';
-import { FacebookIcon, HeartIcon, InstagramIcon } from '@/components/global/icons';
+import { HeartIcon } from '@/components/global/icons';
 import { fetchSocialFeed, type SocialPost } from '@/lib/api';
 
 function PostCard({ post }: { post: SocialPost }) {
   const truncated = post.caption.length > 100 ? post.caption.slice(0, 100) + '…' : post.caption;
 
   return (
-    <div className="group rounded-2xl overflow-hidden bg-[#0d2d47] border border-white/5 hover:border-accent-from/40 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-blue-500/10">
+    <div className="group rounded-xl overflow-hidden bg-gray-100 border border-gray-200 hover:border-accent-from/40 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-blue-500/10">
       <div className="relative aspect-square overflow-hidden">
         <Image
           src={post.imageUrl}
@@ -22,12 +22,16 @@ function PostCard({ post }: { post: SocialPost }) {
         />
         <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent" />
         <div className="absolute top-3 right-3 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/50 backdrop-blur-sm text-white text-xs">
-          {post.platform === 'instagram' ? <InstagramIcon className="w-4 h-4" /> : <FacebookIcon className="w-4 h-4" />}
+          <img 
+            src={post.platform === 'instagram' ? '/logos/insta filled.svg' : '/logos/facebook filled.svg'}
+            alt={post.platform}
+            className="w-4 h-4"
+          />
         </div>
       </div>
       <div className="p-4">
-        <p className="text-slate-300 text-sm leading-relaxed mb-3">{truncated}</p>
-        <div className="flex items-center justify-between text-xs text-slate-500">
+        <p className="text-gray-700 text-sm leading-relaxed mb-3">{truncated}</p>
+        <div className="flex items-center justify-between text-xs text-gray-500">
           <div className="flex items-center gap-1 text-red-400">
             <HeartIcon className="w-4 h-4" />
             <span>{post.likes.toLocaleString()}</span>
@@ -82,14 +86,14 @@ export default function SocialGallery() {
   const skeletonCards = Array.from({ length: 3 }, (_, index) => index);
 
   return (
-    <section id="gallery" className="py-24 bg-primary">
+    <section id="gallery" className="py-24 bg-white">
       <Container>
         <div className="text-center mb-12">
           <span className="text-accent-to text-sm font-semibold uppercase tracking-widest">Social Feed</span>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white mt-3 mb-5">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-black mt-3 mb-5">
             Latest Posts
           </h2>
-          <p className="text-slate-400 max-w-xl mx-auto">
+          <p className="text-gray-600 max-w-xl mx-auto">
             Stay up to date with our latest content and marketing insights.
           </p>
         </div>
@@ -102,26 +106,30 @@ export default function SocialGallery() {
               className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-200 ${
                 activeTab === tab
                   ? 'bg-linear-to-r from-accent-from to-accent-to text-white shadow-lg shadow-blue-500/25'
-                  : 'bg-[#0d2d47] text-slate-400 hover:text-white border border-white/10'
+                  : 'bg-gray-100 text-gray-700 hover:text-black border border-gray-300'
               }`}
             >
-              {tab === 'instagram' ? <InstagramIcon className="w-4 h-4" /> : <FacebookIcon className="w-4 h-4" />}
+              <img
+                src={tab === 'instagram' ? '/logos/insta filled.svg' : '/logos/facebook filled.svg'}
+                alt={tab}
+                className="w-4 h-4"
+              />
               {tab.charAt(0).toUpperCase() + tab.slice(1)}
             </button>
           ))}
         </div>
 
         {error && (
-          <div className="mb-6 rounded-2xl border border-white/10 bg-[#0d2d47] px-4 py-3 text-sm text-slate-300">
+          <div className="mb-6 rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-700">
             {error}
           </div>
         )}
 
         {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {skeletonCards.map((card) => (
-              <div key={card} className="h-105 rounded-2xl bg-[#0d2d47] border border-white/5 animate-pulse">
-                <div className="h-64 rounded-t-2xl bg-white/5" />
+              {skeletonCards.map((card) => (
+              <div key={card} className="h-105 rounded-xl bg-gray-100 border border-gray-200 animate-pulse">
+                <div className="h-64 rounded-t-xl bg-white/5" />
                 <div className="p-4 space-y-4">
                   <div className="h-4 w-4/5 rounded bg-white/5" />
                   <div className="h-4 w-3/5 rounded bg-white/5" />
@@ -137,7 +145,7 @@ export default function SocialGallery() {
             ))}
           </div>
         ) : (
-          <div className="rounded-2xl border border-white/10 bg-[#0d2d47] px-6 py-10 text-center text-slate-400">
+          <div className="rounded-xl border border-gray-200 bg-gray-50 px-6 py-10 text-center text-gray-600">
             No posts available yet. Once your Meta tokens and IDs are set, the latest posts will appear here.
           </div>
         )}

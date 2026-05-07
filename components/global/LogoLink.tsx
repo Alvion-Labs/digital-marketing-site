@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { ReactNode } from 'react';
 
 interface LogoLinkProps {
@@ -9,10 +10,16 @@ interface LogoLinkProps {
 }
 
 export default function LogoLink({ children, onClick }: LogoLinkProps) {
+  const pathname = usePathname();
+
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    e.preventDefault();
-    if (onClick) onClick();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // If we're already on the homepage, prevent navigation and smooth-scroll up.
+    if (pathname === '/') {
+      e.preventDefault();
+      if (onClick) onClick();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    // Otherwise, allow the link to navigate to `/` normally.
   };
 
   return (

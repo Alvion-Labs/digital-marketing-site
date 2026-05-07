@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Container from '@/components/global/Container';
 import Button from '@/components/global/Button';
-import { CheckIcon, EnvelopeIcon, LoadingSpinnerIcon, WhatsAppIcon } from '@/components/global/icons';
+import { CheckIcon, LoadingSpinnerIcon } from '@/components/global/icons';
 import { CONTACT_INFO, GMAIL_COMPOSE_LINK, WHATSAPP_LINK } from '@/lib/contact';
 
 interface FormState {
@@ -81,32 +81,36 @@ export default function Contact() {
   };
 
   const inputClass = (field: keyof FormErrors) =>
-    `w-full bg-[#0d2d47] border ${
-      errors[field] ? 'border-red-500' : 'border-white/10'
-    } rounded-xl px-4 py-3 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-accent-from focus:ring-1 focus:ring-accent-from transition-colors duration-200`;
+    `w-full bg-white border ${
+      errors[field] ? 'border-red-500' : 'border-gray-300'
+    } rounded-xl px-4 py-3 text-black placeholder-gray-400 text-sm focus:outline-none focus:border-accent-from focus:ring-1 focus:ring-accent-from transition-colors duration-200`;
 
   return (
-    <section id="contact" className="py-24 bg-[#061c2e]">
+    <section id="contact" className="py-24 bg-transparent">
       <Container>
         <div className="text-center mb-16">
-          <span className="text-accent-to text-sm font-semibold uppercase tracking-widest">Contact Us</span>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white mt-3 mb-5">
+          <div className="inline-block mb-4">
+            <span className="px-4 py-2 rounded-full bg-accent-from/10 border border-accent-from/30 text-accent-to text-xs font-semibold uppercase tracking-widest">
+              Contact Us
+            </span>
+          </div>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-black mt-3 mb-5">
             Get In Touch
           </h2>
-          <p className="text-slate-400 max-w-xl mx-auto">
+          <p className="text-gray-600 max-w-xl mx-auto">
             Ready to grow your digital presence? Let&apos;s talk about your goals.
           </p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-5xl mx-auto">
-          <div className="bg-[#0d2d47] rounded-2xl p-8 border border-white/5">
+          <div className="rounded-xl p-8">
             {status === 'success' ? (
               <div className="flex flex-col items-center justify-center h-full py-12 text-center">
                 <div className="w-16 h-16 rounded-full bg-green-500/20 flex items-center justify-center mb-5">
-                  <CheckIcon className="w-8 h-8 text-green-400" />
+                  <CheckIcon className="w-8 h-8 text-green-600" />
                 </div>
-                <h3 className="text-xl font-bold text-white mb-2">Message Sent!</h3>
-                <p className="text-slate-400 text-sm mb-6">
+                <h3 className="text-xl font-bold text-black mb-2">Message Sent!</h3>
+                <p className="text-gray-600 text-sm mb-6">
                   We&apos;ll get back to you within 24 hours.
                 </p>
                 <Button variant="secondary" onClick={() => setStatus('idle')}>
@@ -116,7 +120,7 @@ export default function Contact() {
             ) : (
               <form onSubmit={handleSubmit} noValidate className="space-y-5">
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-1.5">Name</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Name</label>
                   <input
                     type="text"
                     name="name"
@@ -129,7 +133,7 @@ export default function Contact() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-1.5">Email</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Email</label>
                   <input
                     type="email"
                     name="email"
@@ -142,7 +146,7 @@ export default function Contact() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-1.5">Message</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Message</label>
                   <textarea
                     name="message"
                     value={form.message}
@@ -177,8 +181,8 @@ export default function Contact() {
 
           <div className="flex flex-col justify-center gap-8">
             <div>
-              <h3 className="text-xl font-bold text-white mb-4">Other Ways to Reach Us</h3>
-              <p className="text-slate-400 text-sm leading-relaxed">
+              <h3 className="text-xl font-bold text-black mb-4">Other Ways to Reach Us</h3>
+              <p className="text-gray-600 text-sm leading-relaxed">
                 We&apos;re available Monday–Friday, 9am–6pm. Reach out via WhatsApp for the fastest response.
               </p>
             </div>
@@ -187,14 +191,12 @@ export default function Contact() {
               href={WHATSAPP_LINK}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-4 p-5 rounded-2xl bg-[#0d2d47] border border-white/5 hover:border-green-500/40 transition-all duration-300 group"
+              className="flex items-center gap-4 p-5 rounded-full bg-gray-50 border border-gray-200 hover:border-green-500/40 transition-all duration-300 group"
             >
-              <div className="w-12 h-12 rounded-xl bg-green-500/20 flex items-center justify-center text-green-400 group-hover:bg-green-500/30 transition-colors">
-                <WhatsAppIcon className="w-6 h-6" />
-              </div>
+              <img src="/logos/whatsapp filled.svg" alt="WhatsApp" className="w-8 h-8" />
               <div>
-                <p className="text-white font-semibold text-sm">{CONTACT_INFO.whatsappTitle}</p>
-                <p className="text-slate-400 text-sm">{CONTACT_INFO.whatsappSubtitle}</p>
+                <p className="text-black font-semibold text-sm">{CONTACT_INFO.whatsappTitle}</p>
+                <p className="text-gray-600 text-sm">{CONTACT_INFO.whatsappSubtitle}</p>
               </div>
             </a>
 
@@ -202,14 +204,12 @@ export default function Contact() {
               href={GMAIL_COMPOSE_LINK}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-4 p-5 rounded-2xl bg-[#0d2d47] border border-white/5 hover:border-accent-from/40 transition-all duration-300 group"
+              className="flex items-center gap-4 p-5 rounded-full bg-gray-50 border border-gray-200 hover:border-accent-from/40 transition-all duration-300 group"
             >
-              <div className="w-12 h-12 rounded-xl bg-accent-from/20 flex items-center justify-center text-accent-to group-hover:bg-accent-from/30 transition-colors">
-                <EnvelopeIcon className="w-6 h-6" />
-              </div>
+              <img src="/logos/Mail .svg" alt="Email" className="w-8 h-8" />
               <div>
-                <p className="text-white font-semibold text-sm">{CONTACT_INFO.emailTitle}</p>
-                <p className="text-slate-400 text-sm">{CONTACT_INFO.emailAddress}</p>
+                <p className="text-black font-semibold text-sm">{CONTACT_INFO.emailTitle}</p>
+                <p className="text-gray-600 text-sm">{CONTACT_INFO.emailAddress}</p>
               </div>
             </a>
           </div>

@@ -1,4 +1,4 @@
-import type { SocialPost } from '@/lib/api';
+ import type { SocialPost } from '@/lib/api';
 
 const GRAPH_API_VERSION = process.env.META_GRAPH_VERSION ?? 'v20.0';
 const GRAPH_API_BASE = `https://graph.facebook.com/${GRAPH_API_VERSION}`;
