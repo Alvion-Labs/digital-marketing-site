@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import '@/styles/globals.css';
 import FloatingWhatsApp from '@/components/global/FloatingWhatsApp';
 import { SpeedInsights } from "@vercel/speed-insights/next"
+import { Analytics } from "@vercel/analytics/next"
 export const metadata: Metadata = {
   metadataBase: new URL('https://alviondigital.in'),
   title: {
@@ -88,6 +89,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body className="antialiased">{children}
         <FloatingWhatsApp />
+        <Analytics/>
         <SpeedInsights/>
       </body>
     </html>
