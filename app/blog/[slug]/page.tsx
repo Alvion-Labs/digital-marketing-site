@@ -28,7 +28,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
     title: `${post.title} | Alvion Digital Marketing`,
     description: post.excerpt,
     keywords: [post.category, 'digital marketing', 'marketing strategy', 'content marketing', post.title],
-    authors: [{ name: post.author, url: 'https://alviondigital.com' }],
+    authors: [{ name: post.author, url: 'https://alviondigital.in' }],
     creator: post.author,
     publisher: 'Alvion Digital Marketing',
     robots: {
@@ -48,18 +48,18 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
       type: 'article',
       publishedTime: post.publishedAt,
       modifiedTime: post.publishedAt,
-      url: `https://alviondigital.com/blog/${post.slug}`,
+      url: `https://alviondigital.in/blog/${post.slug}`,
       siteName: 'Alvion Digital Marketing',
       images: post.thumbnail ? [
         {
-          url: `https://alviondigital.com${post.thumbnail}`,
+          url: `https://alviondigital.in${post.thumbnail}`,
           width: 1200,
           height: 630,
           alt: post.title,
         }
       ] : [
         {
-          url: 'https://alviondigital.com/opengraph-image',
+          url: 'https://alviondigital.in/opengraph-image',
           width: 1200,
           height: 630,
           alt: post.title,
@@ -72,10 +72,10 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
       title: post.title,
       description: post.excerpt,
       creator: '@alviondigital',
-      images: post.thumbnail ? [`https://alviondigital.com${post.thumbnail}`] : ['https://alviondigital.com/twitter-image'],
+      images: post.thumbnail ? [`https://alviondigital.in${post.thumbnail}`] : ['https://alviondigital.in/twitter-image'],
     },
     alternates: {
-      canonical: `https://alviondigital.com/blog/${post.slug}`,
+      canonical: `https://alviondigital.in/blog/${post.slug}`,
     },
   };
 }
@@ -100,9 +100,9 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify(getBreadcrumbSchema([
-            { name: 'Home', url: 'https://alviondigital.com' },
-            { name: 'Blog', url: 'https://alviondigital.com/blog' },
-            { name: post.title, url: `https://alviondigital.com/blog/${post.slug}` },
+            { name: 'Home', url: 'https://alviondigital.in' },
+            { name: 'Blog', url: 'https://alviondigital.in/blog' },
+            { name: post.title, url: `https://alviondigital.in/blog/${post.slug}` },
           ])),
         }}
       />

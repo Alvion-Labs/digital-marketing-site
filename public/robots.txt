@@ -1,9 +1,9 @@
-# Allow all crawlers
+# *
 User-agent: *
 Allow: /
 
-# Disallow admin and API routes
-Disallow: /api/
+# Host
+Host: https://alviondigital.in
 
-# Sitemap location
-Sitemap: https://alviondigital.com/sitemap.xml
+# Sitemaps
+Sitemap: https://alviondigital.in/sitemap.xml

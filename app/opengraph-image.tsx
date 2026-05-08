@@ -9,7 +9,7 @@ export const size = {
 export const contentType = 'image/png';
 
 export default async function Image() {
-  const logoUrl = 'https://alviondigital.com/Alvion%20Logo%20landsacpe.png';
+  const logoUrl = 'https://alviondigital.in/Alvion%20Logo%20landsacpe.png';
 
   return new ImageResponse(
     (

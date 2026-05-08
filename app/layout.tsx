@@ -4,7 +4,7 @@ import FloatingWhatsApp from '@/components/global/FloatingWhatsApp';
 import { getOrganizationSchema, getWebsiteSchema, getLocalBusinessSchema } from '@/lib/seo/structuredData';
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://alviondigital.com'),
+  metadataBase: new URL('https://alviondigital.in'),
   title: {
     default: 'Alvion Digital Marketing ( Social Media Expert, SEO & Ads Agency )',
     template: '%s | Alvion Digital Marketing',
@@ -42,7 +42,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_IN',
-    url: 'https://alviondigital.com',
+    url: 'https://alviondigital.in',
     siteName: 'Alvion Digital Marketing',
     title: 'Alvion Digital Marketing  ( Social Media Expert, SEO & Ads Agency )',
     description: 'Leading digital marketing agency specializing in social media management, SEO, and paid advertising. Grow your business with proven strategies.',
@@ -74,7 +74,7 @@ export const metadata: Metadata = {
     },
   },
   alternates: {
-    canonical: 'https://alviondigital.com',
+    canonical: 'https://alviondigital.in',
   },
 };
 

@@ -2,7 +2,7 @@ import { MetadataRoute } from 'next';
 import { getAllBlogPosts } from '@/lib/blog';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://alviondigital.com';
+  const baseUrl = 'https://alviondigital.in';
   
   // Get all blog posts
   const blogPosts = getAllBlogPosts();
