@@ -138,7 +138,7 @@ export default function Services() {
       <Container>
         <div className="text-center mb-20">
           <div className="inline-block mb-4">
-            <span className="px-4 py-2 rounded-full bg-accent-from/10 border border-accent-from/30 text-accent-to text-xs font-semibold uppercase tracking-widest">
+            <span className="px-4 py-2 rounded-full bg-transparent border border-accent-from/20 text-accent-to text-xs font-semibold uppercase tracking-widest">
               What We Do
             </span>
           </div>

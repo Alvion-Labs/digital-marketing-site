@@ -2,15 +2,15 @@
 
 @theme {
   --color-primary: #FFFFFF;
-  --color-accent-from: #1E6BFF;
-  --color-accent-to: #00A3FF;
+  --color-accent-from: #1a1054;
+  --color-accent-to: #255ff1;
   --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
 
 :root {
   --primary: #FFFFFF;
-  --accent-from: #1E6BFF;
-  --accent-to: #00A3FF;
+  --accent-from: #1a1054;
+  --accent-to: #255ff1;
   --foreground: #1a1a1a;
   --foreground-muted: #666666;
 }
@@ -32,22 +32,22 @@ body {
   background: #F5F5F5;
 }
 ::-webkit-scrollbar-thumb {
-  background: #1E6BFF;
+  background: #1a1054;
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #00A3FF;
+  background: #255ff1;
 }
 
 @utility gradient-text {
-  background: linear-gradient(90deg, #1E6BFF, #00A3FF);
+  background: linear-gradient(90deg, #1a1054, #255ff1);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 @utility gradient-bg {
-  background: linear-gradient(135deg, #1E6BFF, #00A3FF);
+  background: linear-gradient(135deg, #1a1054, #255ff1);
 }
 
 @utility glass {

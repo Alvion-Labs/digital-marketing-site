@@ -39,7 +39,7 @@ export default function BlogPost({ post }: BlogPostProps) {
             </Link>
 
             <div className="flex flex-wrap gap-3 mb-8">
-              <span className="inline-flex items-center rounded-full border border-accent-from/30 bg-linear-to-r from-accent-from/10 to-accent-to/10 px-5 py-2 text-sm font-semibold text-accent-to shadow-sm">
+              <span className="inline-flex items-center rounded-full border border-accent-from/20 bg-transparent px-5 py-2 text-sm font-semibold text-accent-to shadow-sm">
                 {post.category}
               </span>
             </div>

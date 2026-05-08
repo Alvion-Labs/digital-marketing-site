@@ -22,7 +22,7 @@ const FloatingLogo = ({
 }) => {
   return (
     <div
-      className="absolute hidden md:block opacity-10 pointer-events-none"
+      className="absolute hidden md:block opacity-15 pointer-events-none"
       style={{
         animation: `slideUp ${duration}s ease-out ${delay}s forwards`,
         animationFillMode: 'backwards',
@@ -56,11 +56,11 @@ export default function Hero() {
             opacity: 0;
           }
           60% {
-            opacity: 0.2;
+            opacity: 0.15;
           }
           100% { 
             transform: translateY(0px);
-            opacity: 0.2;
+            opacity: 0.15;
           }
         }
         @keyframes typing {
@@ -100,12 +100,11 @@ export default function Hero() {
       <FloatingLogo src="/logos/meta 3d.png" delay={0.8} duration={9} top="72%" left="86%" size={90} />
       <FloatingLogo src="/logos/facebook 3d.png" delay={1.3} duration={8.7} top="75%" left="66%" size={80} />
       
-      <div className="absolute top-1/4 -left-32 w-96 h-96 bg-accent-from/15 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-1/4 -right-32 w-96 h-96 bg-accent-to/15 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-150 h-150 bg-accent-from/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-0 -left-32 w-96 h-96 bg-sky-400/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-0 -right-32 w-96 h-96 bg-sky-400/10 rounded-full blur-3xl pointer-events-none" />
 
       <Container className="relative z-10 text-center py-24 pt-32">
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-accent-from/40 bg-accent-from/10 text-accent-to text-sm font-medium mb-8">
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-accent-from/20 bg-transparent text-accent-to text-sm font-medium mb-8">
           <span className="w-2 h-2 rounded-full bg-accent-to animate-pulse" />
           Digital Marketing Agency
         </div>

@@ -55,7 +55,7 @@ Use these approved gradient color combinations for consistency:
 
 | Category | `accentFrom` | `accentTo` |
 |----------|--------------|------------|
-| Content Strategy | `#1E6BFF` | `#00A3FF` |
+| Content Strategy | `#1a1054` | `#255ff1` |
 | Paid Media | `#0EA5E9` | `#22C55E` |
 | Social Media | `#8B5CF6` | `#EC4899` |
 | SEO | `#F59E0B` | `#EF4444` |
@@ -79,8 +79,9 @@ Open `/lib/blog.ts` and add a new object to the **START** of the `blogPosts` arr
   publishedAt: '2026-05-01',
   readTime: '6 min read',
   author: 'Alvion Digital Team',
-  accentFrom: '#1E6BFF',
-  accentTo: '#00A3FF',
+  accentFrom: '#1a1054',
+  accentTo: '#255ff1',
+
   summary: 'Longer summary that appears below the title on the single post page.',
   sections: [
     {

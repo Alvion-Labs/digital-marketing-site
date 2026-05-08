@@ -30,8 +30,8 @@ export const blogPosts: BlogPost[] = [
     publishedAt: '2026-04-08',
     readTime: '6 min read',
     author: 'Alvion Digital Team',
-    accentFrom: '#1E6BFF',
-    accentTo: '#00A3FF',
+    accentFrom: '#1a1054',
+    accentTo: '#255ff1',
     thumbnail: '/Content Images/content Calender.png',
     summary:
       'A strong content calendar keeps your messaging clear, reduces last-minute publishing, and helps every post support a measurable marketing goal.',
