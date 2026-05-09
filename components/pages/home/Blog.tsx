@@ -4,8 +4,8 @@ import Button from '@/components/global/Button';
 import BlogCard from '@/components/pages/blog/BlogCard';
 import { getFeaturedBlogPosts } from '@/lib/blog';
 
-export default function BlogSection() {
-  const posts = getFeaturedBlogPosts(3);
+export default async function BlogSection() {
+  const posts = await getFeaturedBlogPosts(3);
 
   return (
     <section id="blog" className="py-24 bg-transparent">

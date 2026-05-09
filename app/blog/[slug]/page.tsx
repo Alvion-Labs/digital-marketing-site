@@ -4,19 +4,32 @@ import Navbar from '@/components/global/Navbar';
 import Footer from '@/components/global/Footer';
 import BlogPost from '@/components/pages/blog/BlogPost';
 import { getAllBlogPosts, getBlogPostBySlug } from '@/lib/blog';
+import { connectToDatabase } from '@/lib/mongodb';
+import BlogModel from '@/lib/models/Blog';
 import { getBlogPostSchema, getBreadcrumbSchema } from '@/lib/seo/structuredData';
 
 interface BlogPostPageProps {
   params: Promise<{ slug: string }>;
 }
 
-export function generateStaticParams() {
-  return getAllBlogPosts().map((post) => ({ slug: post.slug }));
+export async function generateStaticParams() {
+  // prefer DB slugs if available, fallback to static posts
+  try {
+    await connectToDatabase();
+    const db = await BlogModel.find({}, { slug: 1 }).lean();
+    const dbSlugs = db.map((b: any) => ({ slug: b.slug }));
+    if (dbSlugs.length) return dbSlugs;
+  } catch (e) {
+    // ignore DB errors and fallback to static
+  }
+
+  const posts = await getAllBlogPosts();
+  return posts.map((post) => ({ slug: post.slug }));
 }
 
 export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const post = getBlogPostBySlug(slug);
+  const post = await getBlogPostBySlug(slug);
 
   if (!post) {
     return {
@@ -27,7 +40,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
   return {
     title: `${post.title} | Alvion Digital Marketing`,
     description: post.excerpt,
-    keywords: [post.category, 'digital marketing', 'marketing strategy', 'content marketing', post.title],
+    keywords: [post.category || 'digital marketing', 'digital marketing', 'marketing strategy', 'content marketing', post.title],
     authors: [{ name: post.author, url: 'https://alviondigital.in' }],
     creator: post.author,
     publisher: 'Alvion Digital Marketing',
@@ -46,8 +59,8 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
       title: post.title,
       description: post.excerpt,
       type: 'article',
-      publishedTime: post.publishedAt,
-      modifiedTime: post.publishedAt,
+      publishedTime: post.publishedAt as string | undefined,
+      modifiedTime: post.publishedAt as string | undefined,
       url: `https://alviondigital.in/blog/${post.slug}`,
       siteName: 'Alvion Digital Marketing',
       images: post.thumbnail ? [
@@ -82,11 +95,20 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
 
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const { slug } = await params;
-  const post = getBlogPostBySlug(slug);
+  // try DB first, then static
+  let post: any = null;
+  try {
+    await connectToDatabase();
+    post = await BlogModel.findOne({ slug }).lean();
+  } catch (e) {
+    // ignore
+  }
 
   if (!post) {
-    notFound();
+    post = await getBlogPostBySlug(slug);
   }
+
+  if (!post) notFound();
 
   return (
     <>

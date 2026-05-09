@@ -1,16 +1,16 @@
 import { MetadataRoute } from 'next';
 import { getAllBlogPosts } from '@/lib/blog';
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://alviondigital.in';
   
   // Get all blog posts
-  const blogPosts = getAllBlogPosts();
+  const blogPosts = await getAllBlogPosts();
   
   // Blog post URLs
   const blogUrls = blogPosts.map((post) => ({
     url: `${baseUrl}/blog/${post.slug}`,
-    lastModified: new Date(post.publishedAt),
+    lastModified: post.publishedAt ? new Date(post.publishedAt) : new Date(),
     changeFrequency: 'monthly' as const,
     priority: 0.7,
   }));

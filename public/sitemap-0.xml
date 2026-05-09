@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:news="http://www.google.com/schemas/sitemap-news/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:mobile="http://www.google.com/schemas/sitemap-mobile/1.0" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
-<url><loc>https://alviondigital.in</loc><lastmod>2026-05-08T05:26:26.584Z</lastmod><changefreq>daily</changefreq><priority>1</priority></url>
-<url><loc>https://alviondigital.in/blog</loc><lastmod>2026-05-08T05:26:26.585Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-<url><loc>https://alviondigital.in/blog/how-to-build-a-content-calendar</loc><lastmod>2026-05-08T05:26:26.585Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-<url><loc>https://alviondigital.in/blog/instagram-reels-strategy-for-2026</loc><lastmod>2026-05-08T05:26:26.585Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-<url><loc>https://alviondigital.in/blog/local-seo-checklist-for-service-brands</loc><lastmod>2026-05-08T05:26:26.585Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-<url><loc>https://alviondigital.in/blog/why-meta-ads-work-better-with-seo</loc><lastmod>2026-05-08T05:26:26.585Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-<url><loc>https://alviondigital.in/sitemap.xml</loc><lastmod>2026-05-08T05:26:26.585Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+<url><loc>https://alviondigital.in</loc><lastmod>2026-05-09T09:36:13.909Z</lastmod><changefreq>daily</changefreq><priority>1</priority></url>
+<url><loc>https://alviondigital.in/admin/login</loc><lastmod>2026-05-09T09:36:13.910Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+<url><loc>https://alviondigital.in/blog</loc><lastmod>2026-05-09T09:36:13.910Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+<url><loc>https://alviondigital.in/blog/how-to-build-a-content-calendar</loc><lastmod>2026-05-09T09:36:13.910Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+<url><loc>https://alviondigital.in/blog/instagram-reels-strategy-for-2026</loc><lastmod>2026-05-09T09:36:13.910Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+<url><loc>https://alviondigital.in/blog/local-seo-checklist-for-service-brands</loc><lastmod>2026-05-09T09:36:13.910Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+<url><loc>https://alviondigital.in/blog/why-meta-ads-work-better-with-seo</loc><lastmod>2026-05-09T09:36:13.910Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+<url><loc>https://alviondigital.in/sitemap.xml</loc><lastmod>2026-05-09T09:36:13.910Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
 </urlset>

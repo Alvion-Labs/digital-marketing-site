@@ -3,6 +3,7 @@ import Image from 'next/image';
 import Container from '@/components/global/Container';
 import { formatBlogDate, type BlogPost as BlogPostType } from '@/lib/blog';
 import { XTwitterIcon, LinkedInIcon, FacebookIcon } from '@/components/global/icons';
+import RelatedPosts from '@/components/pages/blog/RelatedPosts';
 
 interface BlogPostProps {
   post: BlogPostType;
@@ -23,9 +24,8 @@ export default function BlogPost({ post }: BlogPostProps) {
         />
       </div>
 
-      <section className="relative overflow-hidden bg-linear-to-b from-gray-50 to-white py-20 md:py-24">
-        <div className="absolute top-1/4 -left-32 w-96 h-96 bg-accent-from/15 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-1/4 -right-32 w-96 h-96 bg-accent-to/15 rounded-full blur-3xl pointer-events-none" />
+      <section className="relative overflow-hidden bg-linear-to-b from-gray-50 to-white py-12 md:py-16">
+        {/* Removed decorative color bubbles to simplify hero */}
         <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center mask-[linear-gradient(180deg,white,rgba(255,255,255,0))] opacity-30 pointer-events-none" />
 
         <Container className="relative z-10">
@@ -84,66 +84,53 @@ export default function BlogPost({ post }: BlogPostProps) {
         </Container>
       </section>
 
-      <section className="bg-linear-to-b from-white to-gray-50 py-16 md:py-20">
+      <section className="bg-linear-to-b from-white to-gray-50 py-12 md:py-16">
         <Container>
           <div className="max-w-4xl mx-auto">
-            {/* Featured Hero Banner */}
-            {post.thumbnail ? (
-              <div className="h-52 md:h-72 w-full rounded-2xl mb-16 relative overflow-hidden shadow-xl">
-                <Image
-                  src={post.thumbnail}
-                  alt={post.title}
-                  fill
-                  sizes="(max-width: 768px) 100vw, 896px"
-                  className="object-cover"
-                  priority
-                />
-                <div className="absolute inset-0 bg-linear-to-t from-black/10 to-transparent" />
-              </div>
-            ) : (
-              <div
-                className="h-52 md:h-64 w-full rounded-2xl mb-16 relative overflow-hidden"
-                style={{ background: `linear-gradient(135deg, ${post.accentFrom}, ${post.accentTo})` }}
-              >
-                <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-20" />
-              </div>
-            )}
+            {/* Removed decorative banner to avoid occluding content */}
 
             {/* Main Article Content - Clean Minimal Design */}
-            <article className="space-y-16">
-              {post.sections.map((section) => (
-                <section
-                  key={section.heading}
-                  id={section.heading.toLowerCase().replace(/\s+/g, '-')}
-                  className="scroll-mt-28"
-                >
-                  <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6 leading-tight">
-                    {section.heading}
-                  </h2>
-                  <div className="h-0.5 w-16 bg-linear-to-r from-accent-from to-accent-to rounded-full mb-8" />
+            <article className="space-y-12">
+              {post.contentHTML ? (
+                <div 
+                  className="prose prose-lg max-w-none prose-headings:font-bold prose-h2:text-2xl md:prose-h2:text-3xl prose-p:text-gray-700 prose-p:leading-[1.85] prose-p:text-lg prose-a:text-accent-to prose-strong:text-gray-900"
+                  dangerouslySetInnerHTML={{ __html: post.contentHTML }}
+                />
+              ) : post.sections && post.sections.length > 0 ? (
+                post.sections.map((section) => (
+                  <section
+                    key={section.heading}
+                    id={section.heading?.toLowerCase().replace(/\s+/g, '-') || 'section'}
+                    className="scroll-mt-28"
+                  >
+                    <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6 leading-tight">
+                      {section.heading}
+                    </h2>
+                    <div className="h-0.5 w-16 bg-linear-to-r from-accent-from to-accent-to rounded-full mb-8" />
 
-                  <div className="space-y-6 text-gray-700 leading-[1.85] text-lg">
-                    {section.paragraphs.map((paragraph) => (
-                      <p key={paragraph}>{paragraph}</p>
-                    ))}
-                  </div>
-
-                  {section.bullets && (
-                    <ul className="mt-8 space-y-4 ml-4">
-                      {section.bullets.map((bullet) => (
-                        <li key={bullet} className="flex gap-4 text-gray-700 items-start text-lg">
-                          <div className="mt-2.5 h-2 w-2 rounded-full bg-accent-to shrink-0" />
-                          <span className="leading-relaxed">{bullet}</span>
-                        </li>
+                    <div className="space-y-6 text-gray-700 leading-[1.85] text-lg">
+                      {section.paragraphs?.map((paragraph) => (
+                        <p key={paragraph}>{paragraph}</p>
                       ))}
-                    </ul>
-                  )}
-                </section>
-              ))}
+                    </div>
+
+                    {section.bullets && (
+                      <ul className="mt-8 space-y-4 ml-4">
+                        {section.bullets.map((bullet) => (
+                          <li key={bullet} className="flex gap-4 text-gray-700 items-start text-lg">
+                            <div className="mt-2.5 h-2 w-2 rounded-full bg-accent-to shrink-0" />
+                            <span className="leading-relaxed">{bullet}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </section>
+                ))
+              ) : null}
             </article>
 
             {/* Clean Footer CTA */}
-            <div className="mt-20 pt-12 border-t border-gray-200">
+            <div className="mt-12 pt-8 border-t border-gray-200">
               <div className="rounded-2xl bg-linear-to-br from-accent-from/5 to-accent-to/5 p-8 md:p-10 text-center">
                 <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-4">Need help implementing this?</h3>
                 <p className="text-gray-600 max-w-2xl mx-auto mb-8">
@@ -157,9 +144,11 @@ export default function BlogPost({ post }: BlogPostProps) {
                 </Link>
               </div>
             </div>
-          </div>
-        </Container>
-      </section>
+            </div>
+            {/* Related posts */}
+            <RelatedPosts category={post.category} currentSlug={post.slug} />
+          </Container>
+        </section>
     </>
   );
 }

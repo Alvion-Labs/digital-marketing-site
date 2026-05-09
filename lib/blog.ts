@@ -1,31 +1,82 @@
+import { connectToDatabase } from './mongodb';
+import BlogModel from './models/Blog';
+
 export interface BlogSection {
-  heading: string;
-  paragraphs: string[];
+  heading?: string;
+  paragraphs?: string[];
   bullets?: string[];
 }
 
 export interface BlogPost {
+  _id?: any;
   slug: string;
   title: string;
-  excerpt: string;
-  category: string;
-  publishedAt: string;
-  readTime: string;
-  author: string;
-  accentFrom: string;
-  accentTo: string;
-  summary: string;
-  sections: BlogSection[];
-  takeaways: string[];
+  excerpt?: string;
+  category?: string;
+  publishedAt?: string | Date;
+  readTime?: string;
+  author?: string;
+  accentFrom?: string;
+  accentTo?: string;
+  summary?: string;
+  sections?: BlogSection[];
+  takeaways?: string[];
   thumbnail?: string;
+  contentHTML?: string;
+  metaTitle?: string;
+  metaDescription?: string;
+  canonical?: string;
+  isDraft?: boolean;
 }
 
+export async function getAllBlogPosts(): Promise<BlogPost[]> {
+  try {
+    await connectToDatabase();
+    const docs = await BlogModel.find({ isDraft: { $ne: true } }).sort({ publishedAt: -1 }).lean();
+    return docs as BlogPost[];
+  } catch (err) {
+    console.error('getAllBlogPosts error', err);
+    return [];
+  }
+}
+
+export async function getFeaturedBlogPosts(limit = 3): Promise<BlogPost[]> {
+  try {
+    await connectToDatabase();
+    const docs = await BlogModel.find({ isDraft: { $ne: true } }).sort({ publishedAt: -1 }).limit(limit).lean();
+    return docs as BlogPost[];
+  } catch (err) {
+    console.error('getFeaturedBlogPosts error', err);
+    return [];
+  }
+}
+
+export async function getBlogPostBySlug(slug: string): Promise<BlogPost | null> {
+  try {
+    await connectToDatabase();
+    const doc = await BlogModel.findOne({ slug }).lean();
+    return doc as BlogPost | null;
+  } catch (err) {
+    console.error('getBlogPostBySlug error', err);
+    return null;
+  }
+}
+
+export function formatBlogDate(date: string | Date | undefined) {
+  if (!date) return '-';
+  return new Intl.DateTimeFormat('en-US', {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+  }).format(new Date(date));
+}
+
+// Legacy static posts for fallback and migration seed
 export const blogPosts: BlogPost[] = [
   {
     slug: 'how-to-build-a-content-calendar',
     title: 'How to Build a Content Calendar That Keeps Your Brand Consistent',
-    excerpt:
-      'A practical framework for planning content that balances campaigns, evergreen posts, and the day-to-day social rhythm your audience expects.',
+    excerpt: 'A practical framework for planning content that balances campaigns, evergreen posts, and the day-to-day social rhythm your audience expects.',
     category: 'Content Strategy',
     publishedAt: '2026-04-08',
     readTime: '6 min read',
@@ -33,8 +84,7 @@ export const blogPosts: BlogPost[] = [
     accentFrom: '#1a1054',
     accentTo: '#255ff1',
     thumbnail: '/Content Images/content Calender.png',
-    summary:
-      'A strong content calendar keeps your messaging clear, reduces last-minute publishing, and helps every post support a measurable marketing goal.',
+    summary: 'A strong content calendar keeps your messaging clear, reduces last-minute publishing, and helps every post support a measurable marketing goal.',
     sections: [
       {
         heading: 'Start with content pillars',
@@ -68,8 +118,7 @@ export const blogPosts: BlogPost[] = [
   {
     slug: 'why-meta-ads-work-better-with-seo',
     title: 'Why Meta Ads Work Better When SEO Is Part of the Plan',
-    excerpt:
-      'Paid social performs best when it is supported by strong organic visibility, clear landing pages, and search-intent aligned messaging.',
+    excerpt: 'Paid social performs best when it is supported by strong organic visibility, clear landing pages, and search-intent aligned messaging.',
     category: 'Paid Media',
     publishedAt: '2026-03-25',
     readTime: '5 min read',
@@ -77,8 +126,7 @@ export const blogPosts: BlogPost[] = [
     accentFrom: '#0EA5E9',
     accentTo: '#22C55E',
     thumbnail: '/Content Images/SEO-Optimization-For-Website.webp',
-    summary:
-      'Meta Ads are powerful for reach and demand generation, but they become much more efficient when SEO sharpens your positioning and landing page relevance.',
+    summary: 'Meta Ads are powerful for reach and demand generation, but they become much more efficient when SEO sharpens your positioning and landing page relevance.',
     sections: [
       {
         heading: 'SEO improves message clarity',
@@ -112,8 +160,7 @@ export const blogPosts: BlogPost[] = [
   {
     slug: 'instagram-reels-strategy-for-2026',
     title: 'Instagram Reels Strategy for 2026: What Brands Should Prioritize',
-    excerpt:
-      'Short-form video still drives reach, but the brands winning in 2026 are the ones combining clear hooks, consistent edits, and real audience value.',
+    excerpt: 'Short-form video still drives reach, but the brands winning in 2026 are the ones combining clear hooks, consistent edits, and real audience value.',
     category: 'Social Media',
     publishedAt: '2026-03-12',
     readTime: '4 min read',
@@ -121,8 +168,7 @@ export const blogPosts: BlogPost[] = [
     accentFrom: '#8B5CF6',
     accentTo: '#EC4899',
     thumbnail: '/Content Images/instagram-.webp',
-    summary:
-      'Reels work when they feel fast, specific, and useful. The format rewards clarity, pacing, and repeatable creative systems more than one-off viral attempts.',
+    summary: 'Reels work when they feel fast, specific, and useful. The format rewards clarity, pacing, and repeatable creative systems more than one-off viral attempts.',
     sections: [
       {
         heading: 'Lead with the hook',
@@ -155,8 +201,7 @@ export const blogPosts: BlogPost[] = [
   {
     slug: 'local-seo-checklist-for-service-brands',
     title: 'Local SEO Checklist for Service Brands That Want More Leads',
-    excerpt:
-      'A focused checklist for service businesses that need stronger visibility in maps, local searches, and city-specific queries.',
+    excerpt: 'A focused checklist for service businesses that need stronger visibility in maps, local searches, and city-specific queries.',
     category: 'SEO',
     publishedAt: '2026-02-28',
     readTime: '7 min read',
@@ -164,8 +209,7 @@ export const blogPosts: BlogPost[] = [
     accentFrom: '#F59E0B',
     accentTo: '#EF4444',
     thumbnail: '/Content Images/SEO-Optimization-For-Website.webp',
-    summary:
-      'Local SEO is about consistency across your website, Google Business Profile, citations, and reviews so nearby customers can find and trust you quickly.',
+    summary: 'Local SEO is about consistency across your website, Google Business Profile, citations, and reviews so nearby customers can find and trust you quickly.',
     sections: [
       {
         heading: 'Optimize the service pages',
@@ -197,23 +241,3 @@ export const blogPosts: BlogPost[] = [
     ],
   },
 ];
-
-export function getAllBlogPosts() {
-  return [...blogPosts].sort((left, right) => right.publishedAt.localeCompare(left.publishedAt));
-}
-
-export function getFeaturedBlogPosts(limit = 3) {
-  return getAllBlogPosts().slice(0, limit);
-}
-
-export function getBlogPostBySlug(slug: string) {
-  return blogPosts.find((post) => post.slug === slug);
-}
-
-export function formatBlogDate(date: string) {
-  return new Intl.DateTimeFormat('en-US', {
-    month: 'long',
-    day: 'numeric',
-    year: 'numeric',
-  }).format(new Date(date));
-}

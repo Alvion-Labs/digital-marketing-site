@@ -2,7 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import Container from './Container';
 import LogoLink from './LogoLink';
-import { CONTACT_INFO, GMAIL_COMPOSE_LINK, WHATSAPP_LINK } from '@/lib/contact';
+import { CONTACT_INFO, MAILTO_LINK, WHATSAPP_LINK } from '@/lib/contact';
 
 const socialLinks = [
   {
@@ -92,9 +92,7 @@ export default function Footer() {
             <ul className="space-y-2 text-sm text-gray-600">
               <li>
                 <a
-                  href={GMAIL_COMPOSE_LINK}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href={MAILTO_LINK}
                   className="inline-flex items-center gap-2 hover:text-black transition-colors"
                 >
                   <img src="/logos/Mail .svg" alt="Email" className="w-7 h-7" />

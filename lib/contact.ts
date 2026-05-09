@@ -12,4 +12,4 @@ export const CONTACT_INFO = {
 
 export const WHATSAPP_LINK = `https://wa.me/${CONTACT_INFO.whatsappPhone}?text=${encodeURIComponent(CONTACT_INFO.whatsappMessage)}`;
 
-export const GMAIL_COMPOSE_LINK = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(CONTACT_INFO.emailAddress)}&su=${encodeURIComponent(CONTACT_INFO.emailSubject)}&body=${encodeURIComponent(CONTACT_INFO.emailBody)}`;
+export const MAILTO_LINK = `mailto:${CONTACT_INFO.emailAddress}?subject=${encodeURIComponent(CONTACT_INFO.emailSubject)}&body=${encodeURIComponent(CONTACT_INFO.emailBody)}`;

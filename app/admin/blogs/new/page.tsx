@@ -1,0 +1,28 @@
+import { checkAdminAuth } from '@/lib/admin';
+import Link from 'next/link';
+import BlogEditorClient from '@/components/admin/BlogEditorClient';
+
+export default async function NewBlogPage() {
+  await checkAdminAuth();
+
+  return (
+    <div>
+      <div className="mb-8 flex items-center gap-3">
+        <Link href="/admin/blogs" className="text-gray-600 hover:text-gray-900 transition-colors">
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+        </Link>
+        <div>
+          <h2 className="text-3xl font-bold text-gray-900">Create New Blog Post</h2>
+          <p className="text-gray-600 mt-1">Write and publish engaging content for your audience</p>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-2xl border border-gray-200 p-8 shadow-sm">
+        {/* client editor handles save */}
+        <BlogEditorClient />
+      </div>
+    </div>
+  );
+}

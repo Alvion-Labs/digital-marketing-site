@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Container from '@/components/global/Container';
 import Button from '@/components/global/Button';
 import { CheckIcon, LoadingSpinnerIcon } from '@/components/global/icons';
-import { CONTACT_INFO, GMAIL_COMPOSE_LINK, WHATSAPP_LINK } from '@/lib/contact';
+import { CONTACT_INFO, MAILTO_LINK, WHATSAPP_LINK } from '@/lib/contact';
 
 interface FormState {
   name: string;
@@ -201,9 +201,7 @@ export default function Contact() {
             </a>
 
             <a
-              href={GMAIL_COMPOSE_LINK}
-              target="_blank"
-              rel="noopener noreferrer"
+              href={MAILTO_LINK}
               className="flex items-center gap-4 p-5 rounded-full bg-gray-50 border border-gray-200 hover:border-accent-from/40 transition-all duration-300 group"
             >
               <img src="/logos/Mail .svg" alt="Email" className="w-8 h-8" />
