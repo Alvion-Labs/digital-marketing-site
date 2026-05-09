@@ -1,6 +1,8 @@
 'use client';
 
 import { useState } from 'react';
+import { useToast, ToastContainer } from '@/components/global/Toast';
+import ConfirmDialog from '@/components/global/ConfirmDialog';
 
 type Lead = {
   _id: string;
@@ -14,6 +16,8 @@ type Lead = {
 export default function LeadsTableClient({ initial }: { initial: Lead[] }) {
   const [leads, setLeads] = useState<Lead[]>(initial);
   const [loadingId, setLoadingId] = useState<string | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState<{ id: string; name: string } | null>(null);
+  const { toasts, addToast, removeToast } = useToast();
 
   const statuses = ['new', 'in_discussion', 'converted', 'bounced'];
 
@@ -38,7 +42,42 @@ export default function LeadsTableClient({ initial }: { initial: Lead[] }) {
     }
   }
 
+  async function handleDelete(id: string, name: string) {
+    if (!confirmDelete) return;
+    setLoadingId(id);
+    try {
+      const res = await fetch(`/api/admin/leads/${id}`, {
+        method: 'DELETE',
+      });
+      if (res.ok) {
+        setLeads((prev) => prev.filter((l) => l._id !== id));
+        addToast('Lead deleted successfully.', 'success', 3000);
+        setConfirmDelete(null);
+      } else {
+        addToast('Failed to delete lead. Please try again.', 'error', 5000);
+      }
+    } catch (err) {
+      console.error(err);
+      addToast('An error occurred while deleting. Please try again.', 'error', 5000);
+    } finally {
+      setLoadingId(null);
+    }
+  }
+
   return (
+    <>
+      <ToastContainer toasts={toasts} onRemove={removeToast} />
+      <ConfirmDialog
+        isOpen={confirmDelete !== null}
+        title="Delete Lead"
+        message={`Are you sure you want to delete the lead from ${confirmDelete?.name}? This action cannot be undone.`}
+        confirmText="Delete"
+        cancelText="Cancel"
+        isDangerous={true}
+        isLoading={loadingId !== null}
+        onConfirm={() => confirmDelete && handleDelete(confirmDelete.id, confirmDelete.name)}
+        onCancel={() => setConfirmDelete(null)}
+      />
     <div className="overflow-x-auto">
       <table className="w-full">
         <thead className="bg-gray-50 border-b border-gray-200">
@@ -73,20 +112,30 @@ export default function LeadsTableClient({ initial }: { initial: Lead[] }) {
               </td>
               <td className="px-6 py-4 text-sm text-gray-600">{new Date(lead.createdAt).toLocaleDateString()}</td>
               <td className="px-6 py-4 text-sm">
-                <button
-                  onClick={() => {
-                    const next = prompt('Enter status (new, in_discussion, converted, bounced)', lead.status || 'new');
-                    if (next) updateStatus(lead._id, next);
-                  }}
-                  className="text-accent-to hover:underline font-medium"
-                >
-                  Edit
-                </button>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => {
+                      const next = prompt('Enter status (new, in_discussion, converted, bounced)', lead.status || 'new');
+                      if (next) updateStatus(lead._id, next);
+                    }}
+                    className="px-3 py-1.5 text-accent-to hover:bg-accent-from/10 rounded-full font-medium hover:cursor-pointer transition-colors"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => setConfirmDelete({ id: lead._id, name: lead.name })}
+                    disabled={loadingId === lead._id}
+                    className="px-3 py-1.5 text-red-600 hover:bg-red-50 rounded-full font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:cursor-pointer transition-colors"
+                  >
+                    {loadingId === lead._id ? 'Deleting...' : 'Delete'}
+                  </button>
+                </div>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
     </div>
+    </>
   );
 }

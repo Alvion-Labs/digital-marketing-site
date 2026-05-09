@@ -49,10 +49,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex items-center gap-4 px-4 py-3 rounded-lg transition-all duration-200 ${
+                className={`flex items-center gap-4 px-4 py-3 rounded-full transition-all duration-200 ${
                   isActive
                     ? 'bg-linear-to-r from-accent-from to-accent-to text-white'
-                    : 'text-gray-600 hover:bg-gray-100'
+                    : 'text-gray-600 hover:bg-gray-100 hover:cursor-pointer'
                 }`}
               >
                 <span className="text-xl">{item.icon}</span>
@@ -65,13 +65,18 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <div className="p-4 border-t border-gray-200 space-y-2">
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="w-full px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors text-sm"
+            className="w-full flex items-center justify-center gap-2 px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-full transition-colors text-sm font-medium hover:cursor-pointer"
+            aria-label={sidebarOpen ? 'Collapse sidebar' : 'Expand sidebar'}
+            title={sidebarOpen ? 'Collapse sidebar' : 'Expand sidebar'}
           >
-            {sidebarOpen ? '← Collapse' : '→ Expand'}
+            <svg className={`w-5 h-5 transition-transform ${sidebarOpen ? '' : 'rotate-180'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+            {sidebarOpen && <span>Collapse</span>}
           </button>
           <button
             onClick={handleLogout}
-            className="w-full px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors text-sm font-medium"
+            className="w-full px-4 py-2 text-red-600 hover:bg-red-50 rounded-full transition-colors text-sm font-medium hover:cursor-pointer"
           >
             {sidebarOpen ? 'Logout' : '🚪'}
           </button>

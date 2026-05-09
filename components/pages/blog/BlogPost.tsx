@@ -44,7 +44,7 @@ export default function BlogPost({ post }: BlogPostProps) {
               </span>
             </div>
 
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold leading-[1.05] tracking-tight bg-linear-to-br from-gray-900 via-gray-800 to-gray-600 bg-clip-text text-transparent mb-6">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold leading-[1.05] tracking-tight bg-linear-to-r from-accent-from to-accent-to bg-clip-text text-transparent mb-6">
               {post.title}
             </h1>
 

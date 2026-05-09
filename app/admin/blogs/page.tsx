@@ -22,7 +22,7 @@ export default async function BlogsPage() {
           </span>
           <Link
             href="/admin/blogs/new"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-linear-to-r from-accent-from to-accent-to text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-accent-from/30 transition-all duration-300 hover:-translate-y-0.5"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-linear-to-r from-accent-from to-accent-to text-white rounded-full font-semibold hover:shadow-lg hover:shadow-accent-from/30 transition-all duration-300 hover:-translate-y-0.5 hover:cursor-pointer"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -85,7 +85,7 @@ export default async function BlogsPage() {
             <p className="text-gray-600 text-lg font-medium mb-4">No blog posts yet</p>
             <Link
               href="/admin/blogs/new"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-linear-to-r from-accent-from to-accent-to text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-accent-from/30 transition-all duration-300"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-linear-to-r from-accent-from to-accent-to text-white rounded-full font-semibold hover:shadow-lg hover:shadow-accent-from/30 transition-all duration-300 hover:cursor-pointer"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
