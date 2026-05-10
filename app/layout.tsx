@@ -99,6 +99,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
           gtag('config', 'G-V2BSEZKEX3');`}
         </Script>
+        <Script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1862757336616285" crossOrigin="anonymous"></Script>
         <Analytics/>
         <SpeedInsights/>
       </body>
