@@ -53,8 +53,8 @@ export default function BlogPost({ post }: BlogPostProps) {
               {post.title}
             </h1>
 
-            <p className="mt-6 max-w-3xl text-xl md:text-2xl text-gray-600 leading-relaxed font-medium">
-              {post.summary}
+            <p className="mt-6 max-w-3xl text-base md:text-lg text-gray-600 leading-relaxed">
+              {post.excerpt || post.summary}
             </p>
 
             <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm text-gray-500">

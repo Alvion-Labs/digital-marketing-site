@@ -4,7 +4,7 @@ import React, { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { sanitizeBlogHtml } from '@/lib/html';
 import { Blog } from '@/lib/models/Blog';
-import type { Media } from '@/lib/models/Media';
+import type { MediaFile } from '@/lib/media';
 import MediaLibraryModal from './MediaLibraryModal';
 import ConfirmDialog from '@/components/global/ConfirmDialog';
 
@@ -27,36 +27,60 @@ export default function BlogEditorImproved({ initial }: { initial?: Partial<Blog
   const [saving, setSaving] = useState(false);
   const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null);
   const [uploadingThumbnail, setUploadingThumbnail] = useState(false);
+  const [uploadingContent, setUploadingContent] = useState(false);
   const [mediaModalOpen, setMediaModalOpen] = useState(false);
   const [mediaModalFor, setMediaModalFor] = useState<'thumbnail' | 'content' | null>(null);
   const [showPreview, setShowPreview] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deletingThumbnail, setDeletingThumbnail] = useState(false);
+  const [dragging, setDragging] = useState(false);
   const contentPreviewRef = useRef<HTMLDivElement>(null);
+
+  function handleDragOver(e: React.DragEvent) {
+    e.preventDefault();
+    setDragging(true);
+  }
+
+  function handleDragLeave() {
+    setDragging(false);
+  }
+
+  function handleDrop(e: React.DragEvent) {
+    e.preventDefault();
+    setDragging(false);
+    if (e.dataTransfer.files[0]) {
+      handleThumbnailUpload(e.dataTransfer.files[0]);
+    }
+  }
+
+  async function uploadToMediaLibrary(file: File, field: string): Promise<MediaFile> {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('usedBy', JSON.stringify({
+      type: (initial as any)?._id || 'new-blog',
+      field,
+      module: 'blog'
+    }));
+
+    const res = await fetch('/api/admin/media', {
+      method: 'POST',
+      body: formData,
+    });
+
+    const data = await res.json();
+    if (data.ok && data.file?.publicUrl) {
+      return data.file as MediaFile;
+    }
+    throw new Error('Upload failed');
+  }
 
   async function handleThumbnailUpload(file: File) {
     setUploadingThumbnail(true);
     try {
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('usedBy', JSON.stringify({
-        type: (initial as any)?._id || 'new-blog',
-        field: 'thumbnail',
-        module: 'blog'
-      }));
-
-      const res = await fetch('/api/admin/media', {
-        method: 'POST',
-        body: formData,
-      });
-
-      const data = await res.json();
-      if (data.ok && data.file?.publicUrl) {
-        setThumbnail(data.file.publicUrl);
-        setThumbnailPreview(data.file.publicUrl);
-        return data.file as Media;
-      }
-      throw new Error('Upload failed');
+      const mediaFile = await uploadToMediaLibrary(file, 'thumbnail');
+      setThumbnail(mediaFile.publicUrl);
+      setThumbnailPreview(mediaFile.publicUrl);
+      return mediaFile;
     } catch (error) {
       console.error('Error uploading thumbnail:', error);
       throw error;
@@ -65,7 +89,23 @@ export default function BlogEditorImproved({ initial }: { initial?: Partial<Blog
     }
   }
 
-  function handleMediaSelect(media: Media) {
+  async function handleContentUpload(file: File) {
+    setUploadingContent(true);
+    try {
+      const mediaFile = await uploadToMediaLibrary(file, 'content');
+      // Only insert into contentHTML — never touches thumbnail state
+      const imgTag = `<img src="${mediaFile.publicUrl}" alt="${mediaFile.originalName}" class="w-full rounded-lg my-4" />`;
+      setContentHTML(prev => prev + '\n' + imgTag);
+      return mediaFile;
+    } catch (error) {
+      console.error('Error uploading content image:', error);
+      throw error;
+    } finally {
+      setUploadingContent(false);
+    }
+  }
+
+  function handleMediaSelect(media: MediaFile) {
     if (mediaModalFor === 'thumbnail') {
       setThumbnail(media.publicUrl);
       setThumbnailPreview(media.publicUrl);
@@ -141,10 +181,17 @@ export default function BlogEditorImproved({ initial }: { initial?: Partial<Blog
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl sm:text-3xl font-bold bg-linear-to-r from-accent-from to-accent-to bg-clip-text text-transparent">
-                {initial?.title ? 'Edit Blog Post' : 'Create New Blog Post'}
+                {isEditing ? (title || 'Untitled') : 'Create New Blog Post'}
               </h1>
-              <p className="text-sm text-gray-600 mt-1">
-                {initial?.title ? `Last modified at ${new Date().toLocaleDateString()}` : 'Share your insights with the world'}
+              <p className="text-sm text-gray-500 mt-1 flex items-center gap-2">
+                {isEditing ? (
+                  <>
+                    <span className="text-gray-400">/ admin / blogs /</span>
+                    <span className="font-semibold text-gray-700 truncate max-w-[300px]">{title || slug || 'untitled'}</span>
+                  </>
+                ) : (
+                  'Share your insights with the world'
+                )}
               </p>
             </div>
             <div className="flex gap-3">
@@ -197,7 +244,7 @@ export default function BlogEditorImproved({ initial }: { initial?: Partial<Blog
         <form onSubmit={onSave} className="grid grid-cols-1 gap-8">
           {/* Main Column */}
           <div className="space-y-6">
-            {/* Thumbnail Card */}
+            {/* Thumbnail Card - Enhanced UI */}
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100/50 overflow-hidden hover:shadow-md transition-shadow">
               <div className="px-6 py-5 border-b border-gray-100/50 bg-linear-to-r from-gray-50/50 to-transparent">
                 <div className="flex items-center gap-3">
@@ -212,56 +259,115 @@ export default function BlogEditorImproved({ initial }: { initial?: Partial<Blog
                   </div>
                 </div>
               </div>
-              <div className="p-6 space-y-4">
-                <div className="flex gap-3">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setMediaModalFor('thumbnail');
-                      setMediaModalOpen(true);
-                    }}
-                    className="flex-1 px-4 py-2.5 bg-linear-to-r from-accent-from to-accent-to text-white rounded-lg hover:opacity-90 transition-all font-medium text-sm flex items-center justify-center gap-2 shadow-sm"
+              <div className="p-6">
+                {/* Preview Area */}
+                {(thumbnailPreview || thumbnail) ? (
+                  <div className="relative group rounded-xl overflow-hidden border border-gray-200 shadow-sm mb-4">
+                    <div className="aspect-video bg-linear-to-br from-gray-100 to-gray-50 relative">
+                      {uploadingThumbnail && (
+                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center z-10">
+                          <div className="flex flex-col items-center gap-2">
+                            <svg className="animate-spin h-8 w-8 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            <span className="text-white text-sm font-medium">Uploading...</span>
+                          </div>
+                        </div>
+                      )}
+                      <img
+                        src={thumbnailPreview || thumbnail}
+                        alt="Thumbnail preview"
+                        className="w-full h-full object-cover"
+                      />
+                      {/* Hover overlay with actions */}
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-300 flex items-center justify-center gap-3 opacity-0 group-hover:opacity-100">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setMediaModalFor('thumbnail');
+                            setMediaModalOpen(true);
+                          }}
+                          className="transform scale-90 group-hover:scale-100 transition-all duration-300 bg-white/90 backdrop-blur-sm text-gray-800 rounded-full px-4 py-2 text-sm font-semibold flex items-center gap-2 hover:bg-white shadow-lg"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16a4 4 0 014-4h8a4 4 0 014 4v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2z" />
+                          </svg>
+                          Change
+                        </button>
+                        <button
+                          type="button"
+                          onClick={handleDeleteThumbnailClick}
+                          className="transform scale-90 group-hover:scale-100 transition-all duration-300 bg-red-500/90 backdrop-blur-sm text-white rounded-full px-4 py-2 text-sm font-semibold flex items-center gap-2 hover:bg-red-600 shadow-lg"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                          Remove
+                        </button>
+                      </div>
+                    </div>
+                    {/* Image info bar */}
+                    <div className="px-4 py-2.5 bg-gray-50 border-t border-gray-100 flex items-center gap-3 text-xs text-gray-500">
+                      <span className="flex items-center gap-1.5">
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        Thumbnail selected
+                      </span>
+                      <span className="w-1 h-1 rounded-full bg-gray-300"></span>
+                      <span className="text-accent-from font-medium">Active</span>
+                    </div>
+                  </div>
+                ) : (
+                  /* Empty state - click opens library, drag to upload */
+                  <div 
+                    className="mb-4"
+                    onDragOver={handleDragOver}
+                    onDragLeave={handleDragLeave}
+                    onDrop={handleDrop}
                   >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16a4 4 0 014-4h8a4 4 0 014 4v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2z" />
-                    </svg>
-                    From Library
-                  </button>
-                  <label className="flex-1 px-4 py-2.5 bg-white border-2 border-accent-from text-accent-from rounded-lg hover:bg-accent-from/5 transition-all font-medium text-sm flex items-center justify-center gap-2 cursor-pointer">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                    </svg>
-                    Upload New
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => e.target.files?.[0] && handleThumbnailUpload(e.target.files[0])}
-                      className="hidden"
-                      disabled={uploadingThumbnail}
-                    />
-                  </label>
-                  {thumbnail && (
                     <button
                       type="button"
-                      onClick={handleDeleteThumbnailClick}
-                      className="px-4 py-2.5 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-all font-medium text-sm flex items-center justify-center"
-                      title="Delete thumbnail"
+                      onClick={() => {
+                        setMediaModalFor('thumbnail');
+                        setMediaModalOpen(true);
+                      }}
+                      className={`relative flex flex-col items-center justify-center w-full aspect-video border-2 border-dashed rounded-xl cursor-pointer transition-all duration-200 ${
+                        dragging 
+                          ? 'border-accent-from bg-accent-from/5 scale-[1.01]' 
+                          : 'border-gray-200 bg-gray-50/50 hover:border-accent-from/40 hover:bg-accent-from/5'
+                      }`}
                     >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                      </svg>
+                      {uploadingThumbnail ? (
+                        <div className="flex flex-col items-center gap-3 py-8">
+                          <svg className="animate-spin h-10 w-10 text-accent-from" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                          </svg>
+                          <p className="text-sm font-medium text-gray-600">Uploading thumbnail...</p>
+                        </div>
+                      ) : (
+                        <>
+                          <div className="flex flex-col items-center gap-3 py-8">
+                            <div className="w-14 h-14 rounded-full bg-linear-to-br from-purple-100 to-purple-50 flex items-center justify-center shadow-sm">
+                              <svg className="w-6 h-6 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                              </svg>
+                            </div>
+                            <div className="text-center">
+                              <p className="text-sm font-semibold text-gray-700">
+                                <span className="text-accent-from">Browse library</span> or drag to upload
+                              </p>
+                              <p className="text-xs text-gray-500 mt-1">PNG, JPG, WebP up to 10MB</p>
+                            </div>
+                          </div>
+                        </>
+                      )}
                     </button>
-                  )}
-                </div>
-                {(thumbnailPreview || thumbnail) && (
-                  <div className="relative rounded-xl overflow-hidden border border-gray-200 h-48 bg-linear-to-br from-gray-100 to-gray-50 shadow-sm">
-                    <img
-                      src={thumbnailPreview || thumbnail}
-                      alt="Thumbnail preview"
-                      className="w-full h-full object-cover"
-                    />
                   </div>
                 )}
+
               </div>
             </div>
 
@@ -429,22 +535,14 @@ export default function BlogEditorImproved({ initial }: { initial?: Partial<Blog
                     >
                       + Library
                     </button>
-                    <label className="text-xs px-2.5 py-1.5 bg-blue-50 text-blue-600 rounded-full font-medium hover:bg-blue-100 transition-all cursor-pointer">
-                      + Upload
+                    <label className={`text-xs px-2.5 py-1.5 bg-blue-50 text-blue-600 rounded-full font-medium hover:bg-blue-100 transition-all cursor-pointer ${uploadingContent ? 'opacity-50 pointer-events-none' : ''}`}>
+                      {uploadingContent ? 'Uploading...' : '+ Upload'}
                       <input
                         type="file"
                         accept="image/*"
-                        onChange={(e) => {
-                          if (e.target.files?.[0]) {
-                            const reader = new FileReader();
-                            reader.onloadend = () => {
-                              const imgTag = `<img src="${reader.result}" alt="description" class="w-full rounded-lg my-4" />`;
-                              setContentHTML(contentHTML + '\n' + imgTag);
-                            };
-                            reader.readAsDataURL(e.target.files[0]);
-                          }
-                        }}
+                        onChange={(e) => e.target.files?.[0] && handleContentUpload(e.target.files[0])}
                         className="hidden"
+                        disabled={uploadingContent}
                       />
                     </label>
                   </div>
@@ -493,12 +591,12 @@ export default function BlogEditorImproved({ initial }: { initial?: Partial<Blog
         </form>
       </div>
 
-      {/* Media Library Modal */}
+      {/* Media Library Modal - pass the correct upload handler based on context */}
       <MediaLibraryModal
         isOpen={mediaModalOpen}
         onClose={() => setMediaModalOpen(false)}
         onSelect={handleMediaSelect}
-        onUpload={handleThumbnailUpload}
+        onUpload={mediaModalFor === 'content' ? handleContentUpload : handleThumbnailUpload}
       />
 
       {/* Delete Thumbnail Confirmation */}

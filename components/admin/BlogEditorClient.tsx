@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { sanitizeBlogHtml } from '@/lib/html';
 import { Blog } from '@/lib/models/Blog';
-import type { Media } from '@/lib/models/Media';
+import type { MediaFile } from '@/lib/media';
 import MediaLibraryModal from './MediaLibraryModal';
 
 export default function BlogEditorClient({ initial }: { initial?: Partial<Blog> }) {
@@ -45,7 +45,7 @@ export default function BlogEditorClient({ initial }: { initial?: Partial<Blog> 
       if (data.ok && data.file?.publicUrl) {
         setThumbnail(data.file.publicUrl);
         setThumbnailPreview(data.file.publicUrl);
-        return data.file as Media;
+        return data.file as MediaFile;
       }
       throw new Error('Upload failed');
     } catch (error) {
@@ -56,7 +56,7 @@ export default function BlogEditorClient({ initial }: { initial?: Partial<Blog> 
     }
   }
 
-  function handleMediaSelect(media: Media) {
+  function handleMediaSelect(media: MediaFile) {
     if (mediaModalFor === 'thumbnail') {
       setThumbnail(media.publicUrl);
       setThumbnailPreview(media.publicUrl);
