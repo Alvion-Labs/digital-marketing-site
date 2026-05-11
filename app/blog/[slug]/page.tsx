@@ -60,7 +60,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
       description: post.excerpt,
       type: 'article',
       publishedTime: post.publishedAt as string | undefined,
-      modifiedTime: post.publishedAt as string | undefined,
+      modifiedTime: (post as any).updatedAt || (post.publishedAt as string | undefined),
       url: `https://alviondigital.in/blog/${post.slug}`,
       siteName: 'Alvion Digital Marketing',
       images: post.thumbnail ? [

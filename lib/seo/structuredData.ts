@@ -135,6 +135,7 @@ export function getServiceSchema() {
 }
 
 export function getBlogPostSchema(post: BlogPost) {
+  const updatedAt = (post as any).updatedAt || post.publishedAt;
   return {
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
@@ -142,7 +143,7 @@ export function getBlogPostSchema(post: BlogPost) {
     description: post.excerpt,
     image: `https://alviondigital.in/opengraph-image`,
     datePublished: post.publishedAt,
-    dateModified: post.publishedAt,
+    dateModified: updatedAt,
     author: {
       '@type': 'Organization',
       name: post.author,
