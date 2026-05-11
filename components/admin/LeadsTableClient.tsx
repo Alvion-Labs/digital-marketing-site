@@ -20,6 +20,16 @@ export default function LeadsTableClient({ initial }: { initial: Lead[] }) {
   const { toasts, addToast, removeToast } = useToast();
 
   const statuses = ['new', 'in_discussion', 'converted', 'bounced'];
+  const statusStyles: Record<string, string> = {
+    new: 'bg-slate-50 text-slate-700 ring-slate-200',
+    in_discussion: 'bg-amber-50 text-amber-700 ring-amber-200',
+    converted: 'bg-emerald-50 text-emerald-700 ring-emerald-200',
+    bounced: 'bg-rose-50 text-rose-700 ring-rose-200',
+  };
+
+  function formatStatus(status?: string) {
+    return (status || 'new').replace('_', ' ');
+  }
 
   async function updateStatus(id: string, status: string) {
     setLoadingId(id);
@@ -97,18 +107,25 @@ export default function LeadsTableClient({ initial }: { initial: Lead[] }) {
               <td className="px-6 py-4 text-sm text-gray-600">{lead.email}</td>
               <td className="px-6 py-4 text-sm text-gray-600 max-w-xs truncate">{lead.message}</td>
               <td className="px-6 py-4 text-sm">
-                <select
-                  value={lead.status || 'new'}
-                  onChange={(e) => updateStatus(lead._id, e.target.value)}
-                  className="px-3 py-2 rounded-full border border-gray-200 text-sm"
-                  disabled={loadingId === lead._id}
-                >
-                  {statuses.map((s) => (
-                    <option key={s} value={s}>
-                      {s.replace('_', ' ')}
-                    </option>
-                  ))}
-                </select>
+                <div className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-3 py-2 shadow-sm ring-1 ring-inset ring-gray-100">
+                  <span className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold ring-1 ring-inset ${statusStyles[lead.status || 'new']}`}>
+                    <span className="h-2 w-2 rounded-full bg-current opacity-70" />
+                    {formatStatus(lead.status)}
+                  </span>
+                  <select
+                    value={lead.status || 'new'}
+                    onChange={(e) => updateStatus(lead._id, e.target.value)}
+                    className="bg-transparent text-xs font-medium text-gray-500 outline-none cursor-pointer"
+                    disabled={loadingId === lead._id}
+                    aria-label={`Update status for ${lead.name}`}
+                  >
+                    {statuses.map((s) => (
+                      <option key={s} value={s}>
+                        {s.replace('_', ' ')}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </td>
               <td className="px-6 py-4 text-sm text-gray-600">{new Date(lead.createdAt).toLocaleDateString()}</td>
               <td className="px-6 py-4 text-sm">

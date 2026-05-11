@@ -1,10 +1,9 @@
-import { checkAdminAuth } from '@/lib/admin';
+'use client';
+
 import Link from 'next/link';
-import BlogEditorClient from '@/components/admin/BlogEditorClient';
+import BlogEditorImproved from '@/components/admin/BlogEditorImproved';
 
-export default async function NewBlogPage() {
-  await checkAdminAuth();
-
+export default function NewBlogPage() {
   return (
     <div>
       <div className="mb-8 flex items-center gap-3">
@@ -14,14 +13,13 @@ export default async function NewBlogPage() {
           </svg>
         </Link>
         <div>
-          <h2 className="text-3xl font-bold text-gray-900">Create New Blog Post</h2>
+          <h2 className="text-3xl font-bold admin-heading-gradient">Create New Blog Post</h2>
           <p className="text-gray-600 mt-1">Write and publish engaging content for your audience</p>
         </div>
       </div>
 
       <div className="bg-white rounded-2xl border border-gray-200 p-8 shadow-sm">
-        {/* client editor handles save */}
-        <BlogEditorClient />
+        <BlogEditorImproved />
       </div>
     </div>
   );

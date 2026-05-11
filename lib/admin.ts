@@ -7,6 +7,10 @@ export function validateAdminPassword(password: string): boolean {
   return password === ADMIN_PASSWORD;
 }
 
+export function hasAdminSession(request: Request) {
+  return request.headers.get('cookie')?.includes('admin_session=authenticated') ?? false;
+}
+
 export async function checkAdminAuth() {
   const cookieStore = await cookies();
   const session = cookieStore.get('admin_session');

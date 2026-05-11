@@ -4,21 +4,29 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import Image from 'next/image';
+import AdminAuthGate from '@/components/admin/AdminAuthGate';
 
 const navItems = [
   { label: 'Dashboard', href: '/admin/dashboard', icon: '📊' },
   { label: 'Analytics', href: '/admin/analytics', icon: '📈' },
   { label: 'Leads', href: '/admin/leads', icon: '👥' },
   { label: 'Blogs', href: '/admin/blogs', icon: '📝' },
+  { label: 'Media', href: '/admin/media', icon: '🖼️' },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const pathname = usePathname();
   const router = useRouter();
+  const isLoginPage = pathname === '/admin/login';
 
   const handleLogout = async () => {
-    document.cookie = 'admin_session=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;';
+    try {
+      await fetch('/api/admin/auth', { method: 'DELETE' });
+    } catch (e) {
+      // ignore network errors, still navigate to login
+    }
+
     router.push('/admin/login');
   };
 
@@ -86,9 +94,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       {/* Main Content */}
       <main className={`${sidebarOpen ? 'ml-64' : 'ml-20'} flex-1 transition-all duration-300`}>
         <div className="h-16 bg-white border-b border-gray-200 flex items-center px-8">
-          <h1 className="text-xl font-bold text-gray-900">Admin Dashboard</h1>
+          <h1 className="text-xl font-bold admin-heading-gradient">Admin Dashboard</h1>
         </div>
-        <div className="p-8">{children}</div>
+        <div className="p-8">{isLoginPage ? children : <AdminAuthGate>{children}</AdminAuthGate>}</div>
       </main>
     </div>
   );

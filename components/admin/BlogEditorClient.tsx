@@ -1,207 +1,366 @@
-'use client';
-
-import React, { useState, useRef } from 'react';
-
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Button from '@/components/global/Button';
-import { useToast, ToastContainer } from '@/components/global/Toast';
+import { sanitizeBlogHtml } from '@/lib/html';
+import { Blog } from '@/lib/models/Blog';
+import type { Media } from '@/lib/models/Media';
+import MediaLibraryModal from './MediaLibraryModal';
 
-interface Props {
-  initial?: any;
-}
-
-export default function BlogEditorClient({ initial = {} }: Props) {
-  const [form, setForm] = useState<any>({
-    _id: initial._id || undefined,
-    title: initial.title || '',
-    slug: initial.slug || '',
-    excerpt: initial.excerpt || '',
-    author: initial.author || '',
-    category: initial.category || '',
-    readTime: initial.readTime || '',
-    thumbnail: initial.thumbnail || '',
-    metaTitle: initial.metaTitle || '',
-    metaDescription: initial.metaDescription || '',
-    canonical: initial.canonical || '',
-    isDraft: initial.isDraft ?? true,
-    contentHTML: initial.contentHTML || '<div className="prose">Start writing HTML here</div>',
-  });
-
-  const { toasts, addToast, removeToast } = useToast();
+export default function BlogEditorClient({ initial }: { initial?: Partial<Blog> }) {
   const router = useRouter();
-  const [isSaving, setIsSaving] = useState(false);
-  const previewRef = useRef<HTMLDivElement | null>(null);
+  const [title, setTitle] = useState(initial?.title || '');
+  const [slug, setSlug] = useState(initial?.slug || '');
+  const [author, setAuthor] = useState(initial?.author || '');
+  const [mediaModalOpen, setMediaModalOpen] = useState(false);
+  const [mediaModalFor, setMediaModalFor] = useState<'thumbnail' | 'content' | null>(null);
+  const [category, setCategory] = useState(initial?.category || '');
+  const [readTime, setReadTime] = useState(initial?.readTime || '');
+  const [thumbnail, setThumbnail] = useState(initial?.thumbnail || '');
+  const [excerpt, setExcerpt] = useState(initial?.excerpt || '');
+  const [metaTitle, setMetaTitle] = useState(initial?.metaTitle || '');
+  const [metaDescription, setMetaDescription] = useState(initial?.metaDescription || '');
+  const [canonical, setCanonical] = useState(initial?.canonical || '');
+  const [isDraft, setIsDraft] = useState(initial?.isDraft ?? true);
+  const [contentHTML, setContentHTML] = useState(initial?.contentHTML || '');
+  const [saving, setSaving] = useState(false);
+  const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null);
+  const [uploadingThumbnail, setUploadingThumbnail] = useState(false);
 
-  function updateField(key: string, value: any) {
-    setForm((s: any) => ({ ...s, [key]: value }));
-  }
-
-  function insertSnippet(snippet: string) {
-    updateField('contentHTML', form.contentHTML + snippet);
-  }
-
-  async function handleSave() {
-    setIsSaving(true);
+  async function handleThumbnailUpload(file: File) {
+    setUploadingThumbnail(true);
     try {
-      const method = form._id ? 'PATCH' : 'POST';
-      const url = form._id ? `/api/admin/blogs/${form._id}` : '/api/admin/blogs';
-      const res = await fetch(url, {
-        method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('usedBy', JSON.stringify({
+        type: (initial as any)?._id || 'new-blog',
+        field: 'thumbnail',
+        module: 'blog'
+      }));
+
+      const res = await fetch('/api/admin/media', {
+        method: 'POST',
+        body: formData,
       });
-      const json = await res.json();
-      if (json.ok) {
-        const actionType = form._id ? 'updated' : 'created';
-        addToast(
-          `Blog post ${actionType} successfully! Redirecting...`,
-          'success',
-          2000
-        );
-        setTimeout(() => router.push('/admin/blogs'), 1500);
-      } else {
-        addToast(json.error || 'Failed to save blog post. Please try again.', 'error', 5000);
+
+      const data = await res.json();
+      if (data.ok && data.file?.publicUrl) {
+        setThumbnail(data.file.publicUrl);
+        setThumbnailPreview(data.file.publicUrl);
+        return data.file as Media;
       }
-    } catch (e) {
-      console.error(e);
-      addToast('An error occurred while saving. Please try again.', 'error', 5000);
+      throw new Error('Upload failed');
+    } catch (error) {
+      console.error('Error uploading thumbnail:', error);
+      throw error;
     } finally {
-      setIsSaving(false);
+      setUploadingThumbnail(false);
+    }
+  }
+
+  function handleMediaSelect(media: Media) {
+    if (mediaModalFor === 'thumbnail') {
+      setThumbnail(media.publicUrl);
+      setThumbnailPreview(media.publicUrl);
+    } else if (mediaModalFor === 'content') {
+      const imgTag = `<img src="${media.publicUrl}" alt="${media.originalName}" class="w-full rounded-lg my-4" />`;
+      setContentHTML(contentHTML + '\n' + imgTag);
+    }
+    setMediaModalOpen(false);
+  }
+
+  async function onSave(e?: React.FormEvent) {
+    e?.preventDefault();
+    setSaving(true);
+    try {
+      const sanitized = sanitizeBlogHtml(contentHTML);
+      await fetch('/api/admin/blogs', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title,
+          slug,
+          author,
+          category,
+          readTime,
+          thumbnail,
+          excerpt,
+          metaTitle,
+          metaDescription,
+          canonical,
+          isDraft,
+          contentHTML: sanitized,
+        }),
+      });
+      router.push('/admin/blogs');
+    } finally {
+      setSaving(false);
     }
   }
 
   return (
     <div className="space-y-8">
-      <ToastContainer toasts={toasts} onRemove={removeToast} />
-
       <div className="flex justify-end">
-        <Button type="button" variant="primary" onClick={handleSave} disabled={isSaving} className="w-full sm:w-auto px-8 py-4 rounded-full text-sm">
-          {isSaving ? 'Saving...' : 'Save Post'}
-        </Button>
+        <button
+          type="submit"
+          onClick={onSave}
+          disabled={saving}
+          className="inline-flex items-center justify-center px-6 py-3 rounded-full font-semibold text-sm bg-linear-to-r from-accent-from to-accent-to text-white hover:opacity-90 hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-from disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-blue-500/25"
+        >
+          {saving ? 'Saving...' : 'Save Post'}
+        </button>
       </div>
 
-      <div className="rounded-2xl border border-gray-200 bg-gray-50/70 p-6 shadow-sm">
-        <div className="mb-6 flex items-center gap-2">
-          <h3 className="text-base font-bold text-gray-900">Post Details</h3>
-          <span className="text-sm text-gray-500">Settings and SEO</span>
-        </div>
-
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-          <div className="space-y-6">
+      <form onSubmit={onSave} className="space-y-8">
+        {/* Post Details */}
+        <div className="rounded-lg border border-gray-200 bg-gray-50 p-6">
+          <h3 className="mb-6 text-lg font-bold text-gray-900">Post Details</h3>
+          <div className="grid gap-6 lg:grid-cols-2">
             <div>
               <label className="block text-sm font-semibold text-gray-900 mb-2">Post Title *</label>
-              <input className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-from focus:border-transparent transition-all bg-white" placeholder="Enter blog title" value={form.title} onChange={(e) => updateField('title', e.target.value)} />
+              <input
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="Enter blog title"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
             </div>
-
             <div>
               <label className="block text-sm font-semibold text-gray-900 mb-2">URL Slug *</label>
-              <input className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-from focus:border-transparent transition-all bg-white" placeholder="url-friendly-slug" value={form.slug} onChange={(e) => updateField('slug', e.target.value)} />
+              <input
+                type="text"
+                value={slug}
+                onChange={(e) => setSlug(e.target.value)}
+                placeholder="url-friendly-slug"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
+              />
             </div>
-
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <div>
-                <label className="block text-sm font-semibold text-gray-900 mb-2">Author</label>
-                <input className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-from focus:border-transparent transition-all bg-white" placeholder="Author name" value={form.author} onChange={(e) => updateField('author', e.target.value)} />
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-gray-900 mb-2">Category</label>
-                <input className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-from focus:border-transparent transition-all bg-white" placeholder="e.g., SEO" value={form.category} onChange={(e) => updateField('category', e.target.value)} />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <div>
-                <label className="block text-sm font-semibold text-gray-900 mb-2">Read Time</label>
-                <input className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-from focus:border-transparent transition-all bg-white" placeholder="e.g., 5 min" value={form.readTime} onChange={(e) => updateField('readTime', e.target.value)} />
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-gray-900 mb-2">Thumbnail Path</label>
-                <input className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-from focus:border-transparent transition-all bg-white" placeholder="/path/to/image.jpg" value={form.thumbnail} onChange={(e) => updateField('thumbnail', e.target.value)} />
-              </div>
-            </div>
-          </div>
-
-          <div className="space-y-6">
             <div>
-              <label className="block text-sm font-semibold text-gray-900 mb-2">Excerpt</label>
-              <textarea className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-from focus:border-transparent transition-all h-28 resize-none bg-white" placeholder="Short description of your post" value={form.excerpt} onChange={(e) => updateField('excerpt', e.target.value)} />
+              <label className="block text-sm font-semibold text-gray-900 mb-2">Author</label>
+              <input
+                type="text"
+                value={author}
+                onChange={(e) => setAuthor(e.target.value)}
+                placeholder="Author name"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
             </div>
-
-            <div className="rounded-xl border border-gray-200 bg-white p-5">
-              <h3 className="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2">
-                <svg className="w-5 h-5 text-accent-from" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.658 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-                </svg>
-                SEO Settings
-              </h3>
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-semibold text-gray-900 mb-2">Meta Title</label>
-                  <input className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-from focus:border-transparent transition-all bg-white" placeholder="SEO title (60 chars)" value={form.metaTitle} onChange={(e) => updateField('metaTitle', e.target.value)} />
+            <div>
+              <label className="block text-sm font-semibold text-gray-900 mb-2">Category</label>
+              <input
+                type="text"
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                placeholder="e.g., SEO"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-gray-900 mb-2">Read Time</label>
+              <input
+                type="text"
+                value={readTime}
+                onChange={(e) => setReadTime(e.target.value)}
+                placeholder="e.g., 5 min"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-gray-900 mb-2">Thumbnail URL / Upload</label>
+              <div className="space-y-2">
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={thumbnail}
+                    onChange={(e) => setThumbnail(e.target.value)}
+                    placeholder="https://example.com/image.jpg or select from library"
+                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMediaModalFor('thumbnail');
+                      setMediaModalOpen(true);
+                    }}
+                    className="px-4 py-2 bg-accent-from text-white rounded-lg hover:opacity-90 cursor-pointer transition-all font-medium text-sm"
+                  >
+                    Library
+                  </button>
+                  <label className="px-4 py-2 bg-accent-from text-white rounded-lg hover:opacity-90 cursor-pointer transition-all font-medium text-sm">
+                    Upload
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => e.target.files?.[0] && handleThumbnailUpload(e.target.files[0])}
+                      className="hidden"
+                      disabled={uploadingThumbnail}
+                    />
+                  </label>
+                  {thumbnail && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setThumbnail('');
+                        setThumbnailPreview(null);
+                      }}
+                      className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 cursor-pointer transition-all font-medium text-sm"
+                    >
+                      Delete
+                    </button>
+                  )}
                 </div>
-                <div>
-                  <label className="block text-sm font-semibold text-gray-900 mb-2">Meta Description</label>
-                  <input className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-from focus:border-transparent transition-all bg-white" placeholder="SEO description (160 chars)" value={form.metaDescription} onChange={(e) => updateField('metaDescription', e.target.value)} />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-gray-900 mb-2">Canonical URL</label>
-                  <input className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-from focus:border-transparent transition-all bg-white" placeholder="https://alviondigital.in/..." value={form.canonical} onChange={(e) => updateField('canonical', e.target.value)} />
-                </div>
+                {(thumbnailPreview || thumbnail) && (
+                  <div className="relative rounded-lg overflow-hidden border border-gray-200 h-32 bg-gray-50">
+                    <img
+                      src={thumbnailPreview || thumbnail}
+                      alt="Thumbnail preview"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                )}
               </div>
             </div>
+            <div className="lg:col-span-2">
+              <label className="block text-sm font-semibold text-gray-900 mb-2">Excerpt</label>
+              <textarea
+                value={excerpt}
+                onChange={(e) => setExcerpt(e.target.value)}
+                placeholder="Short description of your post"
+                rows={3}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+          </div>
+        </div>
 
-            <div className="rounded-xl border border-gray-200 bg-white p-5">
-              <label className="flex items-center gap-3 cursor-pointer">
-                <div className="relative inline-flex">
-                  <input type="checkbox" checked={!form.isDraft} onChange={(e) => updateField('isDraft', !e.target.checked)} className="sr-only" />
-                  <div className={`w-12 h-6 rounded-full transition-all ${!form.isDraft ? 'bg-green-500' : 'bg-gray-300'}`}></div>
-                  <div className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-all ${!form.isDraft ? 'translate-x-6' : ''}`}></div>
+        {/* SEO Settings */}
+        <div className="rounded-lg border border-gray-200 bg-white p-6">
+          <h3 className="mb-6 text-lg font-bold text-gray-900">SEO Settings</h3>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-semibold text-gray-900 mb-2">Meta Title</label>
+              <input
+                type="text"
+                value={metaTitle}
+                onChange={(e) => setMetaTitle(e.target.value)}
+                placeholder="SEO title (60 chars)"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-gray-900 mb-2">Meta Description</label>
+              <input
+                type="text"
+                value={metaDescription}
+                onChange={(e) => setMetaDescription(e.target.value)}
+                placeholder="SEO description (160 chars)"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-gray-900 mb-2">Canonical URL</label>
+              <input
+                type="text"
+                value={canonical}
+                onChange={(e) => setCanonical(e.target.value)}
+                placeholder="https://alviondigital.in/..."
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Publish Status */}
+        <div className="rounded-lg border border-gray-200 bg-white p-6">
+          <label className="flex items-center gap-3 cursor-pointer">
+            <div className="relative inline-flex">
+              <input
+                type="checkbox"
+                checked={!isDraft}
+                onChange={(e) => setIsDraft(!e.target.checked)}
+                className="sr-only"
+              />
+              <div className={`w-12 h-6 rounded-full transition-all ${!isDraft ? 'bg-green-500' : 'bg-gray-300'}`} />
+              <div
+                className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-all ${!isDraft ? 'translate-x-6' : ''}`}
+              />
+            </div>
+            <span className="font-semibold text-gray-900">{!isDraft ? '✓ Published' : '⊙ Draft'}</span>
+          </label>
+        </div>
+
+        {/* Content Editor */}
+        <div className="rounded-lg border border-gray-200 bg-white p-6">
+          <h3 className="mb-4 text-lg font-bold text-gray-900">Content</h3>
+          <div className="grid gap-6 lg:grid-cols-2">
+            <div>
+              <div className="flex justify-between items-center mb-2">
+                <label className="block text-sm font-semibold text-gray-900">HTML Content</label>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMediaModalFor('content');
+                      setMediaModalOpen(true);
+                    }}
+                    className="text-xs px-2 py-1 bg-gray-100 hover:bg-gray-200 rounded-full text-gray-700 font-medium cursor-pointer transition-colors"
+                  >
+                    + From Library
+                  </button>
+                  <label className="text-xs px-2 py-1 bg-gray-100 hover:bg-gray-200 rounded-full text-gray-700 font-medium cursor-pointer transition-colors">
+                    + Upload
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        if (e.target.files?.[0]) {
+                          const reader = new FileReader();
+                          reader.onloadend = () => {
+                            const imgTag = `<img src="${reader.result}" alt="description" class="w-full rounded-lg my-4" />`;
+                            setContentHTML(contentHTML + '\n' + imgTag);
+                          };
+                          reader.readAsDataURL(e.target.files[0]);
+                        }
+                      }}
+                      className="hidden"
+                    />
+                  </label>
                 </div>
-                <span className="font-semibold text-gray-900">{!form.isDraft ? '✓ Published' : '⊙ Draft'}</span>
-              </label>
+              </div>
+              <textarea
+                value={contentHTML}
+                onChange={(e) => setContentHTML(e.target.value)}
+                placeholder="Paste or write raw HTML here. Inline styles allowed."
+                rows={12}
+                className="w-full p-3 border border-gray-300 rounded-lg font-mono text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <p className="text-xs text-gray-500 mt-2">You can use inline CSS in this editor.</p>
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-gray-900 mb-2">Live Preview</label>
+              <div className="border-2 border-dashed border-gray-200 rounded-lg p-4 bg-gray-50 h-96 overflow-y-auto">
+                <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: contentHTML }} />
+              </div>
             </div>
           </div>
         </div>
 
-      </div>
-
-      <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-        <div className="mb-6 flex items-center gap-2">
-          <h3 className="text-base font-bold text-gray-900">Content Editor</h3>
-          <span className="text-sm text-gray-500">Code input and live preview</span>
+        <div className="flex justify-end">
+          <button
+            type="submit"
+            disabled={saving}
+            className="inline-flex items-center justify-center px-6 py-3 rounded-full font-semibold text-sm bg-linear-to-r from-accent-from to-accent-to text-white hover:opacity-90 hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-from disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-blue-500/25"
+          >
+            {saving ? 'Saving...' : 'Save Post'}
+          </button>
         </div>
+      </form>
 
-        <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
-          <div>
-            <label className="block text-sm font-semibold text-gray-900 mb-2">Content (HTML + Tailwind Classes) *</label>
-            <textarea className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-from focus:border-transparent transition-all h-136 resize-none font-mono text-sm bg-white" value={form.contentHTML} onChange={(e) => updateField('contentHTML', e.target.value)} />
-            <div className="flex flex-wrap gap-2 mt-3">
-              <button type="button" onClick={() => insertSnippet('<h2 className="text-2xl font-bold mt-8 mb-4">Section Title</h2><p className="text-gray-700 leading-relaxed">Your paragraph here...</p>')} className="text-xs px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-full text-gray-700 font-medium transition-colors hover:cursor-pointer">+ Section</button>
-              <button type="button" onClick={() => insertSnippet('<img src="/Content Images/example.jpg" alt="description" class="w-full rounded-lg my-6"/>')} className="text-xs px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-full text-gray-700 font-medium transition-colors hover:cursor-pointer">+ Image</button>
-              <button type="button" onClick={() => insertSnippet('<ul class="space-y-2 ml-4"><li class="flex gap-2"><span class="text-accent-to">•</span> Point one</li><li class="flex gap-2"><span class="text-accent-to">•</span> Point two</li></ul>')} className="text-xs px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-full text-gray-700 font-medium transition-colors hover:cursor-pointer">+ List</button>
-            </div>
-          </div>
-
-          <div>
-            <label className="flex items-center gap-2 text-sm font-semibold text-gray-900 mb-3">
-              <svg className="w-5 h-5 text-accent-from" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-              </svg>
-              Live Preview
-            </label>
-            <div className="border-2 border-dashed border-gray-200 rounded-lg p-6 bg-gray-50 h-136 overflow-y-auto" ref={previewRef}>
-              <div className="prose prose-sm sm:prose max-w-none" dangerouslySetInnerHTML={{ __html: form.contentHTML }} />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="flex justify-end pt-2">
-        <Button type="button" variant="primary" onClick={handleSave} disabled={isSaving} className="w-full sm:w-auto px-8 py-4 rounded-full text-sm">
-          {isSaving ? 'Saving...' : 'Save Post'}
-        </Button>
-      </div>
+      <MediaLibraryModal
+        isOpen={mediaModalOpen}
+        onClose={() => setMediaModalOpen(false)}
+        onSelect={handleMediaSelect}
+        onUpload={handleThumbnailUpload}
+      />
     </div>
   );
 }

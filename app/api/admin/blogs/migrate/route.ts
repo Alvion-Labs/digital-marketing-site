@@ -1,33 +1,38 @@
 import { NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 import BlogModel from '@/lib/models/Blog';
-import { checkAdminAuth } from '@/lib/admin';
+import { hasAdminSession } from '@/lib/admin';
 import { blogPosts } from '@/lib/blog';
+import { sanitizeBlogHtml } from '@/lib/html';
 
 function sectionsToHTML(sections: any[]) {
   if (!sections || !sections.length) return '';
-  let html = '<div class="prose max-w-none">';
+  let html = '';
   sections.forEach((s) => {
-    if (s.heading) html += `<h2 class="text-2xl font-bold">${s.heading}</h2>`;
+    html += '<section>';
+    if (s.heading) html += `<h2>${s.heading}</h2>`;
     if (s.paragraphs && s.paragraphs.length) {
       s.paragraphs.forEach((p: string) => {
-        html += `<p class="mt-2">${p}</p>`;
+        html += `<p>${p}</p>`;
       });
     }
     if (s.bullets && s.bullets.length) {
-      html += '<ul class="list-disc pl-6 mt-2">';
+      html += '<ul>';
       s.bullets.forEach((b: string) => {
         html += `<li>${b}</li>`;
       });
       html += '</ul>';
     }
+    html += '</section>';
   });
-  html += '</div>';
-  return html;
+  return sanitizeBlogHtml(html);
 }
 
 export async function POST(req: Request) {
-  await checkAdminAuth();
+  if (!hasAdminSession(req)) {
+    return NextResponse.json({ ok: false, error: 'Unauthorized' }, { status: 401 });
+  }
+
   await connectToDatabase();
 
   let inserted = 0;

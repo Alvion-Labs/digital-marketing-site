@@ -4,12 +4,17 @@ import Container from '@/components/global/Container';
 import { formatBlogDate, type BlogPost as BlogPostType } from '@/lib/blog';
 import { XTwitterIcon, LinkedInIcon, FacebookIcon } from '@/components/global/icons';
 import RelatedPosts from '@/components/pages/blog/RelatedPosts';
+import { sanitizeBlogHtml } from '@/lib/html';
 
 interface BlogPostProps {
   post: BlogPostType;
 }
 
 export default function BlogPost({ post }: BlogPostProps) {
+  // Use contentHTML directly (contentBlocks support removed)
+  const contentHTML = post.contentHTML || '';
+  const safeContentHTML = contentHTML ? sanitizeBlogHtml(contentHTML) : '';
+
   return (
     <>
       {/* Reading Progress Indicator */}
@@ -91,10 +96,10 @@ export default function BlogPost({ post }: BlogPostProps) {
 
             {/* Main Article Content - Clean Minimal Design */}
             <article className="space-y-12">
-              {post.contentHTML ? (
+              {safeContentHTML ? (
                 <div 
-                  className="prose prose-lg max-w-none prose-headings:font-bold prose-h2:text-2xl md:prose-h2:text-3xl prose-p:text-gray-700 prose-p:leading-[1.85] prose-p:text-lg prose-a:text-accent-to prose-strong:text-gray-900"
-                  dangerouslySetInnerHTML={{ __html: post.contentHTML }}
+                  className="blog-content max-w-none"
+                  dangerouslySetInnerHTML={{ __html: safeContentHTML }}
                 />
               ) : post.sections && post.sections.length > 0 ? (
                 post.sections.map((section) => (

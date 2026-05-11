@@ -1,5 +1,6 @@
 import { connectToDatabase } from './mongodb';
 import BlogModel from './models/Blog';
+import { AnyBlock } from './blocks';
 
 export interface BlogSection {
   heading?: string;
@@ -23,6 +24,7 @@ export interface BlogPost {
   takeaways?: string[];
   thumbnail?: string;
   contentHTML?: string;
+  contentBlocks?: AnyBlock[];
   metaTitle?: string;
   metaDescription?: string;
   canonical?: string;

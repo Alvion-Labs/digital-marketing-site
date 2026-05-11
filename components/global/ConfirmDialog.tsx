@@ -28,11 +28,11 @@ export default function ConfirmDialog({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full animate-in zoom-in-95 duration-200">
+    <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/65 px-4 backdrop-blur-sm">
+      <div className="w-full max-w-sm animate-in zoom-in-95 duration-200 rounded-3xl border border-white/10 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.28)]">
         <div className="p-6">
-          <h2 className="text-lg font-bold text-gray-900 mb-2">{title}</h2>
-          <p className="text-gray-600 text-sm leading-relaxed">{message}</p>
+          <h2 className="mb-2 text-lg font-bold text-gray-900">{title}</h2>
+          <p className="text-sm leading-relaxed text-gray-600">{message}</p>
         </div>
 
         <div className="flex gap-3 px-6 pb-6">

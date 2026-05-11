@@ -15,6 +15,8 @@ const blogSchema = new Schema(
     thumbnail: { type: String, trim: true },
     // full HTML content authored in the editor (allows Tailwind classes)
     contentHTML: { type: String, default: '' },
+    // block-based content (new format)
+    contentBlocks: { type: Array, default: [] },
     // arbitrary JSON sections (optional)
     sections: { type: Array, default: [] },
     takeaways: { type: Array, default: [] },
