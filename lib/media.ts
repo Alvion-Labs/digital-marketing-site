@@ -1,11 +1,10 @@
-import fs from 'fs/promises';
-import path from 'path';
+import { put, del } from '@vercel/blob';
 import { connectToDatabase } from './mongodb';
 import MediaModel from './models/Media';
 import { randomBytes } from 'crypto';
 
-const MEDIA_DIR = path.join(process.cwd(), 'public', 'blogs', 'Media');
-const PUBLIC_URL_PREFIX = '/blogs/Media';
+// Vercel Blob storage prefix for organization
+const BLOB_PREFIX = 'blogs/media';
 
 export interface MediaFile {
   _id?: string;
@@ -26,18 +25,16 @@ export interface UploadOptions {
 }
 
 /**
- * Ensure media directory exists
+ * Ensure media storage is ready (no-op for Vercel Blob, kept for compatibility)
  */
 export async function ensureMediaDir() {
-  try {
-    await fs.mkdir(MEDIA_DIR, { recursive: true });
-  } catch (e) {
-    console.error('Failed to create media directory:', e);
-  }
+  // Vercel Blob doesn't require directory initialization
+  // This function is kept for backward compatibility
+  return Promise.resolve();
 }
 
 /**
- * Upload a file to the centralized media storage
+ * Upload a file to the centralized media storage using Vercel Blob
  * @param file File buffer or Blob
  * @param options Upload options (originalName, mimeType, usedBy)
  * @returns Media metadata
@@ -46,30 +43,35 @@ export async function uploadMedia(
   file: Buffer,
   options: UploadOptions = {}
 ): Promise<MediaFile> {
-  await ensureMediaDir();
   await connectToDatabase();
 
   try {
-    // Generate safe filename
+    // Generate safe filename with timestamp and random ID
     const ext = getFileExtension(options.originalName);
     const uniqueId = randomBytes(4).toString('hex');
     const timestamp = Date.now();
     const filename = `${timestamp}-${uniqueId}${ext}`;
+    const blobPath = `${BLOB_PREFIX}/${filename}`;
 
-    // Write file to disk
-    const targetPath = path.join(MEDIA_DIR, filename);
-    await fs.writeFile(targetPath, file);
+    // Upload file to Vercel Blob with metadata
+    const blob = await put(blobPath, file, {
+      access: 'public',
+      contentType: options.mimeType || 'application/octet-stream',
+      addRandomSuffix: false, // We handle naming ourselves
+    });
+
+    if (!blob.url) {
+      throw new Error('No URL returned from Vercel Blob');
+    }
 
     // Create media record in database
-    const publicUrl = `${PUBLIC_URL_PREFIX}/${encodeURIComponent(filename)}`;
-    
     const mediaRecord = await MediaModel.create({
       filename,
       originalName: options.originalName || filename,
       mimeType: options.mimeType || 'application/octet-stream',
       size: file.length,
-      storagePath: path.relative(process.cwd(), targetPath),
-      publicUrl,
+      storagePath: blobPath,
+      publicUrl: blob.url,
       usedBy: options.usedBy ? [options.usedBy as any] : [],
       uploadedAt: new Date(),
     });
@@ -130,10 +132,9 @@ export async function getMediaByFilename(filename: string): Promise<MediaFile | 
 }
 
 /**
- * Delete media file
+ * Delete media file from Vercel Blob and database
  */
 export async function deleteMedia(filename: string, hardDelete = false): Promise<boolean> {
-  await ensureMediaDir();
   await connectToDatabase();
 
   try {
@@ -141,16 +142,17 @@ export async function deleteMedia(filename: string, hardDelete = false): Promise
     if (!media) return false;
 
     if (hardDelete) {
-      // Hard delete: remove from disk and database
-      const targetPath = path.join(MEDIA_DIR, filename);
+      // Hard delete: remove from Vercel Blob and database
+      const blobPath = `${BLOB_PREFIX}/${filename}`;
       try {
-        await fs.unlink(targetPath);
+        await del(blobPath);
       } catch (e) {
-        // ignore if file doesn't exist
+        // Log but don't fail if blob deletion fails
+        console.warn('Failed to delete blob:', e);
       }
       await MediaModel.deleteOne({ filename });
     } else {
-      // Soft delete: mark as deleted
+      // Soft delete: mark as deleted in database
       await MediaModel.updateOne({ filename }, { isDeleted: true });
     }
 
