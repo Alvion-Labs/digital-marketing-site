@@ -182,27 +182,34 @@ export default function BlogEditorImproved({ initial }: { initial?: Partial<Blog
 
   return (
     <div className="min-h-screen bg-linear-to-br from-gray-50 via-white to-gray-50">
-      {/* Header */}
-      <div className="sticky top-0 z-40 border-b border-gray-200/50 bg-white/80 backdrop-blur-md shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-bold bg-linear-to-r from-accent-from to-accent-to bg-clip-text text-transparent">
-                {isEditing ? (title || 'Untitled') : 'Create New Blog Post'}
-              </h1>
-              <p className="text-sm text-gray-500 mt-1 flex items-center gap-2">
-                {isEditing ? (
+      {/* Header - Refined Toolbar */}
+      <div className="sticky top-0 z-40 border-b border-gray-200/60 bg-white shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            {/* Left section */}
+            <div className="flex items-center gap-4 min-w-0">
+              <div className="hidden sm:flex items-center gap-2 text-xs text-gray-400">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                </svg>
+                <span className="text-gray-400">/</span>
+                <span>blogs</span>
+                {isEditing && (
                   <>
-                    <span className="text-gray-400">/ admin / blogs /</span>
-                    <span className="font-semibold text-gray-700 truncate max-w-[300px]">{title || slug || 'untitled'}</span>
+                    <span className="text-gray-400">/</span>
+                    <span className="text-gray-600 font-medium truncate max-w-[200px]">{title || slug || 'untitled'}</span>
                   </>
-                ) : (
-                  'Share your insights with the world'
                 )}
-              </p>
+              </div>
+              <h1 className="text-lg sm:text-xl font-bold bg-linear-to-r from-accent-from to-accent-to bg-clip-text text-transparent truncate">
+                {isEditing ? (title || 'Untitled') : 'New Blog Post'}
+              </h1>
             </div>
-            <div className="flex gap-3">
-              <label className="inline-flex items-center gap-3 px-4 py-2 rounded-lg bg-white border border-gray-200 cursor-pointer">
+
+            {/* Right section */}
+            <div className="flex items-center gap-2 sm:gap-3">
+              {/* Draft / Published Toggle */}
+              <label className="relative inline-flex items-center gap-2.5 px-3.5 py-2 rounded-xl bg-gray-50 border border-gray-200/80 cursor-pointer hover:bg-gray-100/80 transition-colors group">
                 <div className="relative inline-flex">
                   <input
                     type="checkbox"
@@ -210,36 +217,61 @@ export default function BlogEditorImproved({ initial }: { initial?: Partial<Blog
                     onChange={(e) => setIsDraft(!e.target.checked)}
                     className="sr-only"
                   />
-                  <div className={`w-12 h-7 rounded-full transition-all ${!isDraft ? 'bg-green-500' : 'bg-gray-300'}`} />
+                  <div className={`w-10 h-6 rounded-full transition-all duration-200 ${!isDraft ? 'bg-emerald-500' : 'bg-gray-300'}`} />
                   <div
-                    className={`absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full transition-all shadow-sm ${!isDraft ? 'translate-x-5' : ''}`}
+                    className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-all duration-200 shadow-sm ${!isDraft ? 'translate-x-4' : ''}`}
                   />
                 </div>
-                <span className={`text-sm font-semibold ${!isDraft ? 'text-green-700' : 'text-yellow-700'}`}>
-                  {!isDraft ? '✓ Published' : '⊙ Draft'}
+                <span className={`text-xs font-semibold tracking-wide ${!isDraft ? 'text-emerald-700' : 'text-amber-700'}`}>
+                  {!isDraft ? 'Published' : 'Draft'}
                 </span>
               </label>
+
+              {/* Preview Toggle (desktop) */}
               <button
                 type="button"
                 onClick={() => setShowPreview(!showPreview)}
-                className="hidden lg:inline-flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm bg-gray-100 text-gray-700 hover:bg-gray-200 transition-all"
+                className={`hidden lg:inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
+                  showPreview 
+                    ? 'bg-accent-from/10 text-accent-from border border-accent-from/20' 
+                    : 'bg-gray-50 text-gray-600 border border-gray-200/80 hover:bg-gray-100 hover:text-gray-800'
+                }`}
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                 </svg>
-                {showPreview ? 'Hide' : 'Show'} Preview
+                {showPreview ? 'Hide' : 'Preview'}
               </button>
+
+              {/* Divider */}
+              <div className="hidden sm:block w-px h-7 bg-gray-200" />
+
+              {/* Save / Publish Button */}
               <button
                 type="submit"
                 onClick={onSave}
                 disabled={saving}
-                className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full font-semibold text-sm bg-linear-to-r from-accent-from to-accent-to text-white hover:opacity-90 hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-from disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-blue-500/20"
+                className="group relative inline-flex items-center gap-2.5 px-5 py-2 rounded-xl font-semibold text-sm bg-linear-to-r from-accent-from to-accent-to text-white shadow-md shadow-accent-from/20 hover:shadow-lg hover:shadow-accent-from/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-from disabled:opacity-60 disabled:cursor-not-allowed overflow-hidden active:scale-[0.97]"
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-                {saving ? 'Saving...' : 'Save Post'}
+                <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-600 bg-linear-to-r from-transparent via-white/20 to-transparent" />
+                
+                {saving ? (
+                  <>
+                    <svg className="w-4 h-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                    </svg>
+                    <span className="relative z-10">Saving...</span>
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-4 h-4 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span className="relative z-10">{isEditing ? 'Update' : 'Publish'}</span>
+                  </>
+                )}
               </button>
             </div>
           </div>
