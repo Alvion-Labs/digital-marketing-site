@@ -4,6 +4,7 @@ import Container from '@/components/global/Container';
 import { formatBlogDate, type BlogPost as BlogPostType } from '@/lib/blog';
 import { XTwitterIcon, LinkedInIcon, FacebookIcon } from '@/components/global/icons';
 import RelatedPosts from '@/components/pages/blog/RelatedPosts';
+import TOC from '@/components/pages/blog/TOC';
 import { sanitizeBlogHtml } from '@/lib/html';
 
 interface BlogPostProps {
@@ -101,70 +102,87 @@ export default function BlogPost({ post }: BlogPostProps) {
       </section>
 
       <section className="bg-linear-to-b from-white to-gray-50 py-12 md:py-16">
+        {/* Mobile TOC - Sticky */}
+        <div className="md:hidden sticky top-16 z-30 bg-linear-to-b from-white via-white to-white/95">
+          <div className="px-4 sm:px-6 lg:px-8">
+            <TOC items={(post as any)?.tableOfContents || []} />
+          </div>
+        </div>
+
         <Container>
-          <div className="max-w-4xl mx-auto">
-            {/* Removed decorative banner to avoid occluding content */}
+          <div className="max-w-7xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+              {/* Main Content - 3 columns */}
+              <div className="md:col-span-3">
+                {/* Removed decorative banner to avoid occluding content */}
 
-            {/* Main Article Content - Clean Minimal Design */}
-            <article className="space-y-12">
-              {safeContentHTML ? (
-                <div 
-                  className="blog-content max-w-none"
-                  dangerouslySetInnerHTML={{ __html: safeContentHTML }}
-                />
-              ) : post.sections && post.sections.length > 0 ? (
-                post.sections.map((section) => (
-                  <section
-                    key={section.heading}
-                    id={section.heading?.toLowerCase().replace(/\s+/g, '-') || 'section'}
-                    className="scroll-mt-28"
-                  >
-                    <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6 leading-tight">
-                      {section.heading}
-                    </h2>
-                    <div className="h-0.5 w-16 bg-linear-to-r from-accent-from to-accent-to rounded-full mb-8" />
+                {/* Main Article Content - Clean Minimal Design */}
+                <article className="space-y-12">
+                  {safeContentHTML ? (
+                    <div 
+                      className="blog-content max-w-none"
+                      dangerouslySetInnerHTML={{ __html: safeContentHTML }}
+                    />
+                  ) : post.sections && post.sections.length > 0 ? (
+                    post.sections.map((section) => (
+                      <section
+                        key={section.heading}
+                        id={section.heading?.toLowerCase().replace(/\s+/g, '-') || 'section'}
+                        className="scroll-mt-28"
+                      >
+                        <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6 leading-tight">
+                          {section.heading}
+                        </h2>
+                        <div className="h-0.5 w-16 bg-linear-to-r from-accent-from to-accent-to rounded-full mb-8" />
 
-                    <div className="space-y-6 text-gray-700 leading-[1.85] text-lg">
-                      {section.paragraphs?.map((paragraph) => (
-                        <p key={paragraph}>{paragraph}</p>
-                      ))}
-                    </div>
+                        <div className="space-y-6 text-gray-700 leading-[1.85] text-lg">
+                          {section.paragraphs?.map((paragraph) => (
+                            <p key={paragraph}>{paragraph}</p>
+                          ))}
+                        </div>
 
-                    {section.bullets && (
-                      <ul className="mt-8 space-y-4 ml-4">
-                        {section.bullets.map((bullet) => (
-                          <li key={bullet} className="flex gap-4 text-gray-700 items-start text-lg">
-                            <div className="mt-2.5 h-2 w-2 rounded-full bg-accent-to shrink-0" />
-                            <span className="leading-relaxed">{bullet}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                  </section>
-                ))
-              ) : null}
-            </article>
+                        {section.bullets && (
+                          <ul className="mt-8 space-y-4 ml-4">
+                            {section.bullets.map((bullet) => (
+                              <li key={bullet} className="flex gap-4 text-gray-700 items-start text-lg">
+                                <div className="mt-2.5 h-2 w-2 rounded-full bg-accent-to shrink-0" />
+                                <span className="leading-relaxed">{bullet}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </section>
+                    ))
+                  ) : null}
+                </article>
 
-            {/* Clean Footer CTA */}
-            <div className="mt-12 pt-8 border-t border-gray-200">
-              <div className="rounded-2xl bg-linear-to-br from-accent-from/5 to-accent-to/5 p-8 md:p-10 text-center">
-                <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-4">Need help implementing this?</h3>
-                <p className="text-gray-600 max-w-2xl mx-auto mb-8">
-                  Our team can help you build this strategy into actionable results for your business.
-                </p>
-                <Link
-                  href="/#contact"
-                  className="inline-flex items-center justify-center rounded-full bg-linear-to-r from-accent-from to-accent-to px-8 py-3.5 font-semibold text-white shadow-lg shadow-accent-from/20 hover:shadow-xl hover:shadow-accent-from/30 transition-all duration-300 hover:-translate-y-0.5"
-                >
-                  Get in touch with our team
-                </Link>
+                {/* Clean Footer CTA */}
+                <div className="mt-12 pt-8 border-t border-gray-200">
+                  <div className="rounded-2xl bg-linear-to-br from-accent-from/5 to-accent-to/5 p-8 md:p-10 text-center">
+                    <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-4">Need help implementing this?</h3>
+                    <p className="text-gray-600 max-w-2xl mx-auto mb-8">
+                      Our team can help you build this strategy into actionable results for your business.
+                    </p>
+                    <Link
+                      href="/#contact"
+                      className="inline-flex items-center justify-center rounded-full bg-linear-to-r from-accent-from to-accent-to px-8 py-3.5 font-semibold text-white shadow-lg shadow-accent-from/20 hover:shadow-xl hover:shadow-accent-from/30 transition-all duration-300 hover:-translate-y-0.5"
+                    >
+                      Get in touch with our team
+                    </Link>
+                  </div>
+                </div>
               </div>
-            </div>
+
+              {/* Sidebar - TOC - 1 column (hidden on mobile) */}
+              <div className="hidden md:block md:col-span-1">
+                <TOC items={(post as any)?.tableOfContents || []} />
+              </div>
             </div>
             {/* Related posts */}
             <RelatedPosts category={post.category} currentSlug={post.slug} />
-          </Container>
-        </section>
+          </div>
+        </Container>
+      </section>
     </>
   );
 }

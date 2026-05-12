@@ -5,6 +5,11 @@ import { Blog } from '@/lib/models/Blog';
 import type { MediaFile } from '@/lib/media';
 import MediaLibraryModal from './MediaLibraryModal';
 
+interface TOCItem {
+  title: string;
+  anchor: string;
+}
+
 export default function BlogEditorClient({ initial }: { initial?: Partial<Blog> }) {
   const router = useRouter();
   const [title, setTitle] = useState(initial?.title || '');
@@ -21,6 +26,7 @@ export default function BlogEditorClient({ initial }: { initial?: Partial<Blog> 
   const [canonical, setCanonical] = useState(initial?.canonical || '');
   const [isDraft, setIsDraft] = useState(initial?.isDraft ?? true);
   const [contentHTML, setContentHTML] = useState(initial?.contentHTML || '');
+  const [tableOfContents, setTableOfContents] = useState<TOCItem[]>((initial as any)?.tableOfContents || []);
   const [saving, setSaving] = useState(false);
   const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null);
   const [uploadingThumbnail, setUploadingThumbnail] = useState(false);
@@ -88,6 +94,7 @@ export default function BlogEditorClient({ initial }: { initial?: Partial<Blog> 
           canonical,
           isDraft,
           contentHTML: sanitized,
+          tableOfContents,
         }),
       });
       router.push('/admin/blogs');
@@ -229,6 +236,59 @@ export default function BlogEditorClient({ initial }: { initial?: Partial<Blog> 
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
+          </div>
+        </div>
+
+        {/* Table of Contents */}
+        <div className="rounded-lg border border-gray-200 bg-white p-6">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-lg font-bold text-gray-900">Table of Contents</h3>
+            <button
+              type="button"
+              onClick={() => setTableOfContents([...tableOfContents, { title: '', anchor: '' }])}
+              className="px-4 py-2 bg-accent-from text-white rounded-lg hover:opacity-90 text-sm font-medium transition-all"
+            >
+              + Add Item
+            </button>
+          </div>
+          <div className="space-y-3">
+            {tableOfContents.length === 0 ? (
+              <p className="text-sm text-gray-500">No TOC items yet. Click "Add Item" to get started.</p>
+            ) : (
+              tableOfContents.map((item, idx) => (
+                <div key={idx} className="flex gap-3 items-start">
+                  <input
+                    type="text"
+                    placeholder="Section title (e.g., What is SEO?)"
+                    value={item.title}
+                    onChange={(e) => {
+                      const updated = [...tableOfContents];
+                      updated[idx].title = e.target.value;
+                      setTableOfContents(updated);
+                    }}
+                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Anchor link (e.g., what-is-seo)"
+                    value={item.anchor}
+                    onChange={(e) => {
+                      const updated = [...tableOfContents];
+                      updated[idx].anchor = e.target.value;
+                      setTableOfContents(updated);
+                    }}
+                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setTableOfContents(tableOfContents.filter((_, i) => i !== idx))}
+                    className="px-3 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all text-sm font-medium"
+                  >
+                    Delete
+                  </button>
+                </div>
+              ))
+            )}
           </div>
         </div>
 

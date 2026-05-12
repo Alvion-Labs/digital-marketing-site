@@ -92,61 +92,63 @@ export default function LeadsTableClient({ initial }: { initial: Lead[] }) {
       <table className="w-full">
         <thead className="bg-gray-50 border-b border-gray-200">
           <tr>
-            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Name</th>
-            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Email</th>
-            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Message</th>
-            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Status</th>
-            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Date</th>
-            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Action</th>
+            <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Name</th>
+            <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Email</th>
+            <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Message</th>
+            <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Status</th>
+            <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Date</th>
+            <th className="px-6 py-4 text-right text-xs font-semibold text-gray-700 uppercase tracking-wider">Actions</th>
           </tr>
         </thead>
         <tbody>
-          {leads.map((lead) => (
-            <tr key={lead._id} className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
-              <td className="px-6 py-4 text-sm text-gray-900 font-medium">{lead.name}</td>
-              <td className="px-6 py-4 text-sm text-gray-600">{lead.email}</td>
-              <td className="px-6 py-4 text-sm text-gray-600 max-w-xs truncate">{lead.message}</td>
-              <td className="px-6 py-4 text-sm">
-                <div className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-3 py-2 shadow-sm ring-1 ring-inset ring-gray-100">
-                  <span className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold ring-1 ring-inset ${statusStyles[lead.status || 'new']}`}>
-                    <span className="h-2 w-2 rounded-full bg-current opacity-70" />
-                    {formatStatus(lead.status)}
-                  </span>
-                  <select
-                    value={lead.status || 'new'}
-                    onChange={(e) => updateStatus(lead._id, e.target.value)}
-                    className="bg-transparent text-xs font-medium text-gray-500 outline-none cursor-pointer"
-                    disabled={loadingId === lead._id}
-                    aria-label={`Update status for ${lead.name}`}
-                  >
-                    {statuses.map((s) => (
-                      <option key={s} value={s}>
-                        {s.replace('_', ' ')}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+          {leads.map((lead, idx) => (
+            <tr key={lead._id} className={`transition-colors ${idx === leads.length - 1 ? '' : 'border-b border-gray-200'} hover:bg-gray-50`}>
+              <td className="px-6 py-4">
+                <p className="text-sm font-semibold text-gray-900">{lead.name}</p>
               </td>
-              <td className="px-6 py-4 text-sm text-gray-600">{new Date(lead.createdAt).toLocaleDateString()}</td>
-              <td className="px-6 py-4 text-sm">
-                <div className="flex gap-3">
-                  <button
-                    onClick={() => {
-                      const next = prompt('Enter status (new, in_discussion, converted, bounced)', lead.status || 'new');
-                      if (next) updateStatus(lead._id, next);
-                    }}
-                    className="px-3 py-1.5 text-accent-to hover:bg-accent-from/10 rounded-full font-medium hover:cursor-pointer transition-colors"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => setConfirmDelete({ id: lead._id, name: lead.name })}
-                    disabled={loadingId === lead._id}
-                    className="px-3 py-1.5 text-red-600 hover:bg-red-50 rounded-full font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:cursor-pointer transition-colors"
-                  >
-                    {loadingId === lead._id ? 'Deleting...' : 'Delete'}
-                  </button>
-                </div>
+              <td className="px-6 py-4">
+                <p className="text-sm text-gray-600">{lead.email}</p>
+              </td>
+              <td className="px-6 py-4">
+                <p className="text-sm text-gray-600 max-w-xs truncate" title={lead.message}>{lead.message}</p>
+              </td>
+              <td className="px-6 py-4">
+                <select
+                  value={lead.status || 'new'}
+                  onChange={(e) => updateStatus(lead._id, e.target.value)}
+                  disabled={loadingId === lead._id}
+                  className={`text-xs font-semibold px-3 py-1.5 rounded-full border outline-none transition-all ${statusStyles[lead.status || 'new']} cursor-pointer`}
+                >
+                  {statuses.map((s) => (
+                    <option key={s} value={s}>
+                      {formatStatus(s)}
+                    </option>
+                  ))}
+                </select>
+              </td>
+              <td className="px-6 py-4">
+                <p className="text-sm text-gray-600">{new Date(lead.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
+              </td>
+              <td className="px-6 py-4 text-right">
+                <button
+                  onClick={() => setConfirmDelete({ id: lead._id, name: lead.name })}
+                  disabled={loadingId === lead._id}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {loadingId === lead._id ? (
+                    <>
+                      <span className="h-3 w-3 animate-spin rounded-full border-2 border-red-300 border-t-red-600" />
+                      Deleting...
+                    </>
+                  ) : (
+                    <>
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                      Delete
+                    </>
+                  )}
+                </button>
               </td>
             </tr>
           ))}

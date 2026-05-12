@@ -20,6 +20,8 @@ const blogSchema = new Schema(
     // arbitrary JSON sections (optional)
     sections: { type: Array, default: [] },
     takeaways: { type: Array, default: [] },
+    // Table of contents items (manual, array of {title, anchor})
+    tableOfContents: { type: Array, default: [] },
     // SEO fields
     metaTitle: { type: String, trim: true },
     metaDescription: { type: String, trim: true },

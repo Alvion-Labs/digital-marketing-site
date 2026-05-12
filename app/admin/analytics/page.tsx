@@ -2,16 +2,20 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { AdminCardGridSkeleton, AdminPageTitleSkeleton, AdminPanelSkeleton } from '@/components/admin/AdminSkeletons';
 
 type Lead = {
   status?: string;
+  createdAt: string;
 };
 
 export default function Analytics() {
   const router = useRouter();
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
+  const [chartDays, setChartDays] = useState(30);
+  const [filterStatus, setFilterStatus] = useState<string>('all');
 
   useEffect(() => {
     let cancelled = false;
@@ -44,7 +48,7 @@ export default function Analytics() {
     };
   }, [router]);
 
-  const { counts, total } = useMemo(() => {
+  const { counts, total, dailyStats, chartData } = useMemo(() => {
     const nextCounts: Record<string, number> = {
       new: 0,
       in_discussion: 0,
@@ -52,15 +56,79 @@ export default function Analytics() {
       bounced: 0,
     };
 
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+    const lastWeek = new Date(today);
+    lastWeek.setDate(lastWeek.getDate() - 7);
+    const lastMonth = new Date(today);
+    lastMonth.setMonth(lastMonth.getMonth() - 1);
+
+    let todayCount = 0;
+    let yesterdayCount = 0;
+    let lastWeekCount = 0;
+    let lastMonthCount = 0;
+
+    // Create chart data based on selected days
+    const dailyLeadsMap: Record<string, { total: number; new: number; in_discussion: number; converted: number; bounced: number }> = {};
+    for (let i = chartDays - 1; i >= 0; i--) {
+      const date = new Date(today);
+      date.setDate(date.getDate() - i);
+      const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      dailyLeadsMap[dateStr] = { total: 0, new: 0, in_discussion: 0, converted: 0, bounced: 0 };
+    }
+
     leads.forEach((lead) => {
       const status = lead.status || 'new';
       if (Object.prototype.hasOwnProperty.call(nextCounts, status)) {
         nextCounts[status] += 1;
       }
+
+      const leadDate = new Date(lead.createdAt);
+      const leadDateOnly = new Date(leadDate.getFullYear(), leadDate.getMonth(), leadDate.getDate());
+
+      if (leadDateOnly.getTime() === today.getTime()) {
+        todayCount += 1;
+      } else if (leadDateOnly.getTime() === yesterday.getTime()) {
+        yesterdayCount += 1;
+      }
+
+      if (leadDate >= lastWeek) {
+        lastWeekCount += 1;
+      }
+
+      if (leadDate >= lastMonth) {
+        lastMonthCount += 1;
+      }
+
+      // Add to daily leads map
+      const dateStr = leadDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      if (dateStr in dailyLeadsMap) {
+        dailyLeadsMap[dateStr].total += 1;
+        if (status === 'new') dailyLeadsMap[dateStr].new += 1;
+        if (status === 'in_discussion') dailyLeadsMap[dateStr].in_discussion += 1;
+        if (status === 'converted') dailyLeadsMap[dateStr].converted += 1;
+        if (status === 'bounced') dailyLeadsMap[dateStr].bounced += 1;
+      }
     });
 
-    return { counts: nextCounts, total: leads.length };
-  }, [leads]);
+    const chartData = Object.entries(dailyLeadsMap).map(([date, data]) => ({
+      date,
+      total: data.total,
+      new: data.new,
+      in_discussion: data.in_discussion,
+      converted: data.converted,
+      bounced: data.bounced,
+    }));
+
+    return {
+      counts: nextCounts,
+      total: leads.length,
+      dailyStats: { todayCount, yesterdayCount, lastWeekCount, lastMonthCount },
+      chartData,
+    };
+  }, [leads, chartDays]);
 
   return (
     <div>
@@ -69,11 +137,7 @@ export default function Analytics() {
       {loading ? (
         <>
           <div className="bg-white rounded-2xl border border-gray-200 p-6 mb-6">
-            <AdminCardGridSkeleton count={5} />
-          </div>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <AdminPanelSkeleton />
-            <AdminPanelSkeleton />
+            <AdminCardGridSkeleton count={9} />
           </div>
         </>
       ) : (
@@ -104,44 +168,139 @@ export default function Analytics() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="bg-white rounded-2xl border border-gray-200 p-6">
-              <h3 className="text-lg font-bold admin-heading-gradient mb-4">Traffic Source</h3>
-              <div className="space-y-4">
-                {[
-                  { name: 'Organic Search', value: 45, color: 'bg-blue-500' },
-                  { name: 'Direct', value: 30, color: 'bg-purple-500' },
-                  { name: 'Social Media', value: 15, color: 'bg-pink-500' },
-                  { name: 'Referral', value: 10, color: 'bg-green-500' },
-                ].map((source) => (
-                  <div key={source.name}>
-                    <div className="flex justify-between items-center mb-1">
-                      <span className="text-sm font-medium text-gray-700">{source.name}</span>
-                      <span className="text-sm font-bold text-gray-900">{source.value}%</span>
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div className={`${source.color} h-2 rounded-full`} style={{ width: `${source.value}%` }} />
-                    </div>
-                  </div>
-                ))}
+          <div className="bg-white rounded-2xl border border-gray-200 p-6">
+            <h3 className="text-lg font-bold admin-heading-gradient mb-4">Lead Activity</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="p-4 bg-linear-to-br from-blue-50 to-blue-100 rounded-xl border border-blue-200">
+                <p className="text-blue-700 text-sm font-medium">Today</p>
+                <p className="text-3xl font-bold text-blue-900 mt-2">{dailyStats.todayCount}</p>
+                <p className="text-xs text-blue-600 mt-1">New leads today</p>
+              </div>
+              <div className="p-4 bg-linear-to-br from-purple-50 to-purple-100 rounded-xl border border-purple-200">
+                <p className="text-purple-700 text-sm font-medium">Yesterday</p>
+                <p className="text-3xl font-bold text-purple-900 mt-2">{dailyStats.yesterdayCount}</p>
+                <p className="text-xs text-purple-600 mt-1">Leads yesterday</p>
+              </div>
+              <div className="p-4 bg-linear-to-br from-amber-50 to-amber-100 rounded-xl border border-amber-200">
+                <p className="text-amber-700 text-sm font-medium">This Week</p>
+                <p className="text-3xl font-bold text-amber-900 mt-2">{dailyStats.lastWeekCount}</p>
+                <p className="text-xs text-amber-600 mt-1">Last 7 days</p>
+              </div>
+              <div className="p-4 bg-linear-to-br from-emerald-50 to-emerald-100 rounded-xl border border-emerald-200">
+                <p className="text-emerald-700 text-sm font-medium">This Month</p>
+                <p className="text-3xl font-bold text-emerald-900 mt-2">{dailyStats.lastMonthCount}</p>
+                <p className="text-xs text-emerald-600 mt-1">Last 30 days</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-2xl border border-gray-200 p-6 mt-6">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
+              <h3 className="text-lg font-bold admin-heading-gradient">Lead Trend</h3>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <div>
+                  <label className="block text-xs font-semibold text-gray-600 mb-2 uppercase tracking-wide">Time Period</label>
+                  <select
+                    value={chartDays}
+                    onChange={(e) => setChartDays(Number(e.target.value))}
+                    className="px-4 py-2 rounded-lg border border-gray-300 text-sm text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-accent-from"
+                  >
+                    <option value={7}>Last 7 Days</option>
+                    <option value={14}>Last 14 Days</option>
+                    <option value={30}>Last 30 Days</option>
+                    <option value={60}>Last 60 Days</option>
+                    <option value={90}>Last 90 Days</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-gray-600 mb-2 uppercase tracking-wide">Lead Status</label>
+                  <select
+                    value={filterStatus}
+                    onChange={(e) => setFilterStatus(e.target.value)}
+                    className="px-4 py-2 rounded-lg border border-gray-300 text-sm text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-accent-from"
+                  >
+                    <option value="all">All Leads</option>
+                    <option value="new">New</option>
+                    <option value="in_discussion">In Discussion</option>
+                    <option value="converted">Converted</option>
+                    <option value="bounced">Bounced</option>
+                  </select>
+                </div>
               </div>
             </div>
 
-            <div className="bg-white rounded-2xl border border-gray-200 p-6">
-              <h3 className="text-lg font-bold admin-heading-gradient mb-4">Top Pages</h3>
-              <div className="space-y-3">
-                {[
-                  { path: '/', views: 1200 },
-                  { path: '/blog', views: 542 },
-                  { path: '/#services', views: 380 },
-                  { path: '/#contact', views: 320 },
-                ].map((page) => (
-                  <div key={page.path} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                    <span className="text-sm text-gray-700 font-medium">{page.path}</span>
-                    <span className="text-sm font-bold text-gray-900">{page.views}</span>
-                  </div>
-                ))}
-              </div>
+            <div className="w-full h-80 -ml-4">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={chartData} margin={{ top: 5, right: 30, left: 0, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                  <XAxis dataKey="date" stroke="#6b7280" style={{ fontSize: '12px' }} />
+                  <YAxis stroke="#6b7280" style={{ fontSize: '12px' }} />
+                  <Tooltip 
+                    contentStyle={{ 
+                      backgroundColor: '#ffffff', 
+                      border: '1px solid #e5e7eb',
+                      borderRadius: '8px',
+                      boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
+                    }}
+                    labelStyle={{ color: '#111827' }}
+                    formatter={(value) => [value, '']}
+                  />
+                  <Legend wrapperStyle={{ paddingTop: '20px' }} />
+                  {filterStatus === 'all' && (
+                    <>
+                      <Line 
+                        type="monotone" 
+                        dataKey="total" 
+                        stroke="#6366f1" 
+                        strokeWidth={3}
+                        dot={{ fill: '#6366f1', r: 5 }}
+                        activeDot={{ r: 7 }}
+                        name="Total Leads"
+                      />
+                    </>
+                  )}
+                  {(filterStatus === 'all' || filterStatus === 'new') && (
+                    <Line 
+                      type="monotone" 
+                      dataKey="new" 
+                      stroke="#3b82f6" 
+                      strokeWidth={2}
+                      dot={{ fill: '#3b82f6', r: 4 }}
+                      name="New"
+                    />
+                  )}
+                  {(filterStatus === 'all' || filterStatus === 'in_discussion') && (
+                    <Line 
+                      type="monotone" 
+                      dataKey="in_discussion" 
+                      stroke="#f59e0b" 
+                      strokeWidth={2}
+                      dot={{ fill: '#f59e0b', r: 4 }}
+                      name="In Discussion"
+                    />
+                  )}
+                  {(filterStatus === 'all' || filterStatus === 'converted') && (
+                    <Line 
+                      type="monotone" 
+                      dataKey="converted" 
+                      stroke="#10b981" 
+                      strokeWidth={2}
+                      dot={{ fill: '#10b981', r: 4 }}
+                      name="Converted"
+                    />
+                  )}
+                  {(filterStatus === 'all' || filterStatus === 'bounced') && (
+                    <Line 
+                      type="monotone" 
+                      dataKey="bounced" 
+                      stroke="#ef4444" 
+                      strokeWidth={2}
+                      dot={{ fill: '#ef4444', r: 4 }}
+                      name="Bounced"
+                    />
+                  )}
+                </LineChart>
+              </ResponsiveContainer>
             </div>
           </div>
         </>

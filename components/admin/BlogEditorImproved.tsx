@@ -8,6 +8,11 @@ import type { MediaFile } from '@/lib/media';
 import MediaLibraryModal from './MediaLibraryModal';
 import ConfirmDialog from '@/components/global/ConfirmDialog';
 
+interface TOCItem {
+  title: string;
+  anchor: string;
+}
+
 export default function BlogEditorImproved({ initial }: { initial?: Partial<Blog> }) {
   const router = useRouter();
   const blogId = (initial as any)?._id; // Get blog ID for updates
@@ -24,6 +29,7 @@ export default function BlogEditorImproved({ initial }: { initial?: Partial<Blog
   const [canonical, setCanonical] = useState(initial?.canonical || '');
   const [isDraft, setIsDraft] = useState(initial?.isDraft ?? true);
   const [contentHTML, setContentHTML] = useState(initial?.contentHTML || '');
+  const [tableOfContents, setTableOfContents] = useState<TOCItem[]>((initial as any)?.tableOfContents || []);
   const [saving, setSaving] = useState(false);
   const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null);
   const [uploadingThumbnail, setUploadingThumbnail] = useState(false);
@@ -159,6 +165,7 @@ export default function BlogEditorImproved({ initial }: { initial?: Partial<Blog
           canonical,
           isDraft,
           contentHTML: sanitized,
+          tableOfContents,
         }),
       });
 
@@ -452,6 +459,71 @@ export default function BlogEditorImproved({ initial }: { initial?: Partial<Blog
                   />
                   <p className="text-xs text-gray-500 mt-2">{excerpt.length}/160 characters</p>
                 </div>
+              </div>
+            </div>
+
+            {/* Table of Contents Card */}
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100/50 overflow-hidden hover:shadow-md transition-shadow">
+              <div className="px-6 py-5 border-b border-gray-100/50 bg-linear-to-r from-blue-50/50 to-transparent">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-linear-to-br from-blue-100 to-blue-50 flex items-center justify-center">
+                      <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                      </svg>
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-gray-900">Table of Contents</h3>
+                      <p className="text-xs text-gray-600">Add sections for readers to navigate</p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setTableOfContents([...tableOfContents, { title: '', anchor: '' }])}
+                    className="px-4 py-2 bg-accent-from text-white rounded-lg hover:opacity-90 text-sm font-medium transition-all"
+                  >
+                    + Add Item
+                  </button>
+                </div>
+              </div>
+              <div className="p-6 space-y-3">
+                {tableOfContents.length === 0 ? (
+                  <p className="text-sm text-gray-500">No TOC items yet. Click "Add Item" to get started.</p>
+                ) : (
+                  tableOfContents.map((item, idx) => (
+                    <div key={idx} className="flex gap-3 items-start">
+                      <input
+                        type="text"
+                        placeholder="Section title (e.g., What is SEO?)"
+                        value={item.title}
+                        onChange={(e) => {
+                          const updated = [...tableOfContents];
+                          updated[idx].title = e.target.value;
+                          setTableOfContents(updated);
+                        }}
+                        className="flex-1 px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                      />
+                      <input
+                        type="text"
+                        placeholder="Anchor (e.g., what-is-seo)"
+                        value={item.anchor}
+                        onChange={(e) => {
+                          const updated = [...tableOfContents];
+                          updated[idx].anchor = e.target.value;
+                          setTableOfContents(updated);
+                        }}
+                        className="flex-1 px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setTableOfContents(tableOfContents.filter((_, i) => i !== idx))}
+                        className="px-3 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all text-sm font-medium"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
 

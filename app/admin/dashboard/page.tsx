@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { AdminCardGridSkeleton, AdminPanelSkeleton, AdminPageTitleSkeleton } from '@/components/admin/AdminSkeletons';
 
@@ -59,14 +60,14 @@ export default function AdminDashboard() {
       label: 'Total Leads',
       value: stats.leadsCount,
       color: 'from-blue-500 to-cyan-500',
-      icon: '👥',
+      icon: '/icons/people.svg',
       description: 'Captured from contact forms',
     },
     {
       label: 'Blog Posts',
       value: stats.blogCount,
       color: 'from-purple-500 to-fuchsia-500',
-      icon: '📝',
+      icon: '/icons/blog.svg',
       description: 'Published and scheduled content',
     },
   ];
@@ -102,8 +103,8 @@ export default function AdminDashboard() {
                       <p className="mt-4 text-sm font-medium text-gray-600">{card.label}</p>
                       <p className="mt-2 text-4xl font-extrabold tracking-tight text-gray-900">{card.value}</p>
                     </div>
-                    <div className={`flex h-14 w-14 items-center justify-center rounded-2xl bg-linear-to-br ${card.color} text-2xl text-white shadow-lg shadow-black/10`}>
-                      {card.icon}
+                    <div className={`flex h-14 w-14 items-center justify-center rounded-2xl bg-linear-to-br ${card.color} text-white shadow-lg shadow-black/10`}>
+                      <Image src={card.icon} alt={`${card.label} icon`} width={36} height={36} className="object-contain" />
                     </div>
                   </div>
 
@@ -127,17 +128,17 @@ export default function AdminDashboard() {
               </div>
               <div className="grid gap-3">
                 {[
-                  { href: '/admin/leads', title: 'View all leads', description: 'Review submissions and update statuses', icon: '👥' },
-                  { href: '/admin/analytics', title: 'View analytics', description: 'Check pipeline counts and traffic snapshots', icon: '📈' },
-                  { href: '/admin/blogs', title: 'Manage blogs', description: 'Edit, publish, or delete blog content', icon: '📝' },
+                  { href: '/admin/leads', title: 'View all leads', description: 'Review submissions and update statuses', icon: '/icons/people.svg' },
+                  { href: '/admin/analytics', title: 'View analytics', description: 'Check pipeline counts and traffic snapshots', icon: '/icons/trend.svg' },
+                  { href: '/admin/blogs', title: 'Manage blogs', description: 'Edit, publish, or delete blog content', icon: '/icons/blog.svg' },
                 ].map((link) => (
                   <Link
                     key={link.href}
                     href={link.href}
                     className="group flex items-center gap-4 rounded-2xl border border-gray-200 bg-gray-50/70 p-4 transition-all duration-300 hover:-translate-y-0.5 hover:border-accent-from/30 hover:bg-white hover:shadow-md"
                   >
-                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white text-xl shadow-sm ring-1 ring-gray-100 transition-transform duration-300 group-hover:scale-105">
-                      {link.icon}
+                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white shadow-sm ring-1 ring-gray-100 transition-transform duration-300 group-hover:scale-105">
+                      <Image src={link.icon} alt={`${link.title} icon`} width={28} height={28} className="object-contain" />
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center justify-between gap-3">
