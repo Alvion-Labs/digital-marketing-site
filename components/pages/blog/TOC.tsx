@@ -1,7 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
+import { useState, useEffect, useRef } from 'react';
 
 interface TOCItem {
   title: string;
@@ -15,10 +14,17 @@ interface TOCProps {
 export default function TOC({ items }: TOCProps) {
   const [activeAnchor, setActiveAnchor] = useState<string>('');
   const [isOpen, setIsOpen] = useState(false);
+  const userClickRef = useRef(false);
 
   useEffect(() => {
+    // Don't run observer if user just clicked — wait for scroll to settle
+    if (userClickRef.current) return;
+
     const observer = new IntersectionObserver(
       (entries) => {
+        // Ignore observer callbacks for a short time after a manual click
+        if (userClickRef.current) return;
+
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             setActiveAnchor(entry.target.id);
@@ -40,28 +46,30 @@ export default function TOC({ items }: TOCProps) {
   }, [items]);
 
   const handleLinkClick = (anchor: string) => {
-    // Close mobile menu on link click
+    // Close mobile menu
     setIsOpen(false);
     
-    // Scroll to the element with offset for sticky header and mobile TOC
+    // Block observer from interfering during scroll
+    userClickRef.current = true;
+    
+    // Set active immediately
+    setActiveAnchor(anchor);
+    
+    // Wait for dropdown collapse animation, then scroll
     setTimeout(() => {
-      const element = document.getElementById(anchor);
-      if (element) {
-        // Calculate offset: header + mobile TOC (if on mobile) + extra padding
-        // Mobile: header (~64px) + sticky TOC (~80px) + padding (~24px) = ~168px
-        // Desktop: header (~96px) = ~96px
-        const headerHeight = window.innerWidth < 768 ? 168 : 96;
-        
-        // Calculate position accounting for sticky header/TOC
-        const elementPosition = element.getBoundingClientRect().top + window.scrollY - headerHeight;
-        
-        window.scrollTo({
-          top: elementPosition,
-          behavior: 'smooth'
-        });
-        setActiveAnchor(anchor);
-      }
-    }, 0);
+      const el = document.getElementById(anchor);
+      if (!el) return;
+      
+      // Mobile: navbar (64px) + sticky TOC bar (~76px) + visible gap (40px) = 180px
+      // Desktop: navbar (~96px) = 96px
+      const offset = window.innerWidth < 768 ? 180 : 96;
+      const y = el.getBoundingClientRect().top + window.scrollY - offset;
+      
+      window.scrollTo({ top: y, behavior: 'smooth' });
+      
+      // Re-enable observer after scroll
+      setTimeout(() => { userClickRef.current = false; }, 800);
+    }, 300);
   };
 
   if (!items || items.length === 0) {
@@ -106,9 +114,13 @@ export default function TOC({ items }: TOCProps) {
             : 'mt-0 opacity-0 max-h-0'
         }`}>
           {items.map((item, idx) => (
-            <button
+            <a
               key={item.anchor}
-              onClick={() => handleLinkClick(item.anchor)}
+              href={`#${item.anchor}`}
+              onClick={(e) => {
+                e.preventDefault();
+                handleLinkClick(item.anchor);
+              }}
               className={`w-full text-left group flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-200 relative ${
                 activeAnchor === item.anchor
                   ? 'text-blue-700 font-semibold bg-blue-50 hover:bg-blue-100 shadow-sm'
@@ -126,7 +138,7 @@ export default function TOC({ items }: TOCProps) {
                 {String(idx + 1).padStart(2, '0')}
               </span>
               <span className="text-sm leading-snug group-hover:underline transition-all flex-1 text-blue-600 group-hover:text-blue-700">{item.title}</span>
-            </button>
+            </a>
           ))}
         </nav>
       </div>
@@ -150,9 +162,13 @@ export default function TOC({ items }: TOCProps) {
           {/* Navigation Items */}
           <nav className="space-y-1.5">
             {items.map((item, idx) => (
-              <button
+              <a
                 key={item.anchor}
-                onClick={() => handleLinkClick(item.anchor)}
+                href={`#${item.anchor}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleLinkClick(item.anchor);
+                }}
                 className={`w-full text-left group flex items-start gap-3 px-4 py-2.5 rounded-2xl transition-all duration-200 relative ${
                   activeAnchor === item.anchor
                     ? 'text-blue-700 bg-blue-50 hover:bg-blue-100 shadow-sm'
@@ -179,7 +195,7 @@ export default function TOC({ items }: TOCProps) {
                 }`}>
                   {item.title}
                 </span>
-              </button>
+              </a>
             ))}
           </nav>
         </div>
