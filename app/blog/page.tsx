@@ -6,6 +6,7 @@ import BlogCard from '@/components/pages/blog/BlogCard';
 import TypingHeadline from '@/components/TypingHeadline';
 import Button from '@/components/global/Button';
 import { getAllBlogPosts } from '@/lib/blog';
+import { toBlogCardPost } from '@/lib/blogCard';
 
 export const metadata: Metadata = {
   title: 'Blog | Alvion Digital Marketing',
@@ -78,9 +79,21 @@ export default async function BlogPage() {
 
         <section id="posts" className="py-12 bg-white">
           <Container>
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+            <div className="mx-auto mb-8 flex max-w-6xl flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <p className="text-sm font-semibold uppercase tracking-[0.16em] text-accent-to">Latest insights</p>
+                <h2 className="mt-2 text-2xl font-bold tracking-tight text-gray-950 md:text-3xl">
+                  Fresh marketing ideas, strategies, and practical how-tos
+                </h2>
+              </div>
+              <p className="max-w-xl text-sm leading-6 text-gray-600 sm:text-right">
+                Browse the newest articles from Alvion Digital Marketing. Each post is written to be useful, actionable, and easy to apply.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-3">
               {posts.map((post) => (
-                <BlogCard key={post.slug} post={post} />
+                <BlogCard key={post.slug} post={toBlogCardPost(post)} />
               ))}
             </div>
           </Container>

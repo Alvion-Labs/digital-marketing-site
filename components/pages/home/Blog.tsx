@@ -3,6 +3,7 @@ import Container from '@/components/global/Container';
 import Button from '@/components/global/Button';
 import BlogCard from '@/components/pages/blog/BlogCard';
 import { getFeaturedBlogPosts } from '@/lib/blog';
+import { toBlogCardPost } from '@/lib/blogCard';
 
 export default async function BlogSection() {
   const posts = await getFeaturedBlogPosts(3);
@@ -35,7 +36,7 @@ export default async function BlogSection() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {posts.map((post) => (
-            <BlogCard key={post.slug} post={post} compact />
+            <BlogCard key={post.slug} post={toBlogCardPost(post)} compact />
           ))}
         </div>
 

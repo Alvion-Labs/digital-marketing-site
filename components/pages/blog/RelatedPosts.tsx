@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import BlogCard from '@/components/pages/blog/BlogCard';
 import { getAllBlogPosts, type BlogPost } from '@/lib/blog';
+import { toBlogCardPost } from '@/lib/blogCard';
 
 interface Props {
   category?: string;
@@ -29,7 +30,7 @@ export default async function RelatedPosts({ category, currentSlug }: Props) {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {related.map((post: BlogPost) => (
-          <BlogCard key={post.slug} post={post} compact />
+          <BlogCard key={post.slug} post={toBlogCardPost(post)} compact />
         ))}
       </div>
     </section>

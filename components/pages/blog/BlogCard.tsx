@@ -1,8 +1,20 @@
+"use client";
+
+import { useState } from 'react';
 import Link from 'next/link';
-import { formatBlogDate, type BlogPost } from '@/lib/blog';
+import type { BlogCardPost } from '@/lib/blogCard';
+
+function formatBlogDate(date: string | Date | undefined) {
+  if (!date) return '-';
+  return new Intl.DateTimeFormat('en-US', {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+  }).format(new Date(date));
+}
 
 interface BlogCardProps {
-  post: BlogPost;
+  post: BlogCardPost;
   compact?: boolean;
 }
 
@@ -21,51 +33,106 @@ function getCoverImage(slug: string) {
 }
 
 export default function BlogCard({ post, compact = false }: BlogCardProps) {
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [isPreviewLoading, setIsPreviewLoading] = useState(false);
+  const imageSrc = post.thumbnail || getCoverImage(post.slug);
+
+  const openPreview = () => {
+    setIsPreviewOpen(true);
+    setIsPreviewLoading(true);
+  };
+
+  const closePreview = () => {
+    setIsPreviewOpen(false);
+    setIsPreviewLoading(false);
+  };
+
   return (
-    <article className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white/90 backdrop-blur-sm transition-all duration-400 hover:-translate-y-1 hover:border-accent-from/40 hover:shadow-2xl hover:shadow-blue-500/15">
-      <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-400 group-hover:opacity-100 bg-linear-to-b from-accent-from/4 via-transparent to-accent-to/5" />
+    <>
+      <article className="group relative flex h-full flex-col rounded-4xl bg-[#f0f4f9] p-3 transition-all duration-300 hover:-translate-y-0.5 sm:p-4">
 
-      <div
-        className={`relative shrink-0 overflow-hidden ${compact ? 'h-44' : 'h-52'} rounded-t-2xl`}
-        style={!post.thumbnail ? { background: `linear-gradient(135deg, ${post.accentFrom}, ${post.accentTo})` } : {}}
-      >
-        <img
-          src={post.thumbnail || getCoverImage(post.slug)}
-          alt={post.title}
-          className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-          loading="lazy"
-        />
-        <div className="absolute top-4 right-4 z-10">
-          <span className="rounded-full border border-white/35 bg-black/40 px-3 py-1 text-[11px] font-semibold text-white backdrop-blur-sm">
-            {post.readTime}
-          </span>
-        </div>
-      </div>
+        <button
+          type="button"
+          aria-label={`Open preview image for ${post.title}`}
+          onClick={openPreview}
+          className={`relative block w-full shrink-0 overflow-hidden rounded-[1.6rem] text-left ${compact ? 'h-44 sm:h-48' : 'h-48 sm:h-56'}`}
+          style={!post.thumbnail ? { background: `linear-gradient(135deg, ${post.accentFrom}, ${post.accentTo})` } : {}}
+        >
+          <img
+            src={imageSrc}
+            alt={post.title}
+            className="absolute inset-0 h-full w-full rounded-[1.6rem] object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+            loading="lazy"
+          />
+        </button>
 
-      <div className="relative z-10 flex flex-1 flex-col p-6">
-        <div className="flex items-center gap-3 mb-3">
-          <span className="text-xs font-medium text-gray-500">{formatBlogDate(post.publishedAt)}</span>
-          <span className="text-gray-300">•</span>
-          <span className="text-xs font-medium text-accent-to">{post.category}</span>
-        </div>
-        
-        <h3 className="text-xl md:text-2xl font-bold leading-tight tracking-tight text-gray-900 mb-3 transition-transform duration-300 group-hover:-translate-y-0.5">
-          {post.title}
-        </h3>
-      
-        <p className="flex-1 text-sm leading-relaxed text-gray-600">{post.excerpt}</p>
+        <div className="relative z-10 flex flex-1 flex-col px-2 pt-2.5 sm:px-3 sm:pt-3">
+          <div className="flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.12em] text-gray-500">
+            <span className="text-accent-to">{post.category || 'Blog'}</span>
+            <span className="h-1 w-1 rounded-full bg-gray-300" />
+            <span>{post.readTime || 'Read time'}</span>
+          </div>
 
-        <div className="mt-5 flex items-center justify-between gap-4 border-t border-gray-100 pt-4">
-          <span className="text-xs font-medium text-slate-500">By {post.author}</span>
+          <h3 className="mt-2 text-[1.22rem] font-semibold leading-tight tracking-tight text-gray-950 transition-transform duration-300 group-hover:-translate-y-0.5 sm:text-[1.35rem] md:text-[1.45rem]">
+            {post.title}
+          </h3>
+
+          <p className="mt-2 flex-1 text-sm leading-6 text-gray-600" style={{ display: '-webkit-box', WebkitBoxOrient: 'vertical', WebkitLineClamp: compact ? 3 : 4, overflow: 'hidden' }}>
+            {post.excerpt}
+          </p>
+
+          <div className="mt-3 flex items-center gap-2 text-sm text-gray-500">
+            <span>{formatBlogDate(post.publishedAt)}</span>
+            <span className="h-1 w-1 rounded-full bg-gray-300" />
+            <span>By {post.author || 'Alvion Digital Team'}</span>
+          </div>
+
           <Link
             href={`/blog/${post.slug}`}
-            className="inline-flex items-center gap-2 rounded-full border border-accent-from/30 bg-accent-from/10 px-3 py-1.5 text-xs font-semibold text-accent-to transition-all duration-300 hover:border-accent-from/60 hover:bg-accent-from/15 hover:text-accent-from"
+            className="mt-3.5 ml-auto inline-flex w-fit items-center gap-1.5 border-b border-transparent pb-0.5 text-sm font-semibold text-accent-to transition-all duration-300 hover:border-accent-from/40 hover:text-accent-from"
           >
             Read article
             <span aria-hidden className="transition-transform duration-300 group-hover:translate-x-0.5">→</span>
           </Link>
         </div>
-      </div>
-    </article>
+      </article>
+
+      {isPreviewOpen && (
+        <div
+          className="fixed inset-0 z-100 flex items-center justify-center bg-black/75 p-4"
+          onClick={closePreview}
+          role="dialog"
+          aria-modal="true"
+          aria-label={`${post.title} image preview`}
+        >
+          <button
+            type="button"
+            aria-label="Close image preview"
+            onClick={closePreview}
+            className="absolute right-4 top-4 rounded-full border border-white/25 bg-black/40 px-3 py-1 text-sm font-semibold text-white"
+          >
+            ✕
+          </button>
+
+          {isPreviewLoading && (
+            <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+              <div className="flex items-center gap-3 rounded-full border border-white/20 bg-black/45 px-4 py-2 text-sm text-white">
+                <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/35 border-t-white" />
+                Loading preview...
+              </div>
+            </div>
+          )}
+
+          <img
+            src={imageSrc}
+            alt={post.title}
+            className={`max-h-[88vh] w-auto max-w-[94vw] rounded-2xl object-contain transition-opacity duration-300 ${isPreviewLoading ? 'opacity-0' : 'opacity-100'}`}
+            onLoad={() => setIsPreviewLoading(false)}
+            onError={() => setIsPreviewLoading(false)}
+            onClick={(e) => e.stopPropagation()}
+          />
+        </div>
+      )}
+    </>
   );
 }
