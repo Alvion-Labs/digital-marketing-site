@@ -26,7 +26,6 @@ const allowedTags = [
   'hr',
   'span',
   'div',
-  'style',
   'section',
   'article',
   'header',

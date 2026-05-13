@@ -109,7 +109,7 @@ export default async function BlogPage() {
                 Ready to put these ideas into action?
               </h2>
               <p className="text-gray-600 text-lg mb-10 max-w-2xl mx-auto leading-relaxed">
-                We don't just write about marketing strategies — we implement them for businesses like yours every day. Let's talk about how we can help you grow.
+                We don't just write about marketing strategies, we implement them for businesses like yours every day. Let's talk about how we can help you grow.
               </p>
               <a
                 href="/#contact"
