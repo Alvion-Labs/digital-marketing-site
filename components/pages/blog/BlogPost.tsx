@@ -111,6 +111,13 @@ export default function BlogPost({ post }: BlogPostProps) {
 
         <Container>
           <div className="max-w-7xl mx-auto">
+            {((post as any)?.tldr) && (
+              <div className="mb-10 rounded-2xl bg-emerald-50/70 px-5 py-5 md:px-6 md:py-6">
+                <span className="inline-flex items-center rounded-full bg-emerald-100 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.15em] text-emerald-700 mb-3">TL;DR</span>
+                <p className="text-sm md:text-base text-gray-900 leading-relaxed">{(post as any)?.tldr}</p>
+              </div>
+            )}
+
             <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
               {/* Main Content - 3 columns */}
               <div className="md:col-span-3">
@@ -155,6 +162,39 @@ export default function BlogPost({ post }: BlogPostProps) {
                     ))
                   ) : null}
                 </article>
+                {/* Conclusion (rendered after article) */}
+                {(post as any).conclusion && (
+                  <div className="mt-8">
+                    <h2 className="text-xl md:text-2xl font-semibold text-gray-900 mb-3">Conclusion</h2>
+                    <div className="blog-content max-w-none">
+                      <p className="text-gray-700 leading-relaxed text-base">{(post as any).conclusion}</p>
+                    </div>
+                  </div>
+                )}
+
+                {/* FAQs (rendered after conclusion) */}
+                {(post as any).faqs && Array.isArray((post as any).faqs) && (post as any).faqs.length > 0 && (
+                  <div className="mt-8">
+                    <h2 className="text-xl md:text-2xl font-semibold text-gray-900 mb-4">Frequently Asked Questions</h2>
+                    <div className="space-y-4">
+                      <ol className="space-y-4">
+                        {(post as any).faqs.map((f: any, i: number) => (
+                          <li key={i} className="pl-0">
+                            <div className="flex items-start gap-4">
+                              <div className="shrink-0">
+                                <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 text-gray-900 font-semibold">{i + 1}</span>
+                              </div>
+                              <div className="min-w-0">
+                                <p className="font-semibold text-gray-900 mb-1">{f.question ? sanitizeBlogHtml(f.question) : `Question ${i+1}`}</p>
+                                <div className="text-gray-700" dangerouslySetInnerHTML={{ __html: sanitizeBlogHtml(f.answer || '') }} />
+                              </div>
+                            </div>
+                          </li>
+                        ))}
+                      </ol>
+                    </div>
+                  </div>
+                )}
 
                 {/* Clean Footer CTA */}
                 <div className="mt-12 pt-8 border-t border-gray-200">

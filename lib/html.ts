@@ -27,6 +27,21 @@ const allowedTags = [
   'span',
   'div',
   'style',
+  'section',
+  'article',
+  'header',
+  'footer',
+  'nav',
+  'aside',
+  'main',
+  'table',
+  'thead',
+  'tbody',
+  'tfoot',
+  'tr',
+  'th',
+  'td',
+  'caption',
 ];
 
 const allowedAttributes: sanitizeHtml.IOptions['allowedAttributes'] = {
@@ -150,4 +165,10 @@ export function sanitizeBlogHtml(html: string): string {
       lowerCaseAttributeNames: true,
     },
   });
+}
+
+export function stripHtmlTags(html: string): string {
+  if (!html) return '';
+  // Use sanitize-html to remove all tags but preserve text content
+  return sanitizeHtml(html, { allowedTags: [], allowedAttributes: {} }).trim();
 }

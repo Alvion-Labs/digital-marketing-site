@@ -21,6 +21,7 @@ export default function BlogEditorClient({ initial }: { initial?: Partial<Blog> 
   const [readTime, setReadTime] = useState(initial?.readTime || '');
   const [thumbnail, setThumbnail] = useState(initial?.thumbnail || '');
   const [excerpt, setExcerpt] = useState(initial?.excerpt || '');
+  const [tldr, setTldr] = useState((initial as any)?.tldr || '');
   const [metaTitle, setMetaTitle] = useState(initial?.metaTitle || '');
   const [metaDescription, setMetaDescription] = useState(initial?.metaDescription || '');
   const [canonical, setCanonical] = useState(initial?.canonical || '');
@@ -89,6 +90,7 @@ export default function BlogEditorClient({ initial }: { initial?: Partial<Blog> 
           readTime,
           thumbnail,
           excerpt,
+          tldr,
           metaTitle,
           metaDescription,
           canonical,
@@ -228,6 +230,17 @@ export default function BlogEditorClient({ initial }: { initial?: Partial<Blog> 
             </div>
             <div className="lg:col-span-2">
               <label className="block text-sm font-semibold text-gray-900 mb-2">Excerpt</label>
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-900 mb-2">TL;DR</label>
+                      <textarea
+                        value={tldr}
+                        onChange={(e) => setTldr(e.target.value)}
+                        placeholder="One-sentence TL;DR for this post"
+                        rows={2}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                      <p className="text-xs text-gray-500 mt-2">Short summary shown in lists</p>
+                    </div>
               <textarea
                 value={excerpt}
                 onChange={(e) => setExcerpt(e.target.value)}

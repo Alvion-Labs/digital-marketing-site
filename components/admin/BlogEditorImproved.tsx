@@ -1,12 +1,13 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { sanitizeBlogHtml } from '@/lib/html';
 import { Blog } from '@/lib/models/Blog';
 import type { MediaFile } from '@/lib/media';
 import MediaLibraryModal from './MediaLibraryModal';
 import ConfirmDialog from '@/components/global/ConfirmDialog';
+import Button from '@/components/global/Button';
 
 interface TOCItem {
   title: string;
@@ -27,10 +28,15 @@ export default function BlogEditorImproved({ initial }: { initial?: Partial<Blog
   const [metaTitle, setMetaTitle] = useState(initial?.metaTitle || '');
   const [metaDescription, setMetaDescription] = useState(initial?.metaDescription || '');
   const [canonical, setCanonical] = useState(initial?.canonical || '');
+  const [tldr, setTldr] = useState((initial as any)?.tldr || '');
   const [isDraft, setIsDraft] = useState(initial?.isDraft ?? true);
   const [contentHTML, setContentHTML] = useState(initial?.contentHTML || '');
   const [tableOfContents, setTableOfContents] = useState<TOCItem[]>((initial as any)?.tableOfContents || []);
+  const [conclusion, setConclusion] = useState((initial as any)?.conclusion || '');
+  const [faqs, setFaqs] = useState<Array<{ question: string; answer: string }>>((initial as any)?.faqs || []);
   const [saving, setSaving] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
   const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null);
   const [uploadingThumbnail, setUploadingThumbnail] = useState(false);
   const [uploadingContent, setUploadingContent] = useState(false);
@@ -40,7 +46,9 @@ export default function BlogEditorImproved({ initial }: { initial?: Partial<Blog
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deletingThumbnail, setDeletingThumbnail] = useState(false);
   const [dragging, setDragging] = useState(false);
+  const editorFormRef = useRef<HTMLFormElement>(null);
   const contentPreviewRef = useRef<HTMLDivElement>(null);
+  const contentFileInputRef = React.useRef<HTMLInputElement | null>(null);
 
   function handleDragOver(e: React.DragEvent) {
     e.preventDefault();
@@ -141,11 +149,54 @@ export default function BlogEditorImproved({ initial }: { initial?: Partial<Blog
     setShowDeleteConfirm(true);
   }
 
+  // Refetch blog data from server to sync state with saved data
+  const refetchBlog = useCallback(async (id: string) => {
+    try {
+      const res = await fetch(`/api/admin/blogs/${id}`, { cache: 'no-store' });
+      if (res.ok) {
+        const json = await res.json();
+        if (json.blog) {
+          // Update all form fields with server data
+          setTitle(json.blog.title || '');
+          setSlug(json.blog.slug || '');
+          setAuthor(json.blog.author || '');
+          setCategory(json.blog.category || '');
+          setReadTime(json.blog.readTime || '');
+          setThumbnail(json.blog.thumbnail || '');
+          setThumbnailPreview(json.blog.thumbnail || null);
+          setExcerpt(json.blog.excerpt || '');
+          setMetaTitle(json.blog.metaTitle || '');
+          setMetaDescription(json.blog.metaDescription || '');
+          setCanonical(json.blog.canonical || '');
+          setTldr(json.blog.tldr || '');
+          setIsDraft(json.blog.isDraft ?? true);
+          setContentHTML(json.blog.contentHTML || '');
+          setTableOfContents(json.blog.tableOfContents || []);
+          setConclusion(json.blog.conclusion || '');
+          setFaqs(json.blog.faqs || []);
+        }
+      }
+    } catch (err) {
+      console.error('Failed to refetch blog:', err);
+    }
+  }, []);
+
   async function onSave(e?: React.FormEvent) {
     e?.preventDefault();
     setSaving(true);
+    setSaveSuccess(false);
+    setSaveError(null);
     try {
       const sanitized = sanitizeBlogHtml(contentHTML);
+      // conclusion should be plain text only; strip any HTML client-side
+      const stripHtml = (s: string) => (s || '').replace(/<[^>]*>/g, '').trim();
+      const formData = e?.currentTarget instanceof HTMLFormElement ? new FormData(e.currentTarget) : null;
+      const conclusionValue = typeof formData?.get('conclusion') === 'string' ? String(formData.get('conclusion')) : conclusion;
+      const plainConclusion = stripHtml(conclusionValue || '');
+      const sanitizedFaqs = faqs.map((f) => ({
+        question: stripHtml(f.question || ''),
+        answer: sanitizeBlogHtml(f.answer || ''),
+      }));
       const method = isEditing ? 'PATCH' : 'POST';
       const url = isEditing ? `/api/admin/blogs/${blogId}` : '/api/admin/blogs';
       
@@ -165,16 +216,59 @@ export default function BlogEditorImproved({ initial }: { initial?: Partial<Blog
           canonical,
           isDraft,
           contentHTML: sanitized,
+          conclusion: plainConclusion,
+          tldr,
+          faqs: sanitizedFaqs,
           tableOfContents,
         }),
       });
 
       if (!response.ok) {
-        console.error('Save failed:', await response.text());
+        const errText = await response.text();
+        setSaveError(errText || 'Save failed');
+        console.error('Save failed:', errText);
         return;
       }
 
-      router.push('/admin/blogs');
+      const json = await response.json();
+
+      // Stay on the editor page and refetch saved data when editing
+      if (isEditing) {
+        await refetchBlog(blogId);
+      } else {
+        // New blog created — refetch with the new server ID to switch to edit mode
+        if (json.blog?._id) {
+          // Update the editor state with server data
+          const b = json.blog;
+          setTitle(b.title || '');
+          setSlug(b.slug || '');
+          setAuthor(b.author || '');
+          setCategory(b.category || '');
+          setReadTime(b.readTime || '');
+          setThumbnail(b.thumbnail || '');
+          setThumbnailPreview(b.thumbnail || null);
+          setExcerpt(b.excerpt || '');
+          setMetaTitle(b.metaTitle || '');
+          setMetaDescription(b.metaDescription || '');
+          setCanonical(b.canonical || '');
+          setTldr(b.tldr || '');
+          setIsDraft(b.isDraft ?? true);
+          setContentHTML(b.contentHTML || '');
+          setTableOfContents(b.tableOfContents || []);
+          setConclusion(b.conclusion || '');
+          setFaqs(b.faqs || []);
+          
+          // Update the URL to edit mode without navigation
+          router.replace(`/admin/blogs/${b._id}/edit`);
+        }
+      }
+
+      setSaveSuccess(true);
+      // Clear success indicator after 3 seconds
+      setTimeout(() => setSaveSuccess(false), 3000);
+    } catch (err) {
+      setSaveError('An unexpected error occurred');
+      console.error('Save error:', err);
     } finally {
       setSaving(false);
     }
@@ -197,7 +291,7 @@ export default function BlogEditorImproved({ initial }: { initial?: Partial<Blog
                 {isEditing && (
                   <>
                     <span className="text-gray-400">/</span>
-                    <span className="text-gray-600 font-medium truncate max-w-[200px]">{title || slug || 'untitled'}</span>
+                    <span className="text-gray-600 font-medium truncate max-w-50">{title || slug || 'untitled'}</span>
                   </>
                 )}
               </div>
@@ -228,34 +322,42 @@ export default function BlogEditorImproved({ initial }: { initial?: Partial<Blog
               </label>
 
               {/* Preview Toggle (desktop) */}
-              <button
-                type="button"
+              <Button
                 onClick={() => setShowPreview(!showPreview)}
-                className={`hidden lg:inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
-                  showPreview 
-                    ? 'bg-accent-from/10 text-accent-from border border-accent-from/20' 
-                    : 'bg-gray-50 text-gray-600 border border-gray-200/80 hover:bg-gray-100 hover:text-gray-800'
-                }`}
+                variant={showPreview ? 'outline' : 'secondary'}
+                size="md"
+                className="hidden lg:inline-flex items-center gap-2"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                 </svg>
                 {showPreview ? 'Hide' : 'Preview'}
-              </button>
+              </Button>
 
               {/* Divider */}
               <div className="hidden sm:block w-px h-7 bg-gray-200" />
 
+              {/* Success indicator */}
+              {saveSuccess && (
+                <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-semibold animate-fade-in">
+                  <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                  Saved
+                </div>
+              )}
+
               {/* Save / Publish Button */}
-              <button
-                type="submit"
-                onClick={onSave}
+              <Button
+                type="button"
+                onClick={() => editorFormRef.current?.requestSubmit()}
                 disabled={saving}
-                className="group relative inline-flex items-center gap-2.5 px-5 py-2 rounded-xl font-semibold text-sm bg-linear-to-r from-accent-from to-accent-to text-white shadow-md shadow-accent-from/20 hover:shadow-lg hover:shadow-accent-from/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-from disabled:opacity-60 disabled:cursor-not-allowed overflow-hidden active:scale-[0.97]"
+                variant="primary"
+                size="md"
+                className="group relative overflow-hidden active:scale-[0.97]"
               >
                 <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-600 bg-linear-to-r from-transparent via-white/20 to-transparent" />
-                
                 {saving ? (
                   <>
                     <svg className="w-4 h-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -272,7 +374,7 @@ export default function BlogEditorImproved({ initial }: { initial?: Partial<Blog
                     <span className="relative z-10">{isEditing ? 'Update' : 'Publish'}</span>
                   </>
                 )}
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -280,7 +382,7 @@ export default function BlogEditorImproved({ initial }: { initial?: Partial<Blog
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <form onSubmit={onSave} className="grid grid-cols-1 gap-8">
+        <form ref={editorFormRef} onSubmit={onSave} className="grid grid-cols-1 gap-8">
           {/* Main Column */}
           <div className="space-y-6">
             {/* Thumbnail Card - Enhanced UI */}
@@ -321,29 +423,31 @@ export default function BlogEditorImproved({ initial }: { initial?: Partial<Blog
                       />
                       {/* Hover overlay with actions */}
                       <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-300 flex items-center justify-center gap-3 opacity-0 group-hover:opacity-100">
-                        <button
-                          type="button"
+                        <Button
                           onClick={() => {
                             setMediaModalFor('thumbnail');
                             setMediaModalOpen(true);
                           }}
-                          className="transform scale-90 group-hover:scale-100 transition-all duration-300 bg-white/90 backdrop-blur-sm text-gray-800 rounded-full px-4 py-2 text-sm font-semibold flex items-center gap-2 hover:bg-white shadow-lg"
+                          variant="secondary"
+                          size="sm"
+                          className="px-4 py-2 transform scale-90 group-hover:scale-100 transition-all duration-300 backdrop-blur-sm flex items-center gap-2"
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16a4 4 0 014-4h8a4 4 0 014 4v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2z" />
                           </svg>
                           Change
-                        </button>
-                        <button
-                          type="button"
+                        </Button>
+                        <Button
                           onClick={handleDeleteThumbnailClick}
-                          className="transform scale-90 group-hover:scale-100 transition-all duration-300 bg-red-500/90 backdrop-blur-sm text-white rounded-full px-4 py-2 text-sm font-semibold flex items-center gap-2 hover:bg-red-600 shadow-lg"
+                          variant="danger"
+                          size="sm"
+                          className="px-4 py-2 transform scale-90 group-hover:scale-100 transition-all duration-300 backdrop-blur-sm flex items-center gap-2"
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                           </svg>
                           Remove
-                        </button>
+                        </Button>
                       </div>
                     </div>
                     {/* Image info bar */}
@@ -366,15 +470,16 @@ export default function BlogEditorImproved({ initial }: { initial?: Partial<Blog
                     onDragLeave={handleDragLeave}
                     onDrop={handleDrop}
                   >
-                    <button
-                      type="button"
+                    <Button
                       onClick={() => {
                         setMediaModalFor('thumbnail');
                         setMediaModalOpen(true);
                       }}
-                      className={`relative flex flex-col items-center justify-center w-full aspect-video border-2 border-dashed rounded-xl cursor-pointer transition-all duration-200 ${
-                        dragging 
-                          ? 'border-accent-from bg-accent-from/5 scale-[1.01]' 
+                      variant="secondary"
+                      size="lg"
+                      className={`relative flex flex-col items-center justify-center w-full aspect-video border-2 border-dashed rounded-xl ${
+                        dragging
+                          ? 'border-accent-from bg-accent-from/5 scale-[1.01]'
                           : 'border-gray-200 bg-gray-50/50 hover:border-accent-from/40 hover:bg-accent-from/5'
                       }`}
                     >
@@ -403,7 +508,7 @@ export default function BlogEditorImproved({ initial }: { initial?: Partial<Blog
                           </div>
                         </>
                       )}
-                    </button>
+                    </Button>
                   </div>
                 )}
 
@@ -491,6 +596,17 @@ export default function BlogEditorImproved({ initial }: { initial?: Partial<Blog
                   />
                   <p className="text-xs text-gray-500 mt-2">{excerpt.length}/160 characters</p>
                 </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-900 mb-2">TL;DR</label>
+                  <textarea
+                    value={tldr}
+                    onChange={(e) => setTldr(e.target.value)}
+                    placeholder="One-sentence TL;DR for this post"
+                    rows={2}
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-accent-from focus:border-transparent transition-all resize-none bg-white"
+                  />
+                  <p className="text-xs text-gray-500 mt-2">Short summary shown in lists</p>
+                </div>
               </div>
             </div>
 
@@ -509,13 +625,14 @@ export default function BlogEditorImproved({ initial }: { initial?: Partial<Blog
                       <p className="text-xs text-gray-600">Add sections for readers to navigate</p>
                     </div>
                   </div>
-                  <button
-                    type="button"
+                  <Button
                     onClick={() => setTableOfContents([...tableOfContents, { title: '', anchor: '' }])}
-                    className="px-4 py-2 bg-accent-from text-white rounded-lg hover:opacity-90 text-sm font-medium transition-all"
+                    variant="primary"
+                    size="sm"
+                    className="text-sm font-medium"
                   >
                     + Add Item
-                  </button>
+                  </Button>
                 </div>
               </div>
               <div className="p-6 space-y-3">
@@ -546,13 +663,14 @@ export default function BlogEditorImproved({ initial }: { initial?: Partial<Blog
                         }}
                         className="flex-1 px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm"
                       />
-                      <button
-                        type="button"
+                      <Button
                         onClick={() => setTableOfContents(tableOfContents.filter((_, i) => i !== idx))}
-                        className="px-3 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all text-sm font-medium"
+                        variant="danger"
+                        size="sm"
+                        className="text-sm"
                       >
                         Delete
-                      </button>
+                      </Button>
                     </div>
                   ))
                 )}
@@ -628,28 +746,35 @@ export default function BlogEditorImproved({ initial }: { initial?: Partial<Blog
               <div className="p-6">
                 <div className="flex justify-between items-center mb-3">
                   <label className="block text-sm font-semibold text-gray-900">HTML Content</label>
-                  <div className="flex gap-1">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setMediaModalFor('content');
-                        setMediaModalOpen(true);
-                      }}
-                      className="text-xs px-2.5 py-1.5 bg-blue-50 text-blue-600 rounded-full font-medium hover:bg-blue-100 transition-all"
-                    >
-                      + Library
-                    </button>
-                    <label className={`text-xs px-2.5 py-1.5 bg-blue-50 text-blue-600 rounded-full font-medium hover:bg-blue-100 transition-all cursor-pointer ${uploadingContent ? 'opacity-50 pointer-events-none' : ''}`}>
-                      {uploadingContent ? 'Uploading...' : '+ Upload'}
+                    <div className="flex gap-1">
+                      <Button
+                        onClick={() => {
+                          setMediaModalFor('content');
+                          setMediaModalOpen(true);
+                        }}
+                        variant="secondary"
+                        size="sm"
+                        className="text-xs"
+                      >
+                        + Library
+                      </Button>
                       <input
+                        ref={contentFileInputRef}
                         type="file"
                         accept="image/*"
                         onChange={(e) => e.target.files?.[0] && handleContentUpload(e.target.files[0])}
                         className="hidden"
                         disabled={uploadingContent}
                       />
-                    </label>
-                  </div>
+                      <Button
+                        onClick={() => contentFileInputRef.current?.click()}
+                        variant="secondary"
+                        size="sm"
+                        className={`text-xs ${uploadingContent ? 'opacity-50 pointer-events-none' : ''}`}
+                      >
+                        {uploadingContent ? 'Uploading...' : '+ Upload'}
+                      </Button>
+                    </div>
                 </div>
                 <div className={`grid gap-4 ${showPreview ? 'grid-cols-2' : 'grid-cols-1'}`}>
                   <div>
@@ -690,6 +815,104 @@ export default function BlogEditorImproved({ initial }: { initial?: Partial<Blog
                 </div>
               </div>
             </div>
+
+            {/* Conclusion Card */}
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100/50 overflow-hidden hover:shadow-md transition-shadow">
+              <div className="px-6 py-5 border-b border-gray-100/50 bg-linear-to-r from-gray-50/50 to-transparent">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-linear-to-br from-indigo-100 to-indigo-50 flex items-center justify-center">
+                    <svg className="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 1.343-3 3v6h6v-6c0-1.657-1.343-3-3-3zM5 20h14" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h2 className="font-bold text-gray-900">Conclusion</h2>
+                    <p className="text-xs text-gray-600">Add a short concluding paragraph — plain text only</p>
+                  </div>
+                </div>
+              </div>
+              <div className="p-6">
+                <textarea
+                  name="conclusion"
+                  value={conclusion}
+                  onChange={(e) => setConclusion(e.target.value)}
+                  placeholder="Write a short conclusion (plain text)"
+                  rows={4}
+                  className="w-full p-4 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-accent-from focus:border-transparent transition-all bg-white"
+                />
+                <p className="text-xs text-gray-500 mt-2">This will be rendered before the FAQ section on the published post.</p>
+              </div>
+            </div>
+
+            {/* FAQs Card */}
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100/50 overflow-hidden hover:shadow-md transition-shadow">
+              <div className="px-6 py-5 border-b border-gray-100/50 bg-linear-to-r from-gray-50/50 to-transparent">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-linear-to-br from-amber-100 to-amber-50 flex items-center justify-center">
+                    <svg className="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-gray-900">FAQs</h3>
+                    <p className="text-xs text-gray-600">Add frequently asked questions for readers</p>
+                  </div>
+                </div>
+              </div>
+              <div className="p-6 space-y-3">
+                {faqs.length === 0 ? (
+                  <p className="text-sm text-gray-500">No FAQs yet. Click "Add FAQ" to get started.</p>
+                ) : (
+                  faqs.map((f, idx) => (
+                    <div key={idx} className="space-y-2">
+                      <input
+                        type="text"
+                        placeholder="Question"
+                        value={f.question}
+                        onChange={(e) => {
+                          const updated = [...faqs];
+                          updated[idx].question = e.target.value;
+                          setFaqs(updated);
+                        }}
+                        className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 text-sm"
+                      />
+                      <textarea
+                        placeholder="Answer (HTML allowed)"
+                        value={f.answer}
+                        onChange={(e) => {
+                          const updated = [...faqs];
+                          updated[idx].answer = e.target.value;
+                          setFaqs(updated);
+                        }}
+                        rows={3}
+                        className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 text-sm"
+                      />
+                      <div className="flex gap-2">
+                        <Button
+                          onClick={() => setFaqs(faqs.filter((_, i) => i !== idx))}
+                          variant="danger"
+                          size="sm"
+                          className="rounded-full"
+                        >
+                          Delete
+                        </Button>
+                      </div>
+                    </div>
+                  ))
+                )}
+
+                <div className="flex gap-2">
+                  <Button
+                    onClick={() => setFaqs([...faqs, { question: '', answer: '' }])}
+                    variant="primary"
+                    size="sm"
+                    className="rounded-full"
+                  >
+                    + Add FAQ
+                  </Button>
+                </div>
+              </div>
+            </div>
           </div>
 
         </form>
@@ -715,6 +938,26 @@ export default function BlogEditorImproved({ initial }: { initial?: Partial<Blog
         onCancel={() => setShowDeleteConfirm(false)}
         isLoading={deletingThumbnail}
       />
+
+      {/* Save error bar */}
+      {saveError && (
+        <div className="fixed bottom-6 right-6 z-50 max-w-sm animate-slide-up">
+          <div className="flex items-center gap-3 px-5 py-3.5 rounded-2xl bg-red-50 border border-red-200 shadow-lg">
+            <svg className="w-5 h-5 text-red-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <p className="text-sm font-medium text-red-800 flex-1">{saveError}</p>
+            <button
+              onClick={() => setSaveError(null)}
+              className="shrink-0 p-1 rounded-full hover:bg-red-100 transition-colors"
+            >
+              <svg className="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

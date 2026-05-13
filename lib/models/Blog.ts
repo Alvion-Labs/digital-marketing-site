@@ -12,6 +12,8 @@ const blogSchema = new Schema(
     accentFrom: { type: String, trim: true },
     accentTo: { type: String, trim: true },
     summary: { type: String, trim: true },
+    // short TL;DR summary for quick reads
+    tldr: { type: String, trim: true },
     thumbnail: { type: String, trim: true },
     // full HTML content authored in the editor (allows Tailwind classes)
     contentHTML: { type: String, default: '' },
@@ -20,6 +22,10 @@ const blogSchema = new Schema(
     // arbitrary JSON sections (optional)
     sections: { type: Array, default: [] },
     takeaways: { type: Array, default: [] },
+    // optional conclusion block (HTML or text)
+    conclusion: { type: String, trim: true, default: '' },
+    // optional FAQ list: array of { question, answer }
+    faqs: { type: Array, default: [] },
     // Table of contents items (manual, array of {title, anchor})
     tableOfContents: { type: Array, default: [] },
     // SEO fields

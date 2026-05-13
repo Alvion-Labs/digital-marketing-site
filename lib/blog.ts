@@ -20,6 +20,7 @@ export interface BlogPost {
   accentFrom?: string;
   accentTo?: string;
   summary?: string;
+  tldr?: string;
   sections?: BlogSection[];
   takeaways?: string[];
   thumbnail?: string;

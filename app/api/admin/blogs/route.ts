@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 import BlogModel from '@/lib/models/Blog';
 import { hasAdminSession } from '@/lib/admin';
-import { sanitizeBlogHtml } from '@/lib/html';
+import { sanitizeBlogHtml, stripHtmlTags } from '@/lib/html';
 
 export async function GET(request: Request) {
   if (!hasAdminSession(request)) {
@@ -28,10 +28,32 @@ export async function POST(req: Request) {
   const blogData = {
     ...body,
     contentHTML: sanitizeBlogHtml(contentHTML),
+    // conclusion must be plain text (pre-styled in rendering)
+    conclusion: stripHtmlTags(body.conclusion || ''),
+    // TL;DR short summary
+    tldr: stripHtmlTags(body.tldr || ''),
+    faqs: Array.isArray(body.faqs)
+      ? body.faqs.map((f: any) => ({
+          question: stripHtmlTags(f.question || ''),
+          answer: sanitizeBlogHtml(f.answer || ''),
+        }))
+      : [],
     publishedAt: body.isDraft === false ? body.publishedAt || new Date() : body.publishedAt,
   };
 
-  const doc = await BlogModel.create(blogData);
+  // Ensure readTime is explicitly set (defensive)
+  if (typeof body.readTime === 'string' && body.readTime.trim() !== '') {
+    (blogData as any).readTime = body.readTime.trim();
+  } else {
+    (blogData as any).readTime = body.readTime || '';
+  }
 
+  console.log('📥 Server received conclusion from client:', body.conclusion);
+  console.log('🔄 After stripHtmlTags, conclusion is:', stripHtmlTags(body.conclusion || ''));
+  console.log('💾 About to save blogData with conclusion:', (blogData as any).conclusion);
+  
+  const doc = await BlogModel.create(blogData);
+  
+  console.log('✅ Blog created. Conclusion in DB:', doc?.conclusion);
   return NextResponse.json({ ok: true, blog: doc });
 }
