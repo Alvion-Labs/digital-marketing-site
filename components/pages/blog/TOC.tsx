@@ -108,10 +108,10 @@ export default function TOC({ items }: TOCProps) {
             </div>
           </div>
         </button>
-        <nav className={`overflow-hidden transition-all duration-300 ${
+        <nav className={`transition-all duration-300 ${
           isOpen 
-            ? 'mt-3 space-y-1.5 px-2 opacity-100 max-h-96' 
-            : 'mt-0 opacity-0 max-h-0'
+            ? 'mt-3 space-y-1.5 px-2 opacity-100 max-h-96 overflow-y-auto' 
+            : 'mt-0 opacity-0 max-h-0 overflow-hidden'
         }`}>
           {items.map((item, idx) => (
             <a

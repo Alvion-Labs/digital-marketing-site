@@ -16,6 +16,22 @@ export default function BlogPost({ post }: BlogPostProps) {
   const contentHTML = post.contentHTML || '';
   const safeContentHTML = contentHTML ? sanitizeBlogHtml(contentHTML) : '';
 
+  // Resolve anchors for dynamic sections (conclusion, faqs) using the post's
+  // `tableOfContents` if available so TOC links work when those items are added
+  const tableOfContents = (post as any)?.tableOfContents || [];
+  const findAnchorFor = (candidates: string[], fallback: string) => {
+    for (const item of tableOfContents) {
+      if (!item || !item.title) continue;
+      const t = String(item.title).toLowerCase();
+      for (const c of candidates) {
+        if (t.includes(String(c).toLowerCase())) return item.anchor;
+      }
+    }
+    return fallback;
+  };
+  const conclusionAnchor = findAnchorFor(['conclusion', 'concluding'], 'conclusion');
+  const faqsAnchor = findAnchorFor(['faq', 'faqs', 'frequently', 'questions'], 'faqs');
+
   return (
     <>
       {/* Reading Progress Indicator */}
@@ -164,7 +180,7 @@ export default function BlogPost({ post }: BlogPostProps) {
                 </article>
                 {/* Conclusion (rendered after article) */}
                 {(post as any).conclusion && (
-                  <div className="mt-8">
+                  <div id={conclusionAnchor} className="mt-8 scroll-mt-28">
                     <h2 className="text-xl md:text-2xl font-semibold text-gray-900 mb-3">Conclusion</h2>
                     <div className="blog-content max-w-none">
                       <p className="text-gray-700 leading-relaxed text-base">{(post as any).conclusion}</p>
@@ -174,7 +190,7 @@ export default function BlogPost({ post }: BlogPostProps) {
 
                 {/* FAQs (rendered after conclusion) */}
                 {(post as any).faqs && Array.isArray((post as any).faqs) && (post as any).faqs.length > 0 && (
-                  <div className="mt-8">
+                  <div id={faqsAnchor} className="mt-8 scroll-mt-28">
                     <h2 className="text-xl md:text-2xl font-semibold text-gray-900 mb-4">Frequently Asked Questions</h2>
                     <div className="space-y-4">
                       <ol className="space-y-4">
