@@ -116,6 +116,10 @@ export default function Footer() {
 
         <div className="mt-10 pt-6 border-t border-gray-200 text-center text-sm text-gray-500">
           &copy; {new Date().getFullYear()} Alvion Digital Marketing. All rights reserved.
+          <span className="mx-2 text-gray-300">|</span>
+          <Link href="/privacy-policy" className="text-gray-600 hover:text-gray-900 transition-colors">
+            Privacy Policy
+          </Link>
         </div>
       </Container>
     </footer>
