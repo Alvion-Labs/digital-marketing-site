@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import '@/styles/globals.css';
-import FloatingWhatsApp from '@/components/global/FloatingWhatsApp';
+import FloatingActionStack from '@/components/global/FloatingActionStack';
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { Analytics } from "@vercel/analytics/next"
 import Script from "next/script";
@@ -90,7 +90,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body className="antialiased">{children}
-        <FloatingWhatsApp />
+        <FloatingActionStack />
         <Script async src="https://www.googletagmanager.com/gtag/js?id=G-V2BSEZKEX3" />
         <Script>
           {`window.dataLayer = window.dataLayer || [];
