@@ -2,7 +2,7 @@ import { MetadataRoute } from 'next';
 import { getAllBlogPosts } from '@/lib/blog';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = 'https://alviondigital.in';
+  const baseUrl = 'https://www.alviondigital.in';
   
   // Get all blog posts
   const blogPosts = await getAllBlogPosts();

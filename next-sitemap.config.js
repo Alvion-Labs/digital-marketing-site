@@ -1,6 +1,6 @@
 /** @type {import('next-sitemap').IConfig} */
 module.exports = {
-  siteUrl: process.env.SITE_URL || 'https://alviondigital.in',
+  siteUrl: process.env.SITE_URL || 'https://www.alviondigital.in',
   generateRobotsTxt: true,
   sitemapSize: 5000,
   changefreq: 'weekly',
@@ -13,7 +13,7 @@ module.exports = {
         allow: '/',
       },
     ],
-    additionalSitemaps: ['https://alviondigital.in/sitemap.xml'],
+    additionalSitemaps: ['https://www.alviondigital.in/sitemap.xml'],
   },
   transform: async (config, path) => ({
     loc: path,

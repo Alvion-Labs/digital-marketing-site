@@ -3,7 +3,7 @@ User-agent: *
 Allow: /
 
 # Host
-Host: https://alviondigital.in
+Host: https://www.alviondigital.in
 
 # Sitemaps
-Sitemap: https://alviondigital.in/sitemap.xml
+Sitemap: https://www.alviondigital.in/sitemap.xml
