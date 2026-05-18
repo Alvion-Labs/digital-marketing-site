@@ -12,7 +12,7 @@ const navLinks = [
   { label: 'Home', href: '/#home' },
   { label: 'Services', href: '/services' },
   { label: 'Pricing', href: '/#pricing' },
-  { label: 'Blogs', href: '/#blog' },
+  { label: 'Blogs', href: '/blog' },
   { label: 'Contact', href: '/#contact' },
 ];
 
@@ -101,13 +101,19 @@ export default function Navbar() {
           <ul className="hidden md:flex items-center gap-8">
             {navLinks.map((link) => (
               <li key={link.label}>
-                <button
-                  type="button"
-                  onClick={() => (link.href.includes('#') ? handleSectionClick(link.href) : router.push(link.href))}
+                <Link
+                  href={link.href}
+                  onClick={(e) => {
+                    setMenuOpen(false);
+                    if (link.href.includes('#')) {
+                      e.preventDefault();
+                      handleSectionClick(link.href);
+                    }
+                  }}
                   className="cursor-pointer text-sm font-medium text-gray-700 hover:text-black transition-colors duration-200 relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-px after:bg-linear-to-r after:from-accent-from after:to-accent-to hover:after:w-full after:transition-all after:duration-300"
                 >
                   {link.label}
-                </button>
+                </Link>
               </li>
             ))}
           </ul>
@@ -148,13 +154,19 @@ export default function Navbar() {
           <ul className="py-4 flex flex-col gap-4">
             {navLinks.map((link) => (
               <li key={link.label}>
-                <button
-                  type="button"
-                  onClick={() => handleNavClick(link.href)}
+                <Link
+                  href={link.href}
+                  onClick={(e) => {
+                    setMenuOpen(false);
+                    if (link.href.includes('#')) {
+                      e.preventDefault();
+                      handleSectionClick(link.href);
+                    }
+                  }}
                   className="block cursor-pointer text-sm font-medium text-gray-700 hover:text-black transition-colors py-1"
                 >
                   {link.label}
-                </button>
+                </Link>
               </li>
             ))}
             <li>

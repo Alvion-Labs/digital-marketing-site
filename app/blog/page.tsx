@@ -15,8 +15,8 @@ export default async function BlogPage() {
   const posts = await getAllBlogPosts();
 
   return (
-    <main className="pt-16 md:pt-20">
-      <section className="blog-hero relative overflow-hidden bg-white flex items-center" style={{ minHeight: 'calc(100vh - var(--header-h))' }}>
+    <main className="pt-12 md:pt-16">
+      <section className="blog-hero relative overflow-hidden bg-white flex items-center" style={{ minHeight: 'calc(70vh - var(--header-h))' }}>
         <style>{`
           .blog-hero { --header-h: 4rem; }
           @media (min-width: 768px) { .blog-hero { --header-h: 5rem; } }
@@ -30,9 +30,9 @@ export default async function BlogPage() {
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold leading-tight mt-3 mb-4">
               <TypingHeadline
                 texts={[
-                  'Marketing ideas, insights, and how-to guides',
-                  'Content strategy, SEO & paid media tips',
-                  'Practical advice for growing brands',
+                  'Marketing ideas that actually work',
+                  'Simple guides to help you learn',
+                  'Latest trends to stay ahead in the market',
                 ]}
                 speed={45}
                 pause={1400}
@@ -40,50 +40,35 @@ export default async function BlogPage() {
               />
             </h1>
             <p className="text-gray-600 text-lg leading-relaxed max-w-2xl mx-auto">
-              Explore articles designed to help brands improve content planning, paid media, SEO, and social performance.
+              Explore practical articles to help your brand improve content quality, SEO, ROI, and social media performance for better growth and results.
             </p>
 
-            <div className="mt-8 flex justify-center gap-4">
-              <Button href="#posts" variant="secondary" className="text-sm px-6 py-3">
+            <div className="mt-8 flex flex-col sm:flex-row items-stretch sm:justify-center gap-4">
+              <Button href="#posts" variant="secondary" className="w-full sm:w-auto px-6 py-3">
                 View latest posts
               </Button>
-              <Button href="/#contact" variant="primary" className="text-sm px-6 py-3">
+              <Button href="/#contact" variant="primary" className="w-full sm:w-auto px-6 py-3">
                 Get Started
               </Button>
             </div>
           </div>
         </Container>
 
-        <div className="absolute bottom-6 md:bottom-8 left-1/2 -translate-x-1/2">
-          <a
-            href="#posts"
-            aria-label="Scroll to posts"
-            className="group inline-flex items-center gap-1.5 rounded-full border border-accent-from/40 bg-transparent px-3 py-1.5 text-accent-from shadow-sm shadow-accent-from/10 transition-all duration-300 hover:-translate-y-0.5 hover:bg-accent-from/8 hover:shadow-md hover:shadow-accent-from/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-from/30 focus-visible:ring-offset-2"
-          >
-            <span className="text-[9px] font-semibold uppercase tracking-[0.14em] text-accent-from/90">Scroll</span>
-            <span className="relative h-4 w-4">
-              <svg className="absolute inset-0 h-4 w-4 motion-safe:animate-[bounce_1.8s_infinite] motion-reduce:animate-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-              <svg className="absolute inset-0 h-4 w-4 translate-y-0.5 opacity-25 group-hover:opacity-55 transition-opacity duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-            </span>
-          </a>
-        </div>
+        {/* Separator divider matching other sections */}
+        <div className="h-px bg-linear-to-r from-transparent via-gray-200 to-transparent w-full absolute bottom-0 left-0" />
       </section>
 
-      <section id="posts" className="py-12 bg-white">
+      <section id="posts" className="py-16 md:py-24 bg-linear-to-b from-white via-white to-gray-50/50">
         <Container>
-          <div className="mx-auto mb-8 flex max-w-6xl flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-            <div>
+          <div className="mb-12 flex max-w-4xl flex-col gap-6 md:gap-8">
+            <div className="flex flex-col gap-4">
               <p className="text-sm font-semibold uppercase tracking-[0.16em] text-accent-to">Latest insights</p>
-              <h2 className="mt-2 text-2xl font-bold tracking-tight text-gray-950 md:text-3xl">
-                Fresh marketing ideas, strategies, and practical how-tos
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight text-gray-950">
+                Fresh and simple marketing ideas
               </h2>
             </div>
-            <p className="max-w-xl text-sm leading-6 text-gray-600 sm:text-right">
-              Browse the newest articles from Alvion Digital Marketing. Each post is written to be useful, actionable, and easy to apply.
+            <p className="max-w-2xl text-base md:text-lg leading-7 text-gray-600">
+              Explore our latest articles from Alvion Digital Marketing, simple, practical, and designed to help you grow.
             </p>
           </div>
 
