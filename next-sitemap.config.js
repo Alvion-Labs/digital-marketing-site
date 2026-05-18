@@ -22,7 +22,6 @@ module.exports = {
         allow: '/',
       },
     ],
-    additionalSitemaps: ['https://www.alviondigital.in/sitemap.xml'],
   },
   transform: async (config, path) => ({
     loc: path,
