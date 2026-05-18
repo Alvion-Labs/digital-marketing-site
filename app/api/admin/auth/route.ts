@@ -1,9 +1,13 @@
 import { NextResponse } from 'next/server';
-import { validateAdminPassword } from '@/lib/admin';
+import {
+  validateAdminPassword,
+  hasAdminSession,
+  createAdminSessionToken,
+} from '@/lib/admin';
+import { checkRateLimit, getClientIp } from '@/lib/rateLimit';
 
-function hasAdminSession(request: Request) {
-  return request.headers.get('cookie')?.includes('admin_session=authenticated') ?? false;
-}
+const AUTH_RATE_LIMIT = 10;
+const AUTH_RATE_WINDOW = 15 * 60 * 1000; // 15 minutes
 
 export async function GET(request: Request) {
   if (!hasAdminSession(request)) {
@@ -15,6 +19,14 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
+    const clientIp = getClientIp(request);
+    if (!checkRateLimit(`admin-auth:${clientIp}`, AUTH_RATE_LIMIT, AUTH_RATE_WINDOW)) {
+      return NextResponse.json(
+        { error: 'Too many login attempts. Please try again later.' },
+        { status: 429 }
+      );
+    }
+
     const { password } = (await request.json()) as { password?: string };
 
     if (!password) {
@@ -28,7 +40,7 @@ export async function POST(request: Request) {
     const res = NextResponse.json({ success: true }, { status: 200 });
 
     // Set admin session cookie
-    res.cookies.set('admin_session', 'authenticated', {
+    res.cookies.set('admin_session', createAdminSessionToken(), {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',

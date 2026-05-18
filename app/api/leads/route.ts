@@ -4,12 +4,18 @@ import { connectToDatabase } from '@/lib/mongodb';
 import LeadModel from '@/lib/models/Lead';
 import { sendEmail } from '@/lib/email/send';
 import { generateLeadNotificationHTML } from '@/lib/email/templates/leadNotification';
+import { checkRateLimit, getClientIp } from '@/lib/rateLimit';
+import { getCorsHeaders, handleCorsOptions } from '@/lib/cors';
 
 type LeadPayload = {
   name?: string;
   email?: string;
   message?: string;
 };
+
+// Rate limiting: 5 submissions per IP per hour
+const RATE_LIMIT = 5;
+const RATE_LIMIT_WINDOW = 60 * 60 * 1000; // 1 hour
 
 function isValidEmail(email: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -25,6 +31,15 @@ function normalizePayload(payload: LeadPayload) {
 
 export async function POST(request: Request) {
   try {
+    // Check rate limit
+    const clientIp = getClientIp(request);
+    if (!checkRateLimit(clientIp, RATE_LIMIT, RATE_LIMIT_WINDOW)) {
+      return Response.json(
+        { error: 'Too many submissions. Please try again later.' },
+        { status: 429, headers: { 'Retry-After': '3600' } }
+      );
+    }
+
     const rawBody = (await request.json()) as LeadPayload;
     const { name, email, message } = normalizePayload(rawBody);
 
@@ -103,7 +118,10 @@ export async function POST(request: Request) {
         success: true,
         id: String(lead._id),
       },
-      { status: 201 }
+      { 
+        status: 201,
+        headers: getCorsHeaders(request.headers.get('origin') || undefined),
+      }
     );
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unexpected server error.';
@@ -112,7 +130,13 @@ export async function POST(request: Request) {
       {
         error: errorMessage,
       },
-      { status: 500 }
+      { 
+        status: 500,
+        headers: getCorsHeaders(request.headers.get('origin') || undefined),
+      }
     );
   }
 }
+
+export async function OPTIONS(request: Request) {
+  return handleCorsOptions(request);}

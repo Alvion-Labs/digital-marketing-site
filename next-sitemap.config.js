@@ -5,7 +5,16 @@ module.exports = {
   sitemapSize: 5000,
   changefreq: 'weekly',
   priority: 0.7,
-  exclude: ['/api/*', '/404', '/500'],
+  exclude: [
+    '/api/*',
+    '/404',
+    '/500',
+    '/admin',
+    '/admin/*',
+    '/opengraph-image',
+    '/twitter-image',
+    '/sitemap.xml',
+  ],
   robotsTxtOptions: {
     policies: [
       {

@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { hasAdminSession } from '@/lib/admin';
 import { uploadMedia, getAllMedia, deleteMedia, searchMedia } from '@/lib/media';
+import { validateFileUpload } from '@/lib/fileValidation';
+import { sanitizeSearchQuery, sanitizePaginationParams } from '@/lib/inputValidation';
 
 export async function GET(req: Request) {
   if (!hasAdminSession(req)) {
@@ -10,12 +12,22 @@ export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
     const query = searchParams.get('q');
-    const limit = Math.min(parseInt(searchParams.get('limit') || '100'), 200);
-    const skip = parseInt(searchParams.get('skip') || '0');
+    const { limit, skip } = sanitizePaginationParams(
+      searchParams.get('limit') || '100',
+      searchParams.get('skip') || '0'
+    );
 
     let result;
     if (query) {
-      const items = await searchMedia(query, limit);
+      // Sanitize search query to prevent injection
+      const sanitizedQuery = sanitizeSearchQuery(query);
+      if (!sanitizedQuery) {
+        return NextResponse.json(
+          { ok: false, error: 'Invalid search query' },
+          { status: 400 }
+        );
+      }
+      const items = await searchMedia(sanitizedQuery, limit);
       result = { ok: true, items };
     } else {
       result = await getAllMedia({}, limit, skip);
@@ -49,6 +61,21 @@ export async function POST(req: Request) {
     }
 
     const buffer = Buffer.from(await file.arrayBuffer());
+
+    // Validate file
+    const validation = validateFileUpload(
+      {
+        name: String(file.name),
+        type: String(file.type),
+        size: buffer.length,
+      },
+      buffer
+    );
+
+    if (!validation.valid) {
+      return NextResponse.json({ ok: false, error: validation.error }, { status: 400 });
+    }
+
     const usedBy = form.get('usedBy');
     const usage = usedBy ? JSON.parse(String(usedBy)) : undefined;
 
