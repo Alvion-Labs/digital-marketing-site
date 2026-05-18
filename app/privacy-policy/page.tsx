@@ -5,7 +5,7 @@ import { sanitizeBlogHtml } from '@/lib/html';
 import { getPrivacyPolicy } from '@/lib/privacyPolicy';
 
 export const metadata: Metadata = {
-  title: 'Privacy Policy | Alvion Digital Marketing',
+  title: 'Privacy Policy',
   description: 'Read the privacy policy for Alvion Digital Marketing.',
 };
 

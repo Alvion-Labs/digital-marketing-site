@@ -7,7 +7,7 @@ import { getAllBlogPosts } from '@/lib/blog';
 import { toBlogCardPost } from '@/lib/blogCard';
 
 export const metadata: Metadata = {
-  title: 'Blog | Alvion Digital Marketing',
+  title: 'Blog',
   description: 'Read practical marketing insights, social media tips, SEO guidance, and content strategy articles from Alvion Digital Marketing.',
 };
 

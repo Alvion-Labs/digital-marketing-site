@@ -36,7 +36,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
   }
 
   return {
-    title: `${post.title} | Alvion Digital Marketing`,
+    title: `${post.title}`,
     description: post.excerpt,
     keywords: [post.category || 'digital marketing', 'digital marketing', 'marketing strategy', 'content marketing', post.title],
     authors: [{ name: post.author, url: 'https://alviondigital.in' }],
