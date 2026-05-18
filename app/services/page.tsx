@@ -7,7 +7,7 @@ import {
 } from '@/lib/seo/structuredData';
 
 export const metadata: Metadata = {
-  title: 'Services',
+  title: 'Digital Marketing & Web Development Services',
   description:
     'Explore our digital marketing services to help your brand grow online, increase visibility, and generate quality leads.',
   keywords: [
