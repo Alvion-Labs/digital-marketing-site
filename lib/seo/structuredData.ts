@@ -7,7 +7,7 @@ export function getOrganizationSchema() {
     name: 'Alvion Digital Marketing',
     url: 'https://alviondigital.in',
     logo: 'https://alviondigital.in/Alvion%20Logo%20landsacpe.png',
-    description: 'Full-service digital marketing agency specializing in Social Media Management, Content Strategy, Google & Meta Ads, and SEO.',
+    description: 'Full-service digital marketing agency specializing in Social Media Management, Content Strategy, Paid Advertising, and SEO.',
     address: {
       '@type': 'PostalAddress',
       addressCountry: 'IN',
@@ -89,10 +89,7 @@ export function getServiceSchema() {
       name: 'Alvion Digital Marketing',
       url: 'https://alviondigital.in',
     },
-    areaServed: {
-      '@type': 'Country',
-      name: 'India',
-    },
+    areaServed: 'Worldwide',
     hasOfferCatalog: {
       '@type': 'OfferCatalog',
       name: 'Digital Marketing Services',
@@ -102,7 +99,8 @@ export function getServiceSchema() {
           itemOffered: {
             '@type': 'Service',
             name: 'Social Media Management',
-            description: 'End-to-end social media management including content creation, scheduling, and analytics.',
+            description:
+              'End-to-end social media management including content creation, scheduling, and analytics.',
           },
         },
         {
@@ -110,15 +108,17 @@ export function getServiceSchema() {
           itemOffered: {
             '@type': 'Service',
             name: 'Content Strategy',
-            description: 'Brand storytelling, campaign creation, and content distribution.',
+            description:
+              'Brand storytelling, campaign creation, and content distribution.',
           },
         },
         {
           '@type': 'Offer',
           itemOffered: {
             '@type': 'Service',
-            name: 'Google & Meta Ads',
-            description: 'Data-driven advertising campaigns on Google and Meta platforms.',
+            name: 'Paid Advertising',
+            description:
+              'Data-driven paid advertising campaigns designed to generate leads, sales, and brand awareness.',
           },
         },
         {
@@ -126,7 +126,17 @@ export function getServiceSchema() {
           itemOffered: {
             '@type': 'Service',
             name: 'SEO',
-            description: 'Search engine optimization including technical audits, keyword research, and link building.',
+            description:
+              'Search engine optimization including technical audits, keyword research, and link building.',
+          },
+        },
+        {
+          '@type': 'Offer',
+          itemOffered: {
+            '@type': 'Service',
+            name: 'Web Development',
+            description:
+              'Modern, fast, and responsive websites built with clean UI/UX, optimized performance, and conversion-focused design.',
           },
         },
       ],
@@ -189,7 +199,7 @@ export function getFAQSchema() {
         name: 'What digital marketing services does Alvion offer?',
         acceptedAnswer: {
           '@type': 'Answer',
-          text: 'Alvion Digital Marketing offers Social Media Management, Content Strategy, Google & Meta Ads, and SEO services to help businesses grow their online presence.',
+          text: 'Alvion Digital Marketing offers Social Media Management, Content Strategy, Paid Advertising, and SEO services to help businesses grow their online presence.',
         },
       },
       {

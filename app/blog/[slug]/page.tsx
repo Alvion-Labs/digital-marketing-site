@@ -1,7 +1,5 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import Navbar from '@/components/global/Navbar';
-import Footer from '@/components/global/Footer';
 import BlogPost from '@/components/pages/blog/BlogPost';
 import { getAllBlogPosts, getBlogPostBySlug } from '@/lib/blog';
 import { connectToDatabase } from '@/lib/mongodb';
@@ -128,11 +126,9 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           ])),
         }}
       />
-      <Navbar />
       <main className="pt-16 md:pt-20">
         <BlogPost post={post} />
       </main>
-      <Footer />
     </>
   );
 }

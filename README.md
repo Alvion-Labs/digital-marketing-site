@@ -37,7 +37,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 - **Navbar** — Sticky with glass blur effect and mobile hamburger menu
 - **Hero** — Headline, CTA buttons, animated gradient blobs, stats grid
-- **Services** — Social Media, Content Strategy, Google & Meta Ads, SEO
+- **Services** — Social Media,  Paid Advertising, SEO, Web Development
 - **Social Gallery** — Tabbed Instagram/Facebook post feed (mock data)
 - **Contact** — Validated contact form + WhatsApp and mailto links
 - **Footer** — Social links, quick nav, contact info

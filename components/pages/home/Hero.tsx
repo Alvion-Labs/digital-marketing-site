@@ -115,7 +115,7 @@ export default function Hero() {
         </h1>
 
         <p className="text-gray-600 text-base sm:text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed">
-          Social Media Management &nbsp;|&nbsp; Ads &nbsp;|&nbsp; Content Strategy &nbsp;|&nbsp; SEO
+          Social Media Marketing &nbsp;|&nbsp; SEO &nbsp;|&nbsp; Paid Advertising &nbsp;|&nbsp; Website Development
         </p>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">

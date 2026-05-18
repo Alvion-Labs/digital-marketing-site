@@ -60,7 +60,7 @@ export default async function Image() {
                 maxWidth: 560,
               }}
             >
-              Social media, SEO, and ads that grow your business.
+              Social media, SEO, and websites that grow your business.
             </div>
           </div>
 

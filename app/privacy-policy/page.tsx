@@ -1,6 +1,4 @@
 import type { Metadata } from 'next';
-import Navbar from '@/components/global/Navbar';
-import Footer from '@/components/global/Footer';
 import Container from '@/components/global/Container';
 import ContactSection from '@/components/pages/privacy/ContactSection';
 import { sanitizeBlogHtml } from '@/lib/html';
@@ -25,7 +23,6 @@ export default async function PrivacyPolicyPage() {
 
   return (
     <>
-      <Navbar />
       <main className="pt-16 md:pt-20 bg-white">
         <section className="py-14 md:py-20 border-b border-gray-100">
           <Container>
@@ -70,7 +67,6 @@ export default async function PrivacyPolicyPage() {
           </Container>
         </section>
       </main>
-      <Footer />
     </>
   );
 }

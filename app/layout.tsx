@@ -1,32 +1,38 @@
 import type { Metadata, Viewport } from 'next';
 import '@/styles/globals.css';
 import FloatingActionStack from '@/components/global/FloatingActionStack';
+import SiteShell from '@/components/global/SiteShell';
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { Analytics } from "@vercel/analytics/next"
 import Script from "next/script";
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://alviondigital.in'),
+  metadataBase: new URL('https://www.alviondigital.in'),
   title: {
-    default: 'Alvion Digital Marketing ( Social Media Expert, SEO & Ads Agency )',
+    default: 'Alvion Digital Marketing | Social Media Marketing, SEO & Web Development Agency',
     template: '%s | Alvion Digital Marketing',
   },
   description:
-    'Leading digital marketing agency in India specializing in Social Media Management, Content Strategy, Google & Meta Ads, and SEO. Grow your business with data-driven marketing solutions.',
+    'At Alvion Digital Marketing, we help businesses to grow online, build a strong brand presence, and generate quality leads through SEO, social media marketing, paid ads, and high-performing websites backed by best industry practices for better ROI and long-term growth.',
   keywords: [
     'digital marketing agency',
     'social media management',
     'SEO services',
-    'Google Ads',
-    'Meta Ads',
-    'Facebook Ads',
+    'paid advertising',
+    'paid media',
+    'paid social ads',
     'Instagram marketing',
     'content strategy',
     'digital marketing India',
     'online marketing',
     'social media agency',
-    'PPC management',
+    'performance marketing',
     'search engine optimization',
+    'website development',
+    'brand building',
+    'lead generation',
+    'ROI-focused marketing',
+    'long-term growth',
   ],
   authors: [{ name: 'Alvion Digital Marketing' }],
   creator: 'Alvion Digital Marketing',
@@ -44,23 +50,23 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_IN',
-    url: 'https://alviondigital.in',
+    url: 'https://www.alviondigital.in',
     siteName: 'Alvion Digital Marketing',
-    title: 'Alvion Digital Marketing  ( Social Media Expert, SEO & Ads Agency )',
-    description: 'Leading digital marketing agency specializing in social media management, SEO, and paid advertising. Grow your business with proven strategies.',
+    title: 'Alvion Digital Marketing | Social Media Marketing, SEO & Web Development Agency',
+    description: 'At Alvion Digital Marketing, we help businesses to grow online, build a strong brand presence, and generate quality leads through SEO, social media marketing, paid ads, and high-performing websites backed by best industry practices for better ROI and long-term growth.',
     images: [
       {
         url: '/opengraph-image',
         width: 1200,
         height: 630,
-        alt: 'Alvion Digital Marketing - Social Media, SEO & Ads Agency',
+        alt: 'Alvion Digital Marketing - Social Media, SEO & websites Agency',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Alvion Digital Marketing  ( Social Media Expert, SEO & Ads Agency )',
-    description: 'Leading digital marketing agency specializing in social media management, SEO, and paid advertising.',
+    title: 'Alvion Digital Marketing | Social Media Marketing, SEO & Web Development Agency',
+    description: 'At Alvion Digital Marketing, we help businesses grow online, build a strong brand presence, and generate quality leads through SEO, social media marketing, paid ads, and high-performing websites backed by best industry practices for better ROI and long-term growth.',
     images: ['/twitter-image'],
     creator: '@alviondigital',
   },
@@ -76,7 +82,7 @@ export const metadata: Metadata = {
     },
   },
   alternates: {
-    canonical: 'https://alviondigital.in',
+    canonical: 'https://www.alviondigital.in',
   },
 };
 
@@ -89,7 +95,8 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className="antialiased">{children}
+      <body className="antialiased">
+        <SiteShell>{children}</SiteShell>
         <FloatingActionStack />
         <Script async src="https://www.googletagmanager.com/gtag/js?id=G-V2BSEZKEX3" />
         <Script>
