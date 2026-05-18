@@ -10,7 +10,7 @@ import LogoLink from './LogoLink';
 
 const navLinks = [
   { label: 'Home', href: '/#home' },
-  { label: 'Services', href: '/#services' },
+  { label: 'Services', href: '/services' },
   { label: 'Pricing', href: '/#pricing' },
   { label: 'Blogs', href: '/#blog' },
   { label: 'Contact', href: '/#contact' },

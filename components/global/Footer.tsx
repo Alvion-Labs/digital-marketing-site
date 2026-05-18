@@ -29,7 +29,7 @@ const socialLinks = [
 
 const quickLinks = [
   { label: 'Home', href: '/#home' },
-  { label: 'Services', href: '/#services' },
+  { label: 'Services', href: '/services' },
   { label: 'Blog', href: '/blog' },
   { label: 'Contact', href: '/#contact' },
 ];
