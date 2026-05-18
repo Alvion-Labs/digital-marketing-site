@@ -114,10 +114,13 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-10 pt-6 border-t border-gray-200 text-center text-sm text-gray-500">
-          &copy; {new Date().getFullYear()} Alvion Digital Marketing. All rights reserved.
-          <span className="mx-2 text-gray-300">|</span>
-          <Link href="/privacy-policy" className="text-gray-600 hover:text-gray-900 transition-colors">
+        <div className="mt-10 pt-6 border-t border-gray-200 flex flex-col items-center gap-2 text-center text-sm text-gray-500 md:flex-row md:justify-center md:gap-0">
+          <span>&copy; {new Date().getFullYear()} Alvion Digital Marketing. All rights reserved.</span>
+          <span className="hidden text-gray-300 md:inline-block md:mx-2">|</span>
+          <Link
+            href="/privacy-policy"
+            className="text-gray-600 hover:text-gray-900 transition-colors"
+          >
             Privacy Policy
           </Link>
         </div>
