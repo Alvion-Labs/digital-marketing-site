@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     canonical: '/services',
   },
   openGraph: {
-    title: 'Services - Social Media Marketing, SEO, Ads & Web Development',
+    title: 'Digital Marketing & Web Development Services - Alvion Digital Marketing',
     description:
       'Explore our digital marketing services to help your brand grow online, increase visibility, and generate quality leads.',
     url: '/services',
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Services - Social Media Marketing, SEO, Ads & Web Development',
+    title: 'Digital Marketing & Web Development Services - Alvion Digital Marketing',
     description:
       'Explore our digital marketing services to help your brand grow online, increase visibility, and generate quality leads.',
   },
@@ -40,7 +40,7 @@ export const metadata: Metadata = {
 const serviceSchema = getServiceSchema();
 const breadcrumbSchema = getBreadcrumbSchema([
   { name: 'Home', url: 'https://www.alviondigital.in' },
-  { name: 'Services', url: 'https://www.alviondigital.in/services' },
+  { name: 'Digital Marketing & Web Development Services', url: 'https://www.alviondigital.in/services' },
 ]);
 
 export default function ServicesRoute() {
