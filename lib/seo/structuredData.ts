@@ -54,7 +54,7 @@ export function getLocalBusinessSchema() {
     image: 'https://alviondigital.in/Alvion%20Logo%20landsacpe.png',
     url: 'https://alviondigital.in',
     telephone: '+91-6230930041',
-    email: 'thakursureshkumar118@gmail.com',
+    email: 'contact@alviondigital.in',
     priceRange: '₹₹',
     address: {
       '@type': 'PostalAddress',

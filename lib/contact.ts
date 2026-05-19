@@ -4,7 +4,7 @@ export const CONTACT_INFO = {
   whatsappSubtitle: 'Chat with us directly',
   whatsappMessage:
     'Hi Alvion Digital! I visited your website and would like to discuss digital marketing services.',
-  emailAddress: 'thakursureshkumar118@gmail.com',
+  emailAddress: 'contact@alviondigital.in',
   emailTitle: 'Email',
   emailSubject: 'Inquiry from Alvion Digital website',
   emailBody: 'Hi Alvion Digital,\n\nI would like to discuss your digital marketing services.',
