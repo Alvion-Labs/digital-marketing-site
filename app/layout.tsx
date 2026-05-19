@@ -9,7 +9,7 @@ import Script from "next/script";
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.alviondigital.in'),
   title: {
-    default: 'Alvion Digital Marketing | Social Media Marketing, SEO & Web Development Agency',
+    default: 'The best partner to grow your brand online. | Alvion Digital Marketing',
     template: '%s | Alvion Digital Marketing',
   },
   description:
@@ -52,7 +52,7 @@ export const metadata: Metadata = {
     locale: 'en_IN',
     url: 'https://www.alviondigital.in',
     siteName: 'Alvion Digital Marketing',
-    title: 'Alvion Digital Marketing | Social Media Marketing, SEO & Web Development Agency',
+    title: 'The best partner to grow your brand online. | Alvion Digital Marketing',
     description: 'At Alvion Digital Marketing, we help businesses to grow online, build a strong brand presence, and generate quality leads through SEO, social media marketing, paid ads, and high-performing websites backed by best industry practices for better ROI and long-term growth.',
     images: [
       {
@@ -65,7 +65,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Alvion Digital Marketing | Social Media Marketing, SEO & Web Development Agency',
+    title: 'The best partner to grow your brand online. | Alvion Digital Marketing',
     description: 'At Alvion Digital Marketing, we help businesses grow online, build a strong brand presence, and generate quality leads through SEO, social media marketing, paid ads, and high-performing websites backed by best industry practices for better ROI and long-term growth.',
     images: ['/twitter-image'],
     creator: '@alviondigital',

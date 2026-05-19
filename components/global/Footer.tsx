@@ -22,7 +22,7 @@ const socialLinks = [
   },
   {
     label: 'Twitter',
-    href: 'https://twitter.com',
+    href: 'https://x.com/AlvionDigital',
     icon: '/logos/X-twitter filled.svg',
   },
 ];

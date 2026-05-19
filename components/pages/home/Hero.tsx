@@ -37,11 +37,28 @@ const FloatingLogo = ({
   );
 };
 
+const HERO_ROTATING_PHRASES = [
+  'That actually works',
+  'That converts visitors',
+  'That grows your brand',
+  'That drives real results',
+];
+
 export default function Hero() {
   const handleScroll = (selector: string) => {
     const el = document.querySelector(selector);
     if (el) el.scrollIntoView({ behavior: 'smooth' });
   };
+
+  const [activePhraseIndex, setActivePhraseIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = window.setInterval(() => {
+      setActivePhraseIndex((currentIndex) => (currentIndex + 1) % HERO_ROTATING_PHRASES.length);
+    }, 2800);
+
+    return () => window.clearInterval(interval);
+  }, []);
 
   return (
     <section
@@ -110,8 +127,10 @@ export default function Hero() {
         </div>
 
         <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold leading-tight mb-6 tracking-tight text-black">
-          Crafting digital presence{' '}
-          <span className="gradient-text typing-text">That actually works</span>
+          Crafting Digital experiences{' '}
+          <span key={activePhraseIndex} className="gradient-text typing-text">
+            {HERO_ROTATING_PHRASES[activePhraseIndex]}
+          </span>
         </h1>
 
         <p className="text-gray-600 text-base sm:text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed">
@@ -167,7 +186,7 @@ export default function Hero() {
             </a>
 
             <a
-              href="https://twitter.com"
+              href="https://x.com/AlvionDigital"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Twitter"

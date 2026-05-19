@@ -22,7 +22,7 @@ export function getOrganizationSchema() {
       'https://www.instagram.com/alviondigitalmarketing/',
       'https://www.facebook.com/profile.php?id=61562935378228',
       'https://linkedin.com',
-      'https://twitter.com',
+      'https://x.com/AlvionDigital',
     ],
   };
 }
