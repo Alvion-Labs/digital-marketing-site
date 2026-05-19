@@ -1,5 +1,6 @@
 import Script from 'next/script';
 import Hero from '@/components/pages/home/Hero';
+import About from '@/components/pages/home/About';
 import Services from '@/components/pages/home/Services';
 import BlogSection from '@/components/pages/home/Blog';
 import Pricing from '@/components/pages/home/Pricing';
@@ -15,6 +16,9 @@ export default function Home() {
         {JSON.stringify(faqSchema)}
       </Script>
       <Hero />
+      <div className="border-t border-gray-100 bg-white">
+        <About />
+      </div>
       <div className="border-t border-gray-100 bg-linear-to-b from-gray-50/70 to-white">
         <Services />
       </div>

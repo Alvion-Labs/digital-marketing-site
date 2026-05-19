@@ -48,12 +48,6 @@ export async function POST(req: Request) {
     (blogData as any).readTime = body.readTime || '';
   }
 
-  console.log('📥 Server received conclusion from client:', body.conclusion);
-  console.log('🔄 After stripHtmlTags, conclusion is:', stripHtmlTags(body.conclusion || ''));
-  console.log('💾 About to save blogData with conclusion:', (blogData as any).conclusion);
-  
   const doc = await BlogModel.create(blogData);
-  
-  console.log('✅ Blog created. Conclusion in DB:', doc?.conclusion);
   return NextResponse.json({ ok: true, blog: doc });
 }

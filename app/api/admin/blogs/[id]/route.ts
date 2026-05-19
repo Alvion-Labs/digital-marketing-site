@@ -55,13 +55,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     publishedAt: body.publishedAt ?? existing.publishedAt ?? (shouldSetPublishedAt ? new Date() : existing.publishedAt),
   };
 
-  console.log('📥 PATCH received conclusion from client:', body.conclusion);
-  console.log('🔄 After stripHtmlTags, conclusion is:', stripHtmlTags(conclusionHtml));
-  console.log('💾 About to update with conclusion:', updatePayload.conclusion);
-  
   const updated = await BlogModel.findByIdAndUpdate(id, updatePayload, { new: true }).lean();
-  
-  console.log('✅ Blog updated. Conclusion in DB:', updated?.conclusion);
   if (!updated) return NextResponse.json({ ok: false, error: 'Not found' }, { status: 404 });
   return NextResponse.json({ ok: true, blog: updated });
 }

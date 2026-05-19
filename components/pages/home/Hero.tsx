@@ -119,6 +119,7 @@ export default function Hero() {
       
       <div className="absolute bottom-0 -left-32 w-96 h-96 bg-sky-400/10 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-0 -right-32 w-96 h-96 bg-sky-400/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute inset-x-0 bottom-0 h-px bg-gray-100" />
 
       <Container className="relative z-10 text-center py-24 pt-32">
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-accent-from/20 bg-transparent text-accent-to text-sm font-medium mb-8">

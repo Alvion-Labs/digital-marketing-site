@@ -13,7 +13,6 @@ export async function GET(request: Request) {
 
   await connectToDatabase();
   const policy = await PrivacyPolicyModel.findOne({ key: DEFAULT_KEY }).lean();
-  console.log('GET /api/admin/privacy-policy ->', { policy });
 
   return NextResponse.json({
     ok: true,
@@ -34,7 +33,6 @@ export async function POST(request: Request) {
   }
 
   const body = await request.json();
-  console.log('POST /api/admin/privacy-policy body ->', body);
   const contentHTML = sanitizeBlogHtml(body?.contentHTML || '');
 
   await connectToDatabase();
@@ -64,8 +62,6 @@ export async function POST(request: Request) {
     },
     { new: true, upsert: true, setDefaultsOnInsert: true }
   ).lean();
-
-  console.log('Saved policy ->', policy);
 
   return NextResponse.json({
     ok: true,

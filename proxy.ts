@@ -8,8 +8,8 @@ export function proxy(request: NextRequest) {
   response.headers.set(
     'Content-Security-Policy',
     process.env.NODE_ENV === 'production'
-      ? "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.google-analytics.com https://cdn.vercel-insights.com; style-src 'self' 'unsafe-inline'; img-src 'self' https: data:; font-src 'self' data:; connect-src 'self' https://www.google-analytics.com https://cdn.vercel-insights.com; frame-ancestors 'none';"
-      : "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.google-analytics.com https://cdn.vercel-insights.com; style-src 'self' 'unsafe-inline'; img-src 'self' https: data:; font-src 'self' data:; connect-src 'self' https://www.google-analytics.com https://cdn.vercel-insights.com; frame-ancestors 'none';"
+        ? "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://pagead2.googlesyndication.com https://www.google-analytics.com https://cdn.vercel-insights.com https://va.vercel-scripts.com https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; img-src 'self' https: data:; font-src 'self' data:; connect-src 'self' https://www.googletagmanager.com https://www.google-analytics.com https://cdn.vercel-insights.com https://va.vercel-scripts.com https://static.cloudflareinsights.com; frame-src https://pagead2.googlesyndication.com; frame-ancestors 'none';"
+        : "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://pagead2.googlesyndication.com https://www.google-analytics.com https://cdn.vercel-insights.com https://va.vercel-scripts.com https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; img-src 'self' https: data:; font-src 'self' data:; connect-src 'self' https://www.googletagmanager.com https://www.google-analytics.com https://cdn.vercel-insights.com https://va.vercel-scripts.com https://static.cloudflareinsights.com; frame-src https://pagead2.googlesyndication.com; frame-ancestors 'none';"
   );
 
   // Prevent MIME type sniffing
