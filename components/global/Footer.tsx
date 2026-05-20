@@ -50,6 +50,7 @@ export default function Footer() {
                   height={56}
                   sizes="(max-width: 768px) 96px, 144px"
                   className="h-auto w-24 md:w-36 object-contain shrink-0"
+                  style={{ height: 'auto' }}
                 />
               </div>
             </LogoLink>

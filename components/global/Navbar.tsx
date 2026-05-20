@@ -95,6 +95,7 @@ export default function Navbar() {
                 priority
                 sizes="(max-width: 768px) 96px, 128px"
                 className="h-auto w-24 md:w-32 object-contain shrink-0"
+                style={{ height: 'auto' }}
               />
             </div>
           </LogoLink>

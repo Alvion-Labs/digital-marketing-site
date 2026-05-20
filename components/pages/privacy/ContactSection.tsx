@@ -52,6 +52,7 @@ export default function ContactSection({ contactEmail, contactWebsite }: Contact
             width={220}
             height={63}
             className="h-12 w-auto"
+            style={{ width: 'auto' }}
           />
         </Link>
 
