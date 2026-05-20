@@ -4,8 +4,8 @@ import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Analytics } from '@vercel/analytics/next';
 
 import '@/styles/globals.css';
-import FloatingActionStack from '@/components/global/FloatingActionStack';
 import SiteShell from '@/components/global/SiteShell';
+import DynamicFloatingActionStack from '@/components/global/DynamicFloatingActionStack';
 
 const SITE_URL = 'https://www.alviondigital.in';
 
@@ -102,7 +102,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" data-scroll-behavior="smooth">
       <body className="antialiased">
         <SiteShell>{children}</SiteShell>
-        <FloatingActionStack />
+        <DynamicFloatingActionStack />
 
         {/* Google Analytics */}
         <Script

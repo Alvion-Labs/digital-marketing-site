@@ -27,11 +27,11 @@ body {
 
 /* Hide scrollbars globally while keeping scroll functionality */
 * {
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE/Edge */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 *::-webkit-scrollbar {
-  display: none; /* Chrome/Safari/Opera */
+  display: none;
 }
 
 @utility gradient-text {
@@ -57,6 +57,65 @@ body {
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid rgba(200, 200, 200, 0.3);
+}
+
+/* ===== Animations extracted from JS components to reduce main thread work ===== */
+
+/* FloatingLogo slideUp in Hero */
+@keyframes hero-slide-up {
+  0% {
+    transform: translateY(100px);
+    opacity: 0;
+  }
+  60% {
+    opacity: 0.15;
+  }
+  100% {
+    transform: translateY(0px);
+    opacity: 0.15;
+  }
+}
+
+.hero-floating-logo {
+  animation: hero-slide-up 8s ease-out forwards;
+  animation-fill-mode: backwards;
+}
+
+/* Typing animation used in Hero and TypingHeadline */
+@keyframes typing {
+  0% { clip-path: inset(0 100% 0 0); }
+  1% { clip-path: inset(0 100% 0 0); }
+  15% { clip-path: inset(0 0% 0 0); }
+  85% { clip-path: inset(0 0% 0 0); }
+  99% { clip-path: inset(0 100% 0 0); }
+  100% { clip-path: inset(0 100% 0 0); }
+}
+
+.typing-text {
+  display: inline-block;
+  white-space: nowrap;
+  animation: typing 8s ease-in-out infinite;
+  -webkit-animation: typing 8s ease-in-out infinite;
+  animation-fill-mode: both;
+}
+
+@media (max-width: 420px) {
+  .typing-text {
+    white-space: normal;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+}
+
+/* TypingHeadline component - allow wrapping variant */
+.typing-headline-text {
+  display: inline-block;
+  white-space: normal;
+  max-width: 100%;
+  box-sizing: border-box;
+  animation: typing 8s ease-in-out infinite;
+  -webkit-animation: typing 8s ease-in-out infinite;
+  animation-fill-mode: both;
 }
 
 button, [role="button"], input[type="button"], input[type="submit"], input[type="reset"] {

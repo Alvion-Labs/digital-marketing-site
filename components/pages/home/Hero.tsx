@@ -24,7 +24,7 @@ const FloatingLogo = ({
     <div
       className="absolute hidden md:block opacity-15 pointer-events-none"
       style={{
-        animation: `slideUp ${duration}s ease-out ${delay}s forwards`,
+        animation: `hero-slide-up ${duration}s ease-out ${delay}s forwards`,
         animationFillMode: 'backwards',
         width: `${size}px`,
         height: `${size}px`,
@@ -65,47 +65,7 @@ export default function Hero() {
       id="home"
       className="relative min-h-screen flex items-center justify-center overflow-hidden bg-white"
     >
-      {/* Animated floating 3D logos background */}
-      <style>{`
-        @keyframes slideUp {
-          0% { 
-            transform: translateY(100px);
-            opacity: 0;
-          }
-          60% {
-            opacity: 0.15;
-          }
-          100% { 
-            transform: translateY(0px);
-            opacity: 0.15;
-          }
-        }
-        @keyframes typing {
-          0% {
-            clip-path: inset(0 100% 0 0);
-          }
-          1% {
-            clip-path: inset(0 100% 0 0);
-          }
-          15% {
-            clip-path: inset(0 0% 0 0);
-          }
-          85% {
-            clip-path: inset(0 0% 0 0);
-          }
-          99% {
-            clip-path: inset(0 100% 0 0);
-          }
-          100% {
-            clip-path: inset(0 100% 0 0);
-          }
-        }
-        .typing-text {
-          display: inline-block;
-          white-space: nowrap;
-          animation: typing 8s ease-in-out infinite;
-        }
-      `}</style>
+      {/* Animated floating 3D logos background — animations moved to globals.css */}
       
       {/* Bottom left corner */}
       <FloatingLogo src="/logos/instagram 3d.png" delay={0} duration={8} top="72%" left="2%" size={90} />
