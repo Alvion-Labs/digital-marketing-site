@@ -48,7 +48,7 @@ export default function ContactSection({ contactEmail, contactWebsite }: Contact
         <Link href="/" aria-label="Alvion Digital Marketing" className="inline-block mt-4">
           <div className="relative h-12 w-auto" style={{ aspectRatio: '220 / 63' }}>
             <Image
-              src="/Alvion%20Logo%20landsacpe.png"
+              src="/Alvion%20Logo%20landsacpe.webp"
               alt="Alvion Digital Marketing"
               fill
               className="object-contain object-left"

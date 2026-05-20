@@ -115,7 +115,7 @@ export default function Navbar() {
             <div className="flex items-center gap-3">
               <div className="relative w-24 md:w-32" style={{ aspectRatio: '128 / 56' }}>
                 <Image
-                  src="/Alvion%20Logo%20landsacpe.png"
+                  src="/Alvion%20Logo%20landsacpe.webp"
                   alt="Alvion Digital Marketing"
                   fill
                   priority

@@ -90,7 +90,7 @@ export async function POST(request: Request) {
         submittedAt,
       });
 
-      const logoPath = join(process.cwd(), 'public', 'Alvion Logo landsacpe.png');
+      const logoPath = join(process.cwd(), 'public', 'Alvion Logo landsacpe.webp');
       const logoBuffer = await readFile(logoPath);
 
       try {
@@ -101,10 +101,10 @@ export async function POST(request: Request) {
           replyTo: email,
           attachments: [
             {
-              filename: 'alvion-logo.png',
+              filename: 'alvion-logo.webp',
               content: logoBuffer,
               cid: 'alvion-logo',
-              contentType: 'image/png',
+              contentType: 'image/webp',
             },
           ],
         });

@@ -78,12 +78,12 @@ export default function BlogPost({ post }: BlogPostProps) {
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-white p-1.5 border border-gray-200 shadow-sm">
                   <Image
-                    src="/Alvion%20Logo%20landsacpe.png"
+                    src="/Alvion%20Logo%20landsacpe.webp"
                     alt="Alvion Digital Marketing"
                     width={40}
                     height={40}
-                      className="w-full h-full object-contain"
-                      style={{ width: 'auto' }}
+                    className="w-full h-full object-contain"
+                    style={{ width: 'auto' }}
                   />
                 </div>
                 <span className="font-medium text-gray-700">{post.author}</span>

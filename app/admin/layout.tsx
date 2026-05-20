@@ -47,7 +47,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <Link href="/" className="flex items-center gap-3">
             <div className={`relative ${open ? 'w-24' : 'w-10'}`} style={{ aspectRatio: '120 / 40' }}>
               <Image
-                src="/Alvion%20Logo%20landsacpe.png"
+                src="/Alvion%20Logo%20landsacpe.webp"
                 alt="Alvion"
                 fill
                 className="object-contain"
