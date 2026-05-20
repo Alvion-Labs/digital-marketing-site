@@ -82,7 +82,8 @@ export default function BlogPost({ post }: BlogPostProps) {
                     alt="Alvion Digital Marketing"
                     width={40}
                     height={40}
-                    className="w-full h-full object-contain"
+                      className="w-full h-full object-contain"
+                      style={{ width: 'auto' }}
                   />
                 </div>
                 <span className="font-medium text-gray-700">{post.author}</span>

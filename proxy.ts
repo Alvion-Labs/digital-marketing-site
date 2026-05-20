@@ -5,11 +5,14 @@ export function proxy(request: NextRequest) {
   const response = NextResponse.next();
 
   // Content Security Policy - prevents XSS attacks
+  // Relaxed Content Security Policy: allow any secure external script/connect/frame sources
+  // Note: this is intentionally permissive to avoid runtime blocking of ad/analytics scripts.
+  // Consider tightening these directives later for production security.
   response.headers.set(
     'Content-Security-Policy',
     process.env.NODE_ENV === 'production'
-        ? "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://pagead2.googlesyndication.com https://www.google-analytics.com https://cdn.vercel-insights.com https://va.vercel-scripts.com https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; img-src 'self' https: data:; font-src 'self' data:; connect-src 'self' https://www.googletagmanager.com https://www.google-analytics.com https://cdn.vercel-insights.com https://va.vercel-scripts.com https://static.cloudflareinsights.com; frame-src https://pagead2.googlesyndication.com; frame-ancestors 'none';"
-        : "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://pagead2.googlesyndication.com https://www.google-analytics.com https://cdn.vercel-insights.com https://va.vercel-scripts.com https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; img-src 'self' https: data:; font-src 'self' data:; connect-src 'self' https://www.googletagmanager.com https://www.google-analytics.com https://cdn.vercel-insights.com https://va.vercel-scripts.com https://static.cloudflareinsights.com; frame-src https://pagead2.googlesyndication.com; frame-ancestors 'none';"
+      ? "default-src 'self'; script-src 'self' 'unsafe-inline' https:; style-src 'self' 'unsafe-inline'; img-src 'self' https: data:; font-src 'self' data:; connect-src 'self' https:; frame-src https:; frame-ancestors 'none';"
+      : "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; style-src 'self' 'unsafe-inline'; img-src 'self' https: data:; font-src 'self' data:; connect-src 'self' https:; frame-src https:; frame-ancestors 'none';"
   );
 
   // Prevent MIME type sniffing

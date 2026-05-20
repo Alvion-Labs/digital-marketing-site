@@ -1,13 +1,16 @@
 import type { Metadata, Viewport } from 'next';
+import Script from 'next/script';
+import { SpeedInsights } from '@vercel/speed-insights/next';
+import { Analytics } from '@vercel/analytics/next';
+
 import '@/styles/globals.css';
 import FloatingActionStack from '@/components/global/FloatingActionStack';
 import SiteShell from '@/components/global/SiteShell';
-import { SpeedInsights } from "@vercel/speed-insights/next"
-import { Analytics } from "@vercel/analytics/next"
-import Script from "next/script";
+
+const SITE_URL = 'https://www.alviondigital.in';
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://www.alviondigital.in'),
+  metadataBase: new URL(SITE_URL),
   title: {
     default: 'The best partner to grow your brand online. | Alvion Digital Marketing',
     template: '%s | Alvion Digital Marketing',
@@ -50,10 +53,11 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_IN',
-    url: 'https://www.alviondigital.in',
+    url: SITE_URL,
     siteName: 'Alvion Digital Marketing',
     title: 'The best partner to grow your brand online. | Alvion Digital Marketing',
-    description: 'At Alvion Digital Marketing, we help businesses to grow online, build a strong brand presence, and generate quality leads through SEO, social media marketing, paid ads, and high-performing websites backed by best industry practices for better ROI and long-term growth.',
+    description:
+      'At Alvion Digital Marketing, we help businesses to grow online, build a strong brand presence, and generate quality leads through SEO, social media marketing, paid ads, and high-performing websites backed by best industry practices for better ROI and long-term growth.',
     images: [
       {
         url: '/opengraph-image',
@@ -66,7 +70,8 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'The best partner to grow your brand online. | Alvion Digital Marketing',
-    description: 'At Alvion Digital Marketing, we help businesses grow online, build a strong brand presence, and generate quality leads through SEO, social media marketing, paid ads, and high-performing websites backed by best industry practices for better ROI and long-term growth.',
+    description:
+      'At Alvion Digital Marketing, we help businesses grow online, build a strong brand presence, and generate quality leads through SEO, social media marketing, paid ads, and high-performing websites backed by best industry practices for better ROI and long-term growth.',
     images: ['/twitter-image'],
     creator: '@alviondigital',
   },
@@ -82,7 +87,7 @@ export const metadata: Metadata = {
     },
   },
   alternates: {
-    canonical: 'https://www.alviondigital.in',
+    canonical: SITE_URL,
   },
 };
 
@@ -94,21 +99,33 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" data-scroll-behavior="smooth">
       <body className="antialiased">
         <SiteShell>{children}</SiteShell>
         <FloatingActionStack />
-        <Script async src="https://www.googletagmanager.com/gtag/js?id=G-V2BSEZKEX3" />
-        <Script>
+
+        {/* Google Analytics */}
+        <Script
+          async
+          src="https://www.googletagmanager.com/gtag/js?id=G-V2BSEZKEX3"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
           {`window.dataLayer = window.dataLayer || [];
           function gtag(){dataLayer.push(arguments);}
           gtag('js', new Date());
-
           gtag('config', 'G-V2BSEZKEX3');`}
         </Script>
-        <Script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1862757336616285" crossOrigin="anonymous"></Script>
-        <Analytics/>
-        <SpeedInsights/>
+
+        {/* Google AdSense */}
+        <script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1862757336616285"
+          crossOrigin="anonymous"
+        />
+
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );

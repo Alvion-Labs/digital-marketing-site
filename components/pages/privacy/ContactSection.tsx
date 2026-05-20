@@ -46,14 +46,14 @@ export default function ContactSection({ contactEmail, contactWebsite }: Contact
         </p>
 
         <Link href="/" aria-label="Alvion Digital Marketing" className="inline-block mt-4">
-          <Image
-            src="/Alvion%20Logo%20landsacpe.png"
-            alt="Alvion Digital Marketing"
-            width={220}
-            height={63}
-            className="h-12 w-auto"
-            style={{ width: 'auto' }}
-          />
+          <div className="relative h-12 w-auto" style={{ aspectRatio: '220 / 63' }}>
+            <Image
+              src="/Alvion%20Logo%20landsacpe.png"
+              alt="Alvion Digital Marketing"
+              fill
+              className="object-contain object-left"
+            />
+          </div>
         </Link>
 
         <div className="mt-1 space-y-2">

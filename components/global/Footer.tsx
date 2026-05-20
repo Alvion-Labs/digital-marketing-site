@@ -43,15 +43,15 @@ export default function Footer() {
           <div>
             <LogoLink>
               <div className="inline-flex items-center gap-3 mb-4">
-                <Image
-                  src="/Alvion%20Logo%20landsacpe.png"
-                  alt="Alvion Digital Marketing"
-                  width={128}
-                  height={56}
-                  sizes="(max-width: 768px) 96px, 144px"
-                  className="h-auto w-24 md:w-36 object-contain shrink-0"
-                  style={{ height: 'auto' }}
-                />
+                <div className="relative w-24 md:w-36" style={{ aspectRatio: '128 / 56' }}>
+                  <Image
+                    src="/Alvion%20Logo%20landsacpe.png"
+                    alt="Alvion Digital Marketing"
+                    fill
+                    sizes="(max-width: 768px) 96px, 144px"
+                    className="object-contain"
+                  />
+                </div>
               </div>
             </LogoLink>
             <p className="text-gray-700 text-sm leading-relaxed max-w-xs">

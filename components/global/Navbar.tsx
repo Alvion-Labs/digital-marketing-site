@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import Image from 'next/image';
@@ -63,6 +63,32 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const mobileMenuRef = useRef<HTMLDivElement | null>(null);
+
+  // When the mobile menu closes, ensure any focused element inside it is blurred
+  // and mark the container inert so assistive tech won't focus hidden children.
+  useEffect(() => {
+    const el = mobileMenuRef.current;
+    if (!el) return;
+
+    if (menuOpen) {
+      el.removeAttribute('inert');
+      el.setAttribute('aria-hidden', 'false');
+    } else {
+      // If some child still has focus, blur it to avoid aria-hidden focus violation
+      const active = document.activeElement as HTMLElement | null;
+      if (active && el.contains(active)) {
+        try {
+          active.blur();
+        } catch (_) {
+          // ignore
+        }
+      }
+      el.setAttribute('inert', '');
+      el.setAttribute('aria-hidden', 'true');
+    }
+  }, [menuOpen]);
+
   useEffect(() => {
     if (pathname !== '/') return;
 
@@ -87,16 +113,16 @@ export default function Navbar() {
         <nav className="flex items-center justify-between h-16 md:h-20">
           <LogoLink onClick={() => setMenuOpen(false)}>
             <div className="flex items-center gap-3">
-              <Image
-                src="/Alvion%20Logo%20landsacpe.png"
-                alt="Alvion Digital Marketing"
-                width={128}
-                height={56}
-                priority
-                sizes="(max-width: 768px) 96px, 128px"
-                className="h-auto w-24 md:w-32 object-contain shrink-0"
-                style={{ height: 'auto' }}
-              />
+              <div className="relative w-24 md:w-32" style={{ aspectRatio: '128 / 56' }}>
+                <Image
+                  src="/Alvion%20Logo%20landsacpe.png"
+                  alt="Alvion Digital Marketing"
+                  fill
+                  priority
+                  sizes="(max-width: 768px) 96px, 128px"
+                  className="object-contain"
+                />
+              </div>
             </div>
           </LogoLink>
 
@@ -159,6 +185,10 @@ export default function Navbar() {
                 <Link
                   href={link.href}
                   onClick={(e) => {
+                    // Blur active element before hiding the menu to avoid aria-hidden focus violation
+                    if (document.activeElement instanceof HTMLElement) {
+                      document.activeElement.blur();
+                    }
                     setMenuOpen(false);
                     if (link.href.includes('#')) {
                       e.preventDefault();
@@ -174,7 +204,12 @@ export default function Navbar() {
             <li>
               <Link
                 href="/#contact"
-                onClick={() => setMenuOpen(false)}
+                onClick={() => {
+                  if (document.activeElement instanceof HTMLElement) {
+                    document.activeElement.blur();
+                  }
+                  setMenuOpen(false);
+                }}
                 className="inline-flex cursor-pointer items-center justify-center px-5 py-2 rounded-full font-semibold text-sm bg-linear-to-r from-accent-from to-accent-to text-white"
               >
                 Get Started
