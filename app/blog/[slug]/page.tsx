@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Script from 'next/script';
 import { notFound } from 'next/navigation';
 import BlogPost from '@/components/pages/blog/BlogPost';
 import { getAllBlogPosts, getBlogPostBySlug } from '@/lib/blog';
@@ -36,7 +37,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
   }
 
   return {
-    title: `${post.title}`,
+    title: { absolute: post.title },
     description: post.excerpt,
     keywords: [post.category || 'digital marketing', 'digital marketing', 'marketing strategy', 'content marketing', post.title],
     authors: [{ name: post.author, url: 'https://alviondigital.in' }],
@@ -110,22 +111,24 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
   return (
     <>
-      <script
+      <Script
+        id="blog-post-schema"
         type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(getBlogPostSchema(post)),
-        }}
-      />
-      <script
+        strategy="beforeInteractive"
+      >
+        {JSON.stringify(getBlogPostSchema(post))}
+      </Script>
+      <Script
+        id="breadcrumb-schema"
         type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(getBreadcrumbSchema([
-            { name: 'Home', url: 'https://alviondigital.in' },
-            { name: 'Blog', url: 'https://alviondigital.in/blog' },
-            { name: post.title, url: `https://alviondigital.in/blog/${post.slug}` },
-          ])),
-        }}
-      />
+        strategy="beforeInteractive"
+      >
+        {JSON.stringify(getBreadcrumbSchema([
+          { name: 'Home', url: 'https://alviondigital.in' },
+          { name: 'Blog', url: 'https://alviondigital.in/blog' },
+          { name: post.title, url: `https://alviondigital.in/blog/${post.slug}` },
+        ]))}
+      </Script>
       <main className="pt-16 md:pt-20">
         <BlogPost post={post} />
       </main>
