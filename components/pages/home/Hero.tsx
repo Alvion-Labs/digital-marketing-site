@@ -136,7 +136,7 @@ export default function Hero() {
             </a>
 
             <a
-              href="https://linkedin.com"
+              href="https://www.linkedin.com/company/alvion-digital"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="LinkedIn"

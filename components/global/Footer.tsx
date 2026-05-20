@@ -17,7 +17,7 @@ const socialLinks = [
   },
   {
     label: 'LinkedIn',
-    href: 'https://linkedin.com',
+    href: 'https://www.linkedin.com/company/alvion-digital',
     icon: '/logos/linkedInFilled.svg',
   },
   {
