@@ -5,6 +5,7 @@ import TypingHeadline from '@/components/TypingHeadline';
 import Button from '@/components/global/Button';
 import { getAllBlogPosts } from '@/lib/blog';
 import { toBlogCardPost } from '@/lib/blogCard';
+import BlogListingFiltersClient from '@/components/pages/blog/BlogListingClient';
 
 export const metadata: Metadata = {
   title: 'Blog',
@@ -28,6 +29,7 @@ export default async function BlogPage() {
               Blogs
             </div>
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold leading-tight mt-3 mb-4">
+              <span className="sr-only">Marketing ideas that actually work</span>
               <TypingHeadline
                 texts={[
                   'Marketing ideas that actually work',
@@ -72,10 +74,8 @@ export default async function BlogPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-3">
-            {posts.map((post) => (
-              <BlogCard key={post.slug} post={toBlogCardPost(post)} />
-            ))}
+          <div>
+            <BlogListingFiltersClient posts={posts.map((p) => toBlogCardPost(p))} />
           </div>
         </Container>
       </section>

@@ -55,7 +55,7 @@ export default function BlogCard({ post, compact = false }: BlogCardProps) {
           type="button"
           aria-label={`Open preview image for ${post.title}`}
           onClick={openPreview}
-          className={`relative block w-full shrink-0 overflow-hidden rounded-[1.6rem] text-left ${compact ? 'h-44 sm:h-48' : 'h-48 sm:h-56'}`}
+          className={`relative block w-full shrink-0 overflow-hidden rounded-[1.6rem] text-left group/preview ${compact ? 'aspect-16/11 sm:aspect-16/10' : 'aspect-16/10 sm:aspect-video'}`}
           style={!post.thumbnail ? { background: `linear-gradient(135deg, ${post.accentFrom}, ${post.accentTo})` } : {}}
         >
           <img
@@ -64,20 +64,21 @@ export default function BlogCard({ post, compact = false }: BlogCardProps) {
             className="absolute inset-0 h-full w-full rounded-[1.6rem] object-cover transition-transform duration-500 group-hover:scale-[1.02]"
             loading="lazy"
           />
+          {/* Theme gradient text read time badge */}
+          <div className="absolute top-4 right-4 backdrop-blur-lg bg-white/35 border border-white/40 rounded-full px-3 py-1.5 text-xs font-semibold text-gray-950 shadow-lg transition-all duration-300 hover:shadow-xl">
+            {post.readTime ? `${post.readTime} min read` : 'Read time'}
+          </div>
         </button>
 
-        <div className="relative z-10 flex flex-1 flex-col px-2 pt-2.5 sm:px-3 sm:pt-3">
-          <div className="flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.12em] text-gray-500">
-            <span className="text-accent-to">{post.category || 'Blog'}</span>
-            <span className="h-1 w-1 rounded-full bg-gray-300" />
-            <span>{post.readTime || 'Read time'}</span>
-          </div>
+        {/* Horizontal separator */}
+        <div className="h-0.5 w-16 bg-gray-300 mx-3 my-3 sm:mx-4 sm:my-3 rounded-full" />
 
-          <h3 className="mt-2 text-[1.22rem] font-semibold leading-tight tracking-tight text-gray-950 transition-transform duration-300 group-hover:-translate-y-0.5 sm:text-[1.35rem] md:text-[1.45rem]">
+        <div className="relative z-10 flex flex-1 flex-col px-2 pt-0 sm:px-3 sm:pt-0">
+          <h3 className="text-[1.22rem] font-semibold leading-tight tracking-tight text-gray-950 transition-transform duration-300 group-hover:-translate-y-0.5 sm:text-[1.35rem] md:text-[1.45rem]">
             {post.title}
           </h3>
 
-          <p className="mt-2 flex-1 text-sm leading-6 text-gray-600" style={{ display: '-webkit-box', WebkitBoxOrient: 'vertical', WebkitLineClamp: compact ? 3 : 4, overflow: 'hidden' }}>
+          <p className="mt-2 flex-1 text-sm leading-6 text-gray-600" style={{ display: '-webkit-box', WebkitBoxOrient: 'vertical', WebkitLineClamp: 3, overflow: 'hidden' }}>
             {post.excerpt}
           </p>
 
@@ -87,13 +88,19 @@ export default function BlogCard({ post, compact = false }: BlogCardProps) {
             <span>By {post.author || 'Alvion Digital Team'}</span>
           </div>
 
-          <Link
-            href={`/blog/${post.slug}`}
-            className="mt-3.5 ml-auto inline-flex w-fit items-center gap-1.5 border-b border-transparent pb-0.5 text-sm font-semibold text-accent-to transition-all duration-300 hover:border-accent-from/40 hover:text-accent-from"
-          >
-            Read article
-            <span aria-hidden className="transition-transform duration-300 group-hover:translate-x-0.5">→</span>
-          </Link>
+          <div className="mt-3.5 flex items-center justify-between gap-4">
+            <span className="text-xs font-semibold uppercase tracking-wide transition-all duration-300" style={{ backgroundImage: 'linear-gradient(90deg, #1a1054, #255ff1)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+              {post.category || 'Blog'}
+            </span>
+            <Link
+              href={`/blog/${post.slug}`}
+              className="inline-flex w-fit items-center gap-1.5 border-b border-transparent pb-0.5 text-sm font-semibold transition-all duration-300 hover:border-accent-from/60 group/link"
+              style={{ backgroundImage: 'linear-gradient(90deg, #1a1054, #255ff1)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}
+            >
+              Read article
+              <span aria-hidden className="transition-transform duration-300 group-hover/link:translate-x-1" style={{ backgroundImage: 'linear-gradient(90deg, #1a1054, #255ff1)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>→</span>
+            </Link>
+          </div>
         </div>
       </article>
 
