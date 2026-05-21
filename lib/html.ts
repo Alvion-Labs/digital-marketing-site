@@ -99,6 +99,10 @@ const allowedStyles: sanitizeHtml.IOptions['allowedStyles'] = {
     gap: [/^\d+(\.\d+)?(px|rem|em|%)$/],
     'row-gap': [/^\d+(\.\d+)?(px|rem|em|%)$/],
     'column-gap': [/^\d+(\.\d+)?(px|rem|em|%)$/],
+    // Overflow properties
+    overflow: [/^(visible|hidden|clip|scroll|auto)$/],
+    'overflow-x': [/^(visible|hidden|clip|scroll|auto)$/],
+    'overflow-y': [/^(visible|hidden|clip|scroll|auto)$/],
   },
 };
 
