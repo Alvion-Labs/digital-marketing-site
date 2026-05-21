@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import type { BlogCardPost } from '@/lib/blogCard';
 
@@ -32,25 +33,88 @@ function getCoverImage(slug: string) {
   return coverImages[total % coverImages.length];
 }
 
+function PreviewOverlay({
+  imageSrc,
+  alt,
+  onClose,
+}: {
+  imageSrc: string;
+  alt: string;
+  onClose: () => void;
+}) {
+  const [isLoading, setIsLoading] = useState(true);
+  const imgRef = useRef<HTMLImageElement>(null);
+
+  // Check if image is already cached when component mounts
+  useEffect(() => {
+    if (imgRef.current?.complete) {
+      setIsLoading(false);
+    }
+  }, []);
+
+  // Lock body scroll on mount, restore on unmount
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, []);
+
+  return createPortal(
+    <div
+      className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/75 p-4"
+      onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-label={`${alt} image preview`}
+    >
+      <button
+        type="button"
+        aria-label="Close image preview"
+        onClick={onClose}
+        className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full border border-white/30 bg-black/50 text-lg text-white backdrop-blur-sm transition-all duration-200 hover:bg-white hover:text-black hover:scale-110 z-10"
+      >
+        ✕
+      </button>
+
+      {isLoading && (
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+          <div className="flex items-center gap-3 rounded-full border border-white/20 bg-black/45 px-4 py-2 text-sm text-white">
+            <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/35 border-t-white" />
+            Loading preview...
+          </div>
+        </div>
+      )}
+
+      <img
+        ref={imgRef}
+        src={imageSrc}
+        alt={alt}
+        className={`max-h-[88vh] w-auto max-w-[94vw] rounded-2xl object-contain ${isLoading ? 'opacity-0' : 'opacity-100'}`}
+        onLoad={() => setIsLoading(false)}
+        onError={() => setIsLoading(false)}
+        onClick={(e) => e.stopPropagation()}
+      />
+    </div>,
+    document.body
+  );
+}
+
 export default function BlogCard({ post, compact = false }: BlogCardProps) {
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
-  const [isPreviewLoading, setIsPreviewLoading] = useState(false);
   const imageSrc = post.thumbnail || getCoverImage(post.slug);
 
   const openPreview = () => {
     setIsPreviewOpen(true);
-    setIsPreviewLoading(true);
   };
 
   const closePreview = () => {
     setIsPreviewOpen(false);
-    setIsPreviewLoading(false);
   };
 
   return (
     <>
       <article className="group relative flex h-full flex-col rounded-4xl bg-[#f0f4f9] p-3 transition-all duration-300 hover:-translate-y-0.5 sm:p-4">
-
         <button
           type="button"
           aria-label={`Open preview image for ${post.title}`}
@@ -64,13 +128,11 @@ export default function BlogCard({ post, compact = false }: BlogCardProps) {
             className="absolute inset-0 h-full w-full rounded-[1.6rem] object-cover transition-transform duration-500 group-hover:scale-[1.02]"
             loading="lazy"
           />
-          {/* Theme gradient text read time badge */}
           <div className="absolute top-4 right-4 backdrop-blur-lg bg-white/35 border border-white/40 rounded-full px-3 py-1.5 text-xs font-semibold text-gray-950 shadow-lg transition-all duration-300 hover:shadow-xl">
             {post.readTime ? `${post.readTime} min read` : 'Read time'}
           </div>
         </button>
 
-        {/* Horizontal separator */}
         <div className="h-0.5 w-16 bg-gray-300 mx-3 my-3 sm:mx-4 sm:my-3 rounded-full" />
 
         <div className="relative z-10 flex flex-1 flex-col px-2 pt-0 sm:px-3 sm:pt-0">
@@ -105,40 +167,11 @@ export default function BlogCard({ post, compact = false }: BlogCardProps) {
       </article>
 
       {isPreviewOpen && (
-        <div
-          className="fixed inset-0 z-100 flex items-center justify-center bg-black/75 p-4"
-          onClick={closePreview}
-          role="dialog"
-          aria-modal="true"
-          aria-label={`${post.title} image preview`}
-        >
-          <button
-            type="button"
-            aria-label="Close image preview"
-            onClick={closePreview}
-            className="absolute right-4 top-4 rounded-full border border-white/25 bg-black/40 px-3 py-1 text-sm font-semibold text-white"
-          >
-            ✕
-          </button>
-
-          {isPreviewLoading && (
-            <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-              <div className="flex items-center gap-3 rounded-full border border-white/20 bg-black/45 px-4 py-2 text-sm text-white">
-                <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/35 border-t-white" />
-                Loading preview...
-              </div>
-            </div>
-          )}
-
-          <img
-            src={imageSrc}
-            alt={post.title}
-            className={`max-h-[88vh] w-auto max-w-[94vw] rounded-2xl object-contain transition-opacity duration-300 ${isPreviewLoading ? 'opacity-0' : 'opacity-100'}`}
-            onLoad={() => setIsPreviewLoading(false)}
-            onError={() => setIsPreviewLoading(false)}
-            onClick={(e) => e.stopPropagation()}
-          />
-        </div>
+        <PreviewOverlay
+          imageSrc={imageSrc}
+          alt={post.title}
+          onClose={closePreview}
+        />
       )}
     </>
   );
