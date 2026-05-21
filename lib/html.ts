@@ -55,6 +55,7 @@ const allowedStyles: sanitizeHtml.IOptions['allowedStyles'] = {
     // Safe color values only (no javascript: URIs, no arbitrary values)
     color: [/^#[0-9a-fA-F]{3,8}$/, /^rgb(a)?\(\s*\d+\s*,\s*\d+\s*,\s*\d+/, /^hsl(a)?\(\s*\d+/, /^(red|blue|green|black|white|gray|transparent)$/i],
     'background-color': [/^#[0-9a-fA-F]{3,8}$/, /^rgb(a)?\(\s*\d+\s*,\s*\d+\s*,\s*\d+/, /^hsl(a)?\(\s*\d+/, /^(red|blue|green|black|white|gray|transparent)$/i],
+    background: [/^#[0-9a-fA-F]{3,8}$/, /^rgb(a)?\(\s*\d+\s*,\s*\d+\s*,\s*\d+/, /^hsl(a)?\(\s*\d+/, /^(red|blue|green|black|white|gray|transparent)$/i],
     // Text styling only - safe properties
     'text-align': [/^(left|right|center|justify)$/],
     'font-size': [/^\d+(\.\d+)?(px|rem|em|%)$/],
@@ -90,6 +91,14 @@ const allowedStyles: sanitizeHtml.IOptions['allowedStyles'] = {
     opacity: [/^(0|0\.\d+|1)$/],
     // Display - safe values only
     display: [/^(block|inline|inline-block|flex|grid|none)$/],
+    // Flexbox alignment properties
+    'align-items': [/^(flex-start|flex-end|center|stretch|baseline|space-between|space-around)$/],
+    'justify-content': [/^(flex-start|flex-end|center|space-between|space-around|space-evenly)$/],
+    'flex-direction': [/^(row|column|row-reverse|column-reverse)$/],
+    'flex-wrap': [/^(nowrap|wrap|wrap-reverse)$/],
+    gap: [/^\d+(\.\d+)?(px|rem|em|%)$/],
+    'row-gap': [/^\d+(\.\d+)?(px|rem|em|%)$/],
+    'column-gap': [/^\d+(\.\d+)?(px|rem|em|%)$/],
   },
 };
 
