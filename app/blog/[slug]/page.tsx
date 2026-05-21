@@ -5,7 +5,7 @@ import BlogPost from '@/components/pages/blog/BlogPost';
 import { getAllBlogPosts, getBlogPostBySlug } from '@/lib/blog';
 import { connectToDatabase } from '@/lib/mongodb';
 import BlogModel from '@/lib/models/Blog';
-import { getBlogPostSchema, getBreadcrumbSchema } from '@/lib/seo/structuredData';
+import { getBlogPostSchema, getBreadcrumbSchema, getBlogFAQSchema } from '@/lib/seo/structuredData';
 
 interface BlogPostPageProps {
   params: Promise<{ slug: string }>;
@@ -109,6 +109,8 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
   if (!post) notFound();
 
+  const blogFaqSchema = getBlogFAQSchema(post);
+
   return (
     <>
       <Script
@@ -129,6 +131,15 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           { name: post.title, url: `https://alviondigital.in/blog/${post.slug}` },
         ]))}
       </Script>
+      {blogFaqSchema && (
+        <Script
+          id="blog-faq-schema"
+          type="application/ld+json"
+          strategy="beforeInteractive"
+        >
+          {JSON.stringify(blogFaqSchema)}
+        </Script>
+      )}
       <main className="pt-16 md:pt-20">
         <BlogPost post={post} />
       </main>
