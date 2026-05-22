@@ -28,9 +28,27 @@ export default async function BlogSection() {
 
           <Link
             href="/blog"
-            className="inline-flex items-center justify-center rounded-full border border-accent-from px-6 py-3 text-sm font-semibold text-accent-from transition-all duration-300 hover:bg-accent-from/10 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-accent-from"
+            className="inline-flex items-center gap-1.5 text-sm font-semibold transition-all duration-300 hover:opacity-90 group/link"
+            style={{
+              backgroundImage: 'linear-gradient(90deg, #1a1054, #255ff1)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+            }}
           >
             View all posts
+            <span
+              aria-hidden
+              className="transition-transform duration-300 group-hover/link:translate-x-1"
+              style={{
+                backgroundImage: 'linear-gradient(90deg, #1a1054, #255ff1)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+              }}
+            >
+              →
+            </span>
           </Link>
         </div>
 
