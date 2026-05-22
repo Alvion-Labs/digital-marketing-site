@@ -46,7 +46,7 @@ export default function BlogPost({ post }: BlogPostProps) {
         />
       </div>
 
-      <section className="relative overflow-hidden bg-linear-to-b from-gray-50 to-white py-12 md:py-16">
+      <section className="relative overflow-hidden border-b border-gray-200 bg-linear-to-b from-gray-50 to-white py-12 md:py-16">
         {/* Removed decorative color bubbles to simplify hero */}
         <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center mask-[linear-gradient(180deg,white,rgba(255,255,255,0))] opacity-30 pointer-events-none" />
 
@@ -114,6 +114,7 @@ export default function BlogPost({ post }: BlogPostProps) {
                 {post.readTime} read
               </span>
             </div>
+
           </div>
         </Container>
       </section>
