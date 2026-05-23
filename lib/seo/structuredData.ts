@@ -200,15 +200,15 @@ export function getFAQSchema() {
         name: 'What digital marketing services does Alvion offer?',
         acceptedAnswer: {
           '@type': 'Answer',
-          text: 'Alvion Digital Marketing offers Social Media Management, Content Strategy, Paid Advertising, and SEO services to help businesses grow their online presence.',
+          text: 'Alvion Digital Marketing offers Social Media Management, Content Strategy, Paid Advertising, SEO services, and Web Development solutions to help businesses grow their online presence.',
         },
       },
       {
         '@type': 'Question',
-        name: 'How much do Alvion digital marketing services cost?',
+        name: 'Does Alvion provide web development services?',
         acceptedAnswer: {
           '@type': 'Answer',
-          text: 'We offer three pricing tiers: Starter at ₹9,999/month, Growth at ₹24,999/month, and Scale at ₹49,999/month. Each plan includes different levels of service and support.',
+          text: 'Yes. Alvion Digital Marketing provides modern web development services including business websites, landing pages, SEO-friendly websites, responsive UI development, and performance-focused web solutions.',
         },
       },
       {
