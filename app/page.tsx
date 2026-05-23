@@ -1,4 +1,3 @@
-import Script from 'next/script';
 import Hero from '@/components/pages/home/Hero';
 import About from '@/components/pages/home/About';
 import Services from '@/components/pages/home/Services';
@@ -6,15 +5,14 @@ import BlogSection from '@/components/pages/home/Blog';
 import Pricing from '@/components/pages/home/Pricing';
 import Contact from '@/components/pages/home/Contact';
 import { getFAQSchema } from '@/lib/seo/structuredData';
+import JsonLdScript from '@/components/global/JsonLdScript';
 
 const faqSchema = getFAQSchema();
 
 export default function Home() {
   return (
     <main className="bg-white">
-      <Script id="faq-schema" type="application/ld+json">
-        {JSON.stringify(faqSchema)}
-      </Script>
+      <JsonLdScript id="faq-schema" data={faqSchema} />
       <Hero />
       <div className="border-t border-gray-100 bg-white">
         <About />

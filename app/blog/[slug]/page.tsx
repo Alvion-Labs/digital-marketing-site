@@ -1,11 +1,11 @@
 import type { Metadata } from 'next';
-import Script from 'next/script';
 import { notFound } from 'next/navigation';
 import BlogPost from '@/components/pages/blog/BlogPost';
 import { getAllBlogPosts, getBlogPostBySlug } from '@/lib/blog';
 import { connectToDatabase } from '@/lib/mongodb';
 import BlogModel from '@/lib/models/Blog';
 import { getBlogPostSchema, getBreadcrumbSchema, getBlogFAQSchema } from '@/lib/seo/structuredData';
+import JsonLdScript from '@/components/global/JsonLdScript';
 
 interface BlogPostPageProps {
   params: Promise<{ slug: string }>;
@@ -113,32 +113,17 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
   return (
     <>
-      <Script
-        id="blog-post-schema"
-        type="application/ld+json"
-        strategy="beforeInteractive"
-      >
-        {JSON.stringify(getBlogPostSchema(post))}
-      </Script>
-      <Script
+      <JsonLdScript id="blog-post-schema" data={getBlogPostSchema(post)} />
+      <JsonLdScript
         id="breadcrumb-schema"
-        type="application/ld+json"
-        strategy="beforeInteractive"
-      >
-        {JSON.stringify(getBreadcrumbSchema([
+        data={getBreadcrumbSchema([
           { name: 'Home', url: 'https://alviondigital.in' },
           { name: 'Blog', url: 'https://alviondigital.in/blog' },
           { name: post.title, url: `https://alviondigital.in/blog/${post.slug}` },
-        ]))}
-      </Script>
+        ])}
+      />
       {blogFaqSchema && (
-        <Script
-          id="blog-faq-schema"
-          type="application/ld+json"
-          strategy="beforeInteractive"
-        >
-          {JSON.stringify(blogFaqSchema)}
-        </Script>
+        <JsonLdScript id="blog-faq-schema" data={blogFaqSchema} />
       )}
       <main className="pt-16 md:pt-20">
         <BlogPost post={post} />

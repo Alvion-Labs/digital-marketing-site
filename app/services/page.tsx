@@ -1,10 +1,10 @@
 import type { Metadata } from 'next';
-import Script from 'next/script';
 import ServicesPage from '@/components/pages/services/ServicesPage';
 import {
   getBreadcrumbSchema,
   getServiceSchema,
 } from '@/lib/seo/structuredData';
+import JsonLdScript from '@/components/global/JsonLdScript';
 
 export const metadata: Metadata = {
   title: 'Digital Marketing & Web Development Services',
@@ -46,12 +46,8 @@ const breadcrumbSchema = getBreadcrumbSchema([
 export default function ServicesRoute() {
   return (
     <>
-      <Script id="services-schema" type="application/ld+json">
-        {JSON.stringify(serviceSchema)}
-      </Script>
-      <Script id="services-breadcrumb-schema" type="application/ld+json">
-        {JSON.stringify(breadcrumbSchema)}
-      </Script>
+      <JsonLdScript id="services-schema" data={serviceSchema} />
+      <JsonLdScript id="services-breadcrumb-schema" data={breadcrumbSchema} />
       <ServicesPage />
     </>
   );

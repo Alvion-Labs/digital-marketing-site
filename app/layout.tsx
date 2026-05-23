@@ -6,6 +6,7 @@ import { Analytics } from '@vercel/analytics/next';
 import '@/styles/globals.css';
 import SiteShell from '@/components/global/SiteShell';
 import DynamicFloatingActionStack from '@/components/global/DynamicFloatingActionStack';
+import AdSenseScript from '@/components/global/AdSenseScript';
 
 const SITE_URL = 'https://www.alviondigital.in';
 
@@ -118,11 +119,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </Script>
 
         {/* Google AdSense */}
-        <script
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1862757336616285"
-          crossOrigin="anonymous"
-        />
+        <AdSenseScript />
 
         <Analytics />
         <SpeedInsights />

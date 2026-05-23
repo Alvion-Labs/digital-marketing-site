@@ -15,6 +15,17 @@ export default function TOC({ items }: TOCProps) {
   const [activeAnchor, setActiveAnchor] = useState<string>('');
   const [isOpen, setIsOpen] = useState(false);
   const userClickRef = useRef(false);
+  const initializedRef = useRef(false);
+
+  useEffect(() => {
+    if (initializedRef.current || items.length === 0) return;
+
+    const currentHash = window.location.hash.replace('#', '');
+    const initialAnchor = items.find((item) => item.anchor === currentHash)?.anchor || items[0].anchor;
+
+    setActiveAnchor(initialAnchor);
+    initializedRef.current = true;
+  }, [items]);
 
   useEffect(() => {
     // Don't run observer if user just clicked — wait for scroll to settle
@@ -76,6 +87,44 @@ export default function TOC({ items }: TOCProps) {
     return null;
   }
 
+  const renderTOCLink = (item: TOCItem, idx: number, variant: 'mobile' | 'desktop') => {
+    const isActive = activeAnchor === item.anchor;
+
+    return (
+      <a
+        key={item.anchor}
+        href={`#${item.anchor}`}
+        onClick={(e) => {
+          e.preventDefault();
+          handleLinkClick(item.anchor);
+        }}
+        className={`w-full text-left group flex items-center gap-3 px-3 py-2 rounded-lg font-medium transition-all duration-200 relative ${
+          variant === 'desktop' ? 'items-start' : ''
+        } ${
+          isActive
+            ? 'text-gray-900'
+            : 'text-gray-600 hover:text-gray-700'
+        }`}
+      >
+        <span
+          className={`text-xs font-bold transition-colors ${
+            isActive ? 'text-gray-900 font-extrabold' : 'text-gray-600 group-hover:text-gray-700'
+          }`}
+        >
+          {String(idx + 1).padStart(2, '0')}
+        </span>
+
+        <span
+          className={`text-sm leading-snug transition-all flex-1 ${
+            isActive ? 'text-gray-900 font-bold' : 'text-gray-600 group-hover:text-gray-700'
+          }`}
+        >
+          {item.title}
+        </span>
+      </a>
+    );
+  };
+
   return (
     <>
       {/* Mobile TOC - Parent handles sticky */}
@@ -113,33 +162,7 @@ export default function TOC({ items }: TOCProps) {
             ? 'mt-3 space-y-1.5 px-2 opacity-100 max-h-96 overflow-y-auto' 
             : 'mt-0 opacity-0 max-h-0 overflow-hidden'
         }`}>
-          {items.map((item, idx) => (
-            <a
-              key={item.anchor}
-              href={`#${item.anchor}`}
-              onClick={(e) => {
-                e.preventDefault();
-                handleLinkClick(item.anchor);
-              }}
-              className={`w-full text-left group flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-200 relative ${
-                activeAnchor === item.anchor
-                  ? 'text-blue-700 font-semibold bg-blue-50 hover:bg-blue-100 shadow-sm'
-                  : 'text-blue-600 hover:text-blue-700 hover:bg-blue-50/50'
-              }`}
-            >
-              {activeAnchor === item.anchor && (
-                <div className="absolute inset-0 rounded-2xl bg-linear-to-r from-blue-100 to-blue-50 -z-10" />
-              )}
-              <span className={`text-xs font-bold transition-colors group-hover:underline ${
-                activeAnchor === item.anchor
-                  ? 'text-blue-700'
-                  : 'text-blue-600 group-hover:text-blue-700'
-              }`}>
-                {String(idx + 1).padStart(2, '0')}
-              </span>
-              <span className="text-sm leading-snug group-hover:underline transition-all flex-1 text-blue-600 group-hover:text-blue-700">{item.title}</span>
-            </a>
-          ))}
+          {items.map((item, idx) => renderTOCLink(item, idx, 'mobile'))}
         </nav>
       </div>
 
@@ -161,42 +184,7 @@ export default function TOC({ items }: TOCProps) {
           
           {/* Navigation Items */}
           <nav className="space-y-1.5">
-            {items.map((item, idx) => (
-              <a
-                key={item.anchor}
-                href={`#${item.anchor}`}
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleLinkClick(item.anchor);
-                }}
-                className={`w-full text-left group flex items-start gap-3 px-4 py-2.5 rounded-2xl transition-all duration-200 relative ${
-                  activeAnchor === item.anchor
-                    ? 'text-blue-700 bg-blue-50 hover:bg-blue-100 shadow-sm'
-                    : 'text-blue-600 hover:text-blue-700 hover:bg-blue-50/40'
-                }`}
-              >
-                {activeAnchor === item.anchor && (
-                  <>
-                    <div className="absolute inset-0 rounded-2xl bg-linear-to-r from-blue-100 to-blue-50 -z-10" />
-                    <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-linear-to-b from-blue-600 to-blue-500 rounded-full" />
-                  </>
-                )}
-                <span className={`text-xs font-bold pt-0.5 transition-colors group-hover:underline ${
-                  activeAnchor === item.anchor
-                    ? 'text-blue-700'
-                    : 'text-blue-600 group-hover:text-blue-700'
-                }`}>
-                  {String(idx + 1).padStart(2, '0')}
-                </span>
-                <span className={`text-sm leading-snug group-hover:translate-x-0.5 transition-all flex-1 text-blue-600 group-hover:text-blue-700 group-hover:underline ${
-                  activeAnchor === item.anchor
-                    ? 'font-semibold'
-                    : ''
-                }`}>
-                  {item.title}
-                </span>
-              </a>
-            ))}
+            {items.map((item, idx) => renderTOCLink(item, idx, 'desktop'))}
           </nav>
         </div>
       </nav>
