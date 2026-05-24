@@ -6,6 +6,7 @@ import { XTwitterIcon, LinkedInIcon, FacebookIcon } from '@/components/global/ic
 import RelatedPosts from '@/components/pages/blog/RelatedPosts';
 import TOC from '@/components/pages/blog/TOC';
 import { sanitizeBlogHtml } from '@/lib/html';
+import { dedupeFaqEntries } from '@/lib/blog';
 
 interface BlogPostProps {
   post: BlogPostType;
@@ -31,6 +32,7 @@ export default function BlogPost({ post }: BlogPostProps) {
   };
   const conclusionAnchor = findAnchorFor(['conclusion', 'concluding'], 'conclusion');
   const faqsAnchor = findAnchorFor(['faq', 'faqs', 'frequently', 'questions'], 'faqs');
+  const faqs = Array.isArray((post as any).faqs) ? dedupeFaqEntries((post as any).faqs) : [];
 
   return (
     <>
@@ -190,12 +192,12 @@ export default function BlogPost({ post }: BlogPostProps) {
                 )}
 
                 {/* FAQs (rendered after conclusion) */}
-                {(post as any).faqs && Array.isArray((post as any).faqs) && (post as any).faqs.length > 0 && (
+                {faqs.length > 0 && (
                   <div id={faqsAnchor} className="mt-8 scroll-mt-28">
                     <h2 className="text-xl md:text-2xl font-semibold text-gray-900 mb-4">Frequently Asked Questions</h2>
                     <div className="space-y-4">
                       <ol className="space-y-4">
-                        {(post as any).faqs.map((f: any, i: number) => (
+                        {faqs.map((f: any, i: number) => (
                           <li key={i} className="pl-0">
                             <div className="flex items-start gap-4">
                               <div className="shrink-0">

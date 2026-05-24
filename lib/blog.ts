@@ -1,6 +1,12 @@
 import { connectToDatabase } from './mongodb';
 import BlogModel from './models/Blog';
 import { AnyBlock } from './blocks';
+import { stripHtmlTags } from './html';
+
+export interface BlogFaqItem {
+  question?: string;
+  answer?: string;
+}
 
 export interface BlogSection {
   heading?: string;
@@ -30,6 +36,26 @@ export interface BlogPost {
   metaDescription?: string;
   canonical?: string;
   isDraft?: boolean;
+}
+
+export function dedupeFaqEntries<T extends BlogFaqItem>(faqs: T[]): T[] {
+  const seenQuestions = new Set<string>();
+
+  return faqs.filter((faq) => {
+    const question = stripHtmlTags(faq.question || '').replace(/\s+/g, ' ').trim().toLowerCase();
+    const answer = stripHtmlTags(faq.answer || '').replace(/\s+/g, ' ').trim();
+
+    if (!question || !answer) {
+      return false;
+    }
+
+    if (seenQuestions.has(question)) {
+      return false;
+    }
+
+    seenQuestions.add(question);
+    return true;
+  });
 }
 
 export async function getAllBlogPosts(): Promise<BlogPost[]> {

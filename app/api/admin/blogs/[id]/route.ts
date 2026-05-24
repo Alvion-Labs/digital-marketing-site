@@ -3,6 +3,7 @@ import { connectToDatabase } from '@/lib/mongodb';
 import BlogModel from '@/lib/models/Blog';
 import { hasAdminSession } from '@/lib/admin';
 import { sanitizeBlogHtml, stripHtmlTags } from '@/lib/html';
+import { dedupeFaqEntries } from '@/lib/blog';
 
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
   if (!hasAdminSession(req)) {
@@ -45,10 +46,12 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     // TL;DR short summary
     tldr: stripHtmlTags(body.tldr ?? existing.tldr ?? ''),
     faqs: Array.isArray(faqsBody)
-      ? faqsBody.map((f: any) => ({
-          question: stripHtmlTags(f.question || ''),
-          answer: sanitizeBlogHtml(f.answer || ''),
-        }))
+      ? dedupeFaqEntries(
+          faqsBody.map((f: any) => ({
+            question: stripHtmlTags(f.question || ''),
+            answer: sanitizeBlogHtml(f.answer || ''),
+          }))
+        )
       : [],
     // ensure readTime is preserved/updated explicitly
     readTime: typeof body.readTime === 'string' && body.readTime.trim() !== '' ? body.readTime.trim() : existing.readTime || '',

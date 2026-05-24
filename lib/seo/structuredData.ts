@@ -1,4 +1,4 @@
-import { BlogPost } from '@/lib/blog';
+import { BlogPost, BlogFaqItem, dedupeFaqEntries } from '@/lib/blog';
 import { stripHtmlTags } from '@/lib/html';
 
 export function getOrganizationSchema() {
@@ -224,15 +224,10 @@ export function getFAQSchema() {
 }
 
 export function getBlogFAQSchema(post: BlogPost) {
-  type BlogFaqItem = {
-    question?: string;
-    answer?: string;
-  };
-
-  const faqs = (((post as any)?.faqs || []) as BlogFaqItem[])
+  const faqs = dedupeFaqEntries((((post as any)?.faqs || []) as BlogFaqItem[]))
     .map((faq) => {
-      const question = stripHtmlTags(faq.question || '').trim();
-      const answer = stripHtmlTags(faq.answer || '').trim();
+      const question = stripHtmlTags(faq.question || '').replace(/\s+/g, ' ').trim();
+      const answer = stripHtmlTags(faq.answer || '').replace(/\s+/g, ' ').trim();
 
       if (!question || !answer) return null;
 

@@ -3,6 +3,7 @@ import { connectToDatabase } from '@/lib/mongodb';
 import BlogModel from '@/lib/models/Blog';
 import { hasAdminSession } from '@/lib/admin';
 import { sanitizeBlogHtml, stripHtmlTags } from '@/lib/html';
+import { dedupeFaqEntries } from '@/lib/blog';
 
 export async function GET(request: Request) {
   if (!hasAdminSession(request)) {
@@ -33,10 +34,12 @@ export async function POST(req: Request) {
     // TL;DR short summary
     tldr: stripHtmlTags(body.tldr || ''),
     faqs: Array.isArray(body.faqs)
-      ? body.faqs.map((f: any) => ({
-          question: stripHtmlTags(f.question || ''),
-          answer: sanitizeBlogHtml(f.answer || ''),
-        }))
+      ? dedupeFaqEntries(
+          body.faqs.map((f: any) => ({
+            question: stripHtmlTags(f.question || ''),
+            answer: sanitizeBlogHtml(f.answer || ''),
+          }))
+        )
       : [],
     publishedAt: body.isDraft === false ? body.publishedAt || new Date() : body.publishedAt,
   };
