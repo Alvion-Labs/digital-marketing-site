@@ -26,6 +26,8 @@ const blogSchema = new Schema(
     conclusion: { type: String, trim: true, default: '' },
     // optional FAQ list: array of { question, answer }
     faqs: { type: Array, default: [] },
+    // references to feedback entries stored in blog_suggestions collection
+    suggestionIds: [{ type: Schema.Types.ObjectId, ref: 'BlogSuggestion' }],
     // Table of contents items (manual, array of {title, anchor})
     tableOfContents: { type: Array, default: [] },
     // SEO fields

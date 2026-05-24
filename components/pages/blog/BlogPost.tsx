@@ -8,6 +8,7 @@ import TOC from '@/components/pages/blog/TOC';
 import { sanitizeBlogHtml } from '@/lib/html';
 import { dedupeFaqEntries } from '@/lib/blog';
 import BlogTldrThumbnail from '@/components/pages/blog/BlogTldrThumbnail';
+import BlogRatingComponent from '@/components/pages/blog/BlogRatingComponent';
 
 interface BlogPostProps {
   post: BlogPostType;
@@ -34,6 +35,8 @@ export default function BlogPost({ post }: BlogPostProps) {
   const conclusionAnchor = findAnchorFor(['conclusion', 'concluding'], 'conclusion');
   const faqsAnchor = findAnchorFor(['faq', 'faqs', 'frequently', 'questions'], 'faqs');
   const faqs = Array.isArray((post as any).faqs) ? dedupeFaqEntries((post as any).faqs) : [];
+  const rawBlogId = (post as any)?._id;
+  const blogIdForFeedback = typeof rawBlogId === 'string' ? rawBlogId : rawBlogId?.toString?.() || post.slug;
 
   return (
     <>
@@ -231,6 +234,11 @@ export default function BlogPost({ post }: BlogPostProps) {
                     </div>
                   </div>
                 )}
+
+                {/* Blog rating and suggestion (moved below FAQs) */}
+                <div className="mt-8">
+                  <BlogRatingComponent blogId={blogIdForFeedback} />
+                </div>
 
                 {/* Clean Footer CTA */}
                 <div className="mt-12 pt-8 border-t border-gray-200">

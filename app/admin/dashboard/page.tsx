@@ -131,6 +131,7 @@ export default function AdminDashboard() {
                   { href: '/admin/leads', title: 'View all leads', description: 'Review submissions and update statuses', icon: '/icons/people.svg' },
                   { href: '/admin/analytics', title: 'View analytics', description: 'Check pipeline counts and traffic snapshots', icon: '/icons/trend.svg' },
                   { href: '/admin/blogs', title: 'Manage blogs', description: 'Edit, publish, or delete blog content', icon: '/icons/blog.svg' },
+                  { href: '/admin/blog-suggestions', title: 'Handle blog suggestions', description: 'Review ratings and user feedback', icon: '/icons/blog.svg' },
                 ].map((link) => (
                   <Link
                     key={link.href}

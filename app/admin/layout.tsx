@@ -11,6 +11,7 @@ const navItems = [
   { label: 'Analytics', href: '/admin/analytics', icon: '/icons/trend.svg' },
   { label: 'Leads', href: '/admin/leads', icon: '/icons/people.svg' },
   { label: 'Blogs', href: '/admin/blogs', icon: '/icons/blog.svg' },
+  { label: 'Blog Suggestions', href: '/admin/blog-suggestions', icon: '/icons/blog.svg' },
   { label: 'Privacy Policy', href: '/admin/privacy-policy', icon: '/icons/blog.svg' },
   { label: 'Media', href: '/admin/media', icon: '/icons/media-page.svg' },
 ];
