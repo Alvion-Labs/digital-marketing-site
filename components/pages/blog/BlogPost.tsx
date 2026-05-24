@@ -7,6 +7,7 @@ import RelatedPosts from '@/components/pages/blog/RelatedPosts';
 import TOC from '@/components/pages/blog/TOC';
 import { sanitizeBlogHtml } from '@/lib/html';
 import { dedupeFaqEntries } from '@/lib/blog';
+import BlogTldrThumbnail from '@/components/pages/blog/BlogTldrThumbnail';
 
 interface BlogPostProps {
   post: BlogPostType;
@@ -131,9 +132,25 @@ export default function BlogPost({ post }: BlogPostProps) {
         <Container>
           <div className="max-w-7xl mx-auto">
             {((post as any)?.tldr) && (
-              <div className="mb-10 rounded-2xl bg-emerald-50/70 px-5 py-5 md:px-6 md:py-6">
-                <span className="inline-flex items-center rounded-full bg-emerald-100 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.15em] text-emerald-700 mb-3">TL;DR</span>
-                <p className="text-sm md:text-base text-gray-900 leading-relaxed">{(post as any)?.tldr}</p>
+              <div className="mb-10 rounded-2xl border border-emerald-100 bg-emerald-50/70 px-5 py-5 md:px-6 md:py-6 shadow-sm">
+                <div className="flex flex-col gap-4">
+                  <div className="flex items-center gap-3">
+                    <span className="inline-flex items-center rounded-full bg-emerald-100 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.15em] text-emerald-700">TL;DR</span>
+                    <h3 className="text-sm font-semibold text-gray-700">Quick summary</h3>
+                  </div>
+
+                  <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:gap-6">
+                    {(post as any)?.thumbnail ? (
+                      <BlogTldrThumbnail
+                        src={(post as any).thumbnail}
+                        alt={(post as any).title || 'thumbnail'}
+                        className="shrink-0 h-20 w-20 sm:h-24 sm:w-24 md:h-28 md:w-28"
+                      />
+                    ) : null}
+
+                    <p className="text-sm leading-relaxed text-gray-900 md:text-base">{(post as any)?.tldr}</p>
+                  </div>
+                </div>
               </div>
             )}
 
