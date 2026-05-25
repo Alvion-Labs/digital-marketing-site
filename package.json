@@ -24,6 +24,7 @@
     "@vercel/analytics": "^2.0.1",
     "@vercel/blob": "^2.3.3",
     "@vercel/speed-insights": "^2.0.0",
+    "mammoth": "^1.12.0",
     "mongoose": "^9.5.0",
     "next": "^16.2.6",
     "next-sitemap": "^4.2.3",

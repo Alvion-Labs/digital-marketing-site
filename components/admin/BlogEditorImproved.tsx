@@ -32,6 +32,7 @@ export default function BlogEditorImproved({ initial }: { initial?: Partial<Blog
   const [isDraft, setIsDraft] = useState(initial?.isDraft ?? true);
   const [contentHTML, setContentHTML] = useState(initial?.contentHTML || '');
   const [tableOfContents, setTableOfContents] = useState<TOCItem[]>((initial as any)?.tableOfContents || []);
+  const [tocCountInput, setTocCountInput] = useState<number>(Math.max(1, ((initial as any)?.tableOfContents || []).length || 1));
   const [conclusion, setConclusion] = useState((initial as any)?.conclusion || '');
   const [faqs, setFaqs] = useState<Array<{ question: string; answer: string }>>((initial as any)?.faqs || []);
   const [saving, setSaving] = useState(false);
@@ -46,9 +47,15 @@ export default function BlogEditorImproved({ initial }: { initial?: Partial<Blog
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deletingThumbnail, setDeletingThumbnail] = useState(false);
   const [dragging, setDragging] = useState(false);
+  const [draggingDoc, setDraggingDoc] = useState(false);
+  const [importingDoc, setImportingDoc] = useState(false);
+  const [docImportStatus, setDocImportStatus] = useState<'idle' | 'importing' | 'imported' | 'error'>('idle');
+  const [importedDocName, setImportedDocName] = useState<string | null>(null);
+  const [docImportMessage, setDocImportMessage] = useState<string | null>(null);
   const editorFormRef = useRef<HTMLFormElement>(null);
   const contentPreviewRef = useRef<HTMLDivElement>(null);
   const contentFileInputRef = React.useRef<HTMLInputElement | null>(null);
+  const docImportInputRef = React.useRef<HTMLInputElement | null>(null);
 
   function handleDragOver(e: React.DragEvent) {
     e.preventDefault();
@@ -272,6 +279,122 @@ export default function BlogEditorImproved({ initial }: { initial?: Partial<Blog
     } finally {
       setSaving(false);
     }
+  }
+
+  async function handleDocImport(file: File) {
+    setImportingDoc(true);
+    setDocImportStatus('importing');
+    setImportedDocName(file.name || 'document.docx');
+    setDocImportMessage(`Importing ${file.name || 'document.docx'}...`);
+
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const res = await fetch('/api/admin/blogs/import-doc', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data?.ok || !data?.parsed) {
+        throw new Error(data?.error || 'Failed to import document');
+      }
+
+      const parsed = data.parsed as {
+        title: string;
+        slug: string;
+        excerpt: string;
+        metaTitle: string;
+        metaDescription: string;
+        author: string;
+        category: string;
+        readTime: string;
+        canonical: string;
+        thumbnail: string;
+        tldr: string;
+        conclusion: string;
+        faqs: Array<{ question: string; answer: string }>;
+        tableOfContents: Array<{ title: string; anchor: string }>;
+        contentHTML: string;
+      };
+
+      // Fill metadata fields from document
+      if (parsed.title) setTitle(parsed.title);
+      if (parsed.slug) setSlug(parsed.slug);
+      if (parsed.excerpt) setExcerpt(parsed.excerpt);
+      if (parsed.metaTitle) setMetaTitle(parsed.metaTitle);
+      if (parsed.metaDescription) setMetaDescription(parsed.metaDescription);
+      if (parsed.author) setAuthor(parsed.author);
+      if (parsed.category) setCategory(parsed.category);
+      if (parsed.readTime) setReadTime(parsed.readTime);
+      if (parsed.canonical) setCanonical(parsed.canonical);
+      if (parsed.thumbnail) {
+        setThumbnail(parsed.thumbnail);
+        setThumbnailPreview(parsed.thumbnail);
+      }
+      if (parsed.tldr) setTldr(parsed.tldr);
+      if (parsed.conclusion) setConclusion(parsed.conclusion);
+      if (Array.isArray(parsed.faqs) && parsed.faqs.length > 0) setFaqs(parsed.faqs);
+      if (Array.isArray(parsed.tableOfContents)) {
+        setTableOfContents(parsed.tableOfContents);
+        setTocCountInput(parsed.tableOfContents.length);
+      }
+
+      // Intentionally keep content editor manual unless user chooses otherwise
+      setDocImportStatus('imported');
+      setDocImportMessage(`Imported ${file.name || 'document.docx'} successfully. Please review auto-filled fields before saving.`);
+    } catch (error) {
+      setDocImportStatus('error');
+      setDocImportMessage(error instanceof Error ? error.message : 'Failed to import document');
+    } finally {
+      setImportingDoc(false);
+      if (docImportInputRef.current) docImportInputRef.current.value = '';
+    }
+  }
+
+  function clearDocImportState() {
+    setImportedDocName(null);
+    setDocImportStatus('idle');
+    setDocImportMessage(null);
+    if (docImportInputRef.current) docImportInputRef.current.value = '';
+  }
+
+  function handleDocDragOver(e: React.DragEvent) {
+    e.preventDefault();
+    setDraggingDoc(true);
+  }
+
+  function handleDocDragLeave(e: React.DragEvent) {
+    e.preventDefault();
+    setDraggingDoc(false);
+  }
+
+  function handleDocDrop(e: React.DragEvent) {
+    e.preventDefault();
+    setDraggingDoc(false);
+
+    const file = e.dataTransfer?.files?.[0];
+    if (!file) return;
+
+    if (!file.name.toLowerCase().endsWith('.docx')) {
+      setDocImportStatus('error');
+      setDocImportMessage('Only .docx files are supported. Export your Google Doc as .docx first.');
+      return;
+    }
+
+    handleDocImport(file);
+  }
+
+  function applyTOCCount() {
+    const target = Math.max(0, Math.min(100, Number(tocCountInput) || 0));
+    setTableOfContents((prev) => {
+      if (target === prev.length) return prev;
+      if (target < prev.length) return prev.slice(0, target);
+
+      const toAdd = target - prev.length;
+      return [...prev, ...Array.from({ length: toAdd }, () => ({ title: '', anchor: '' }))];
+    });
   }
 
   return (
@@ -531,6 +654,94 @@ export default function BlogEditorImproved({ initial }: { initial?: Partial<Blog
                 </div>
               </div>
               <div className="p-6 space-y-5">
+                <div
+                  className={`rounded-xl border p-4 transition-all ${draggingDoc ? 'border-accent-from bg-accent-from/10 ring-2 ring-accent-from/30' : 'border-blue-200 bg-blue-50/70'}`}
+                  onDragOver={handleDocDragOver}
+                  onDragLeave={handleDocDragLeave}
+                  onDrop={handleDocDrop}
+                >
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                      <p className="text-sm font-semibold text-blue-900">Import Google Doc (.docx)</p>
+                      <p className="text-xs text-blue-700">Auto-fills metadata, TOC, and labeled fields. Content stays manual as requested. You can also drag and drop a `.docx` here.</p>
+                      <p className="mt-1 text-[11px] text-blue-700">Features: auto-fill title/SEO/TOC/FAQs, keep content editor manual, and quick re-import.</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <input
+                        ref={docImportInputRef}
+                        type="file"
+                        accept=".docx"
+                        onChange={(e) => {
+                          const f = e.target.files?.[0];
+                          if (f) handleDocImport(f);
+                        }}
+                        className="hidden"
+                      />
+                      <Button
+                        onClick={() => docImportInputRef.current?.click()}
+                        variant="secondary"
+                        size="sm"
+                        disabled={importingDoc}
+                      >
+                        {importingDoc ? 'Importing…' : importedDocName ? 'Import Again' : 'Import .docx'}
+                      </Button>
+                      {importedDocName && (
+                        <Button
+                          onClick={clearDocImportState}
+                          variant="danger"
+                          size="sm"
+                          disabled={importingDoc}
+                        >
+                          Remove
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                  {importedDocName && (
+                    <div className="mt-3 rounded-lg border border-blue-200 bg-white/90 px-3 py-2 flex flex-wrap items-center gap-2 text-xs">
+                      <span className="inline-flex items-center gap-1 rounded-full bg-blue-100 text-blue-800 px-2 py-0.5 font-semibold">
+                        {docImportStatus === 'importing' ? 'Importing' : docImportStatus === 'imported' ? 'Imported' : docImportStatus === 'error' ? 'Import Error' : 'Ready'}
+                      </span>
+                      <span className="text-gray-700">File:</span>
+                      <span className="font-medium text-gray-900 break-all">{importedDocName}</span>
+                      {docImportStatus === 'imported' && (
+                        <span className="text-emerald-700 font-medium">Please review fields before saving.</span>
+                      )}
+                    </div>
+                  )}
+                  {docImportMessage && (
+                    <p className={`mt-3 text-xs ${docImportStatus === 'error' ? 'text-red-700' : 'text-blue-800'}`}>{docImportMessage}</p>
+                  )}
+                  <div className="mt-3 rounded-lg border border-blue-200 bg-white/80 p-3">
+                    <p className="text-[11px] font-semibold text-blue-900">Recommended DOC format (in order):</p>
+                    <p className="mt-1 text-[11px] text-blue-800 leading-5">
+                      <span className="font-medium">Title:</span> ...<br />
+                      <span className="font-medium">Author:</span> ...<br />
+                      <span className="font-medium">Category:</span> ...<br />
+                      <span className="font-medium">ReadTime:</span> ...<br />
+                      <span className="font-medium">Canonical:</span> ...<br />
+                      <span className="font-medium">Thumbnail:</span> ...<br />
+                      <span className="font-medium">Excerpt:</span> ...<br />
+                      <span className="font-medium">MetaTitle:</span> ...<br />
+                      <span className="font-medium">MetaDescription:</span> ...<br />
+                      <span className="font-medium">TLDR:</span> ...<br />
+                      <span className="font-medium">Conclusion:</span> ...<br />
+                      <span className="font-medium">TOC:</span> Intro to SEO, On-Page SEO, Off-Page SEO<br />
+                      <span className="font-medium">or TOC:</span><br />
+                      1. Intro to SEO<br />
+                      2. On-Page SEO<br />
+                      3. Off-Page SEO<br />
+                      <span className="font-medium">FAQs:</span><br />
+                      Q: ...<br />
+                      A: ...<br />
+                      Q: ...<br />
+                      A: ...<br />
+                      <span className="font-medium">or FAQs:</span> What is SEO?, SEO is..., Why SEO?, Because...
+                    </p>
+                    <p className="mt-2 text-[11px] text-blue-700">Heading 2/3 in document body is now optional fallback for TOC if `TOC:` is not provided.</p>
+                  </div>
+                </div>
+
                 <div>
                   <label className="block text-sm font-semibold text-gray-900 mb-2">Post Title *</label>
                   <input
@@ -625,14 +836,39 @@ export default function BlogEditorImproved({ initial }: { initial?: Partial<Blog
                       <p className="text-xs text-gray-600">Add sections for readers to navigate</p>
                     </div>
                   </div>
-                  <Button
-                    onClick={() => setTableOfContents([...tableOfContents, { title: '', anchor: '' }])}
-                    variant="primary"
-                    size="sm"
-                    className="text-sm font-medium"
-                  >
-                    + Add Item
-                  </Button>
+                  <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-2 py-1.5">
+                      <label htmlFor="toc-count" className="text-xs font-medium text-gray-600 whitespace-nowrap">Total TOCs</label>
+                      <input
+                        id="toc-count"
+                        type="number"
+                        min={0}
+                        max={100}
+                        value={tocCountInput}
+                        onChange={(e) => setTocCountInput(Math.max(0, Math.min(100, Number(e.target.value) || 0)))}
+                        className="w-16 rounded-md border border-gray-200 px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                    <Button
+                      onClick={applyTOCCount}
+                      variant="primary"
+                      size="sm"
+                      className="text-sm font-medium"
+                    >
+                      Apply
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        setTableOfContents([...tableOfContents, { title: '', anchor: '' }]);
+                        setTocCountInput(tableOfContents.length + 1);
+                      }}
+                      variant="secondary"
+                      size="sm"
+                      className="text-sm font-medium"
+                    >
+                      + Add Item
+                    </Button>
+                  </div>
                 </div>
               </div>
               <div className="p-6 space-y-3">
@@ -664,7 +900,11 @@ export default function BlogEditorImproved({ initial }: { initial?: Partial<Blog
                         className="flex-1 px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm"
                       />
                       <Button
-                        onClick={() => setTableOfContents(tableOfContents.filter((_, i) => i !== idx))}
+                        onClick={() => {
+                          const updated = tableOfContents.filter((_, i) => i !== idx);
+                          setTableOfContents(updated);
+                          setTocCountInput(updated.length);
+                        }}
                         variant="danger"
                         size="sm"
                         className="text-sm"
