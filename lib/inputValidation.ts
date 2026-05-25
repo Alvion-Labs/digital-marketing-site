@@ -68,11 +68,29 @@ export function sanitizeUserInput(input: string): string {
     return '';
   }
 
-  return input
-    .replace(/[<>]/g, '') // Remove < and >
-    .replace(/javascript:/gi, '') // Remove javascript: protocol
-    .replace(/on\w+\s*=/gi, '') // Remove event handlers (onclick=, etc)
-    .trim();
+  // Trim and limit length to a reasonable maximum to prevent abuse
+  let s = input.substring(0, 5000).trim();
+
+  // Remove null bytes
+  s = s.replace(/\x00/g, '');
+
+  // Remove javascript: protocol usage (case-insensitive)
+  s = s.replace(/javascript:/gi, '');
+
+  // Remove inline event handlers like onclick=, onerror= etc
+  s = s.replace(/on\w+\s*=\s*(['"]).*?\1/gi, '');
+  s = s.replace(/on\w+\s*=\s*[^\s>]+/gi, '');
+
+  // Escape HTML special characters to prevent XSS when rendered
+  s = s
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;')
+    .replace(/\//g, '&#x2F;');
+
+  return s;
 }
 
 /**

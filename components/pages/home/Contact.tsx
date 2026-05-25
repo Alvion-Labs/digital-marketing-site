@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Container from '@/components/global/Container';
 import Button from '@/components/global/Button';
 import { CheckIcon, LoadingSpinnerIcon } from '@/components/global/icons';
+import RecaptchaV2 from '@/components/global/RecaptchaV2';
 import { CONTACT_INFO, MAILTO_LINK, WHATSAPP_LINK } from '@/lib/contact';
 
 interface FormState {
@@ -38,6 +39,7 @@ export default function Contact() {
   const [errors, setErrors] = useState<FormErrors>({});
   const [status, setStatus] = useState<SubmitStatus>('idle');
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -45,6 +47,10 @@ export default function Contact() {
     if (errors[name as keyof FormErrors]) {
       setErrors((prev) => ({ ...prev, [name]: undefined }));
     }
+  };
+
+  const handleCaptchaChange = (token: string | null) => {
+    setCaptchaToken(token);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -59,12 +65,13 @@ export default function Contact() {
     setSubmitError(null);
 
     try {
+      const payload = { ...form, captchaToken };
       const response = await fetch('/api/leads', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(form),
+        body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
@@ -74,6 +81,7 @@ export default function Contact() {
 
       setStatus('success');
       setForm({ name: '', email: '', message: '' });
+      setCaptchaToken(null);
     } catch (error) {
       setStatus('error');
       setSubmitError(error instanceof Error ? error.message : 'Something went wrong. Please try again.');
@@ -161,11 +169,14 @@ export default function Contact() {
                 {status === 'error' && (
                   <p className="text-red-400 text-sm">{submitError || 'Something went wrong. Please try again.'}</p>
                 )}
+                <div className="mt-3">
+                  <RecaptchaV2 siteKey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ''} onVerify={handleCaptchaChange} />
+                </div>
 
                 <Button
                   type="submit"
                   variant="primary"
-                  disabled={status === 'loading'}
+                  disabled={status === 'loading' || !captchaToken}
                   className="w-full py-4 cursor-pointer"
                 >
                   {status === 'loading' ? (

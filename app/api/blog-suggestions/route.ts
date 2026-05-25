@@ -3,10 +3,41 @@ import { connectToDatabase } from '@/lib/mongodb';
 import BlogSuggestionModel from '@/lib/models/BlogSuggestion';
 import BlogModel from '@/lib/models/Blog';
 import { isValidEmail, sanitizeUserInput } from '@/lib/inputValidation';
+import { checkRateLimit, getClientIp } from '@/lib/rateLimit';
 
 export async function POST(req: NextRequest) {
   try {
+    // Basic IP-based rate limiting to mitigate spam/abuse
+    const clientIp = getClientIp(req as Request);
+    const allowed = checkRateLimit(clientIp, 10, 60 * 60 * 1000); // 10 requests per hour
+    if (!allowed) {
+      return NextResponse.json({ error: 'Too many requests, please try again later.' }, { status: 429 });
+    }
+
     const body = await req.json();
+    const captchaToken = typeof body.captchaToken === 'string' ? body.captchaToken : '';
+
+    // Verify reCAPTCHA v2 token server-side
+    if (!captchaToken) {
+      return NextResponse.json({ error: 'Missing captcha token' }, { status: 400 });
+    }
+
+    const secret = process.env.RECAPTCHA_SECRET || process.env.RECAPTCHA_V2_SECRET || '';
+    if (!secret) {
+      console.error('reCAPTCHA secret not configured');
+      return NextResponse.json({ error: 'Captcha verification unavailable' }, { status: 500 });
+    }
+
+    const verifyRes = await fetch('https://www.google.com/recaptcha/api/siteverify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({ secret, response: captchaToken, remoteip: clientIp }),
+    });
+
+    const verifyJson = await verifyRes.json();
+    if (!verifyJson.success) {
+      return NextResponse.json({ error: 'Captcha verification failed' }, { status: 401 });
+    }
     const rawBlogId = typeof body.blogId === 'string' ? body.blogId.trim() : '';
     const email = typeof body.email === 'string' ? body.email.trim().toLowerCase() : '';
     const rating = Number(body.rating);

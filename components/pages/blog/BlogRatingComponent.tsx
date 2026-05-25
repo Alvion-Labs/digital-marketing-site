@@ -9,6 +9,8 @@ import {
   FeedbackTextarea,
   FeedbackTextInput,
 } from '@/components/pages/blog/FeedbackFormFields';
+import { sanitizeUserInput } from '@/lib/inputValidation';
+import RecaptchaV2 from '@/components/global/RecaptchaV2';
 
 interface BlogRatingComponentProps {
   blogId: string;
@@ -23,6 +25,7 @@ export default function BlogRatingComponent({ blogId }: BlogRatingComponentProps
   const [visible, setVisible] = useState(false);
   const [hoveredStar, setHoveredStar] = useState<number>(0);
   const [errors, setErrors] = useState<{ rating?: string; email?: string; submit?: string }>({});
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
 
   useEffect(() => {
     if (isSubmitted) {
@@ -57,17 +60,20 @@ export default function BlogRatingComponent({ blogId }: BlogRatingComponentProps
     setIsSubmitting(true);
 
     try {
+      const payload = {
+        blogId,
+        email: email.trim(),
+        rating,
+        suggestion: sanitizeUserInput(suggestion),
+        captchaToken,
+      };
+
       const response = await fetch('/api/blog-suggestions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          blogId,
-          email: email.trim(),
-          rating,
-          suggestion: suggestion.trim(),
-        }),
+        body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
@@ -79,6 +85,7 @@ export default function BlogRatingComponent({ blogId }: BlogRatingComponentProps
       setRating(0);
       setEmail('');
       setSuggestion('');
+      setCaptchaToken(null);
     } catch (error) {
       console.error('Error submitting rating:', error);
       setErrors({ submit: error instanceof Error ? error.message : 'Failed to submit feedback. Please try again.' });
@@ -209,12 +216,16 @@ export default function BlogRatingComponent({ blogId }: BlogRatingComponentProps
           </div>
         </div>
 
+          <div className="pt-2">
+            <RecaptchaV2 siteKey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ''} onVerify={(t) => setCaptchaToken(t)} />
+          </div>
+
         <div className="flex flex-col sm:flex-row items-center sm:justify-between gap-3 pt-1">
           <p className="text-xs text-gray-500 text-center sm:text-left">We use your feedback only to improve content quality.</p>
           <div className="w-full sm:w-auto">
             <Button
               type="submit"
-              disabled={isSubmitting || isSubmitted}
+                disabled={isSubmitting || isSubmitted || !captchaToken}
               variant="primary"
               size="lg"
               className="w-full min-w-0 hover:-translate-y-0.5"

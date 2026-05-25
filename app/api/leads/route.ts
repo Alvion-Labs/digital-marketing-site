@@ -40,7 +40,31 @@ export async function POST(request: Request) {
       );
     }
 
-    const rawBody = (await request.json()) as LeadPayload;
+    const rawBody = (await request.json()) as LeadPayload & { captchaToken?: string };
+    const captchaToken = typeof rawBody.captchaToken === 'string' ? rawBody.captchaToken : '';
+
+    // Verify reCAPTCHA v2 token
+    if (!captchaToken) {
+      return Response.json({ error: 'Missing captcha token' }, { status: 400 });
+    }
+
+    const secret = process.env.RECAPTCHA_SECRET || process.env.RECAPTCHA_V2_SECRET || '';
+    if (!secret) {
+      console.error('reCAPTCHA secret not configured');
+      return Response.json({ error: 'Captcha verification unavailable' }, { status: 500 });
+    }
+
+    const verifyRes = await fetch('https://www.google.com/recaptcha/api/siteverify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({ secret, response: captchaToken, remoteip: clientIp }),
+    });
+
+    const verifyJson = await verifyRes.json();
+    if (!verifyJson.success) {
+      return Response.json({ error: 'Captcha verification failed' }, { status: 401 });
+    }
+
     const { name, email, message } = normalizePayload(rawBody);
 
     if (!name || !email || !message) {
