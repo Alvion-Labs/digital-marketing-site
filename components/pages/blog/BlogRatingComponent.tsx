@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Button from '@/components/global/Button';
 import { CheckIcon, LoadingSpinnerIcon } from '@/components/global/icons';
 import {
@@ -10,7 +10,7 @@ import {
   FeedbackTextInput,
 } from '@/components/pages/blog/FeedbackFormFields';
 import { sanitizeUserInput } from '@/lib/inputValidation';
-import RecaptchaV2 from '@/components/global/RecaptchaV2';
+import RecaptchaV2, { type RecaptchaV2Handle } from '@/components/global/RecaptchaV2';
 
 interface BlogRatingComponentProps {
   blogId: string;
@@ -26,6 +26,7 @@ export default function BlogRatingComponent({ blogId }: BlogRatingComponentProps
   const [hoveredStar, setHoveredStar] = useState<number>(0);
   const [errors, setErrors] = useState<{ rating?: string; email?: string; submit?: string }>({});
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const captchaRef = useRef<RecaptchaV2Handle>(null);
 
   useEffect(() => {
     if (isSubmitted) {
@@ -86,6 +87,8 @@ export default function BlogRatingComponent({ blogId }: BlogRatingComponentProps
       setEmail('');
       setSuggestion('');
       setCaptchaToken(null);
+      // Reset captcha widget for next submission
+      captchaRef.current?.reset();
     } catch (error) {
       console.error('Error submitting rating:', error);
       setErrors({ submit: error instanceof Error ? error.message : 'Failed to submit feedback. Please try again.' });
@@ -216,9 +219,9 @@ export default function BlogRatingComponent({ blogId }: BlogRatingComponentProps
           </div>
         </div>
 
-          <div className="pt-2">
-            <RecaptchaV2 siteKey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ''} onVerify={(t) => setCaptchaToken(t)} />
-          </div>
+        <div className="pt-2">
+          <RecaptchaV2 ref={captchaRef} siteKey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ''} onVerify={(t) => setCaptchaToken(t)} />
+        </div>
 
         <div className="flex flex-col sm:flex-row items-center sm:justify-between gap-3 pt-1">
           <p className="text-xs text-gray-500 text-center sm:text-left">We use your feedback only to improve content quality.</p>

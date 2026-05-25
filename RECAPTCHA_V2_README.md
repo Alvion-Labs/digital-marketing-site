@@ -159,12 +159,17 @@ RECAPTCHA_SECRET=your_secret_here
 ## Detailed Behavior
 
 ### Client-Side Flow
-1. **Widget Initialization:** `RecaptchaV2` component loads Google's script and renders the checkbox widget.
+1. **Widget Initialization:** `RecaptchaV2` component wraps the official `react-google-recaptcha` package and exposes a `ref` for manual widget control.
 2. **User Interaction:** User clicks "I'm not a robot" checkbox. Google verifies user behavior silently.
 3. **Token Generation:** On successful verification, Google passes a `captchaToken` to `onVerify()` callback.
 4. **Button State:** Submit button transitions from disabled → enabled when token received.
 5. **Form Submission:** On click, client sends form data + `captchaToken` in JSON body to API.
-6. **Widget Reset:** After success, widget is reset and token state is cleared for next attempt.
+6. **Widget Reset (Security):** After successful submission:
+   - Form fields are cleared
+   - Captcha widget is explicitly reset via `ref.current?.reset()` (clears checkbox and internal token)
+   - Token state is cleared for next attempt
+   - **Important:** User must complete captcha again for next submission (prevents token reuse)
+   - This is a security best practice to ensure fresh verification for each submission
 
 ### Server-Side Flow
 1. **Extract Token:** Route handler retrieves `captchaToken` from JSON body.
@@ -266,6 +271,8 @@ RECAPTCHA_SECRET=your_secret_here
 | Safeguard | Implementation |
 |-----------|-----------------|
 | **Server-side verification** | Token verified on server before any action; client-side token alone insufficient |
+| **Explicit widget reset** | After each successful submission, captcha widget is reset via ref to prevent token reuse |
+| **Token state cleared** | React state is cleared so submit button disables again, forcing fresh captcha |
 | **Secret protection** | `RECAPTCHA_SECRET` kept server-side; never exposed in network/client code |
 | **Rate limiting** | IP-based limits (5 reqs/hr for leads, 10/hr for suggestions) + captcha checks |
 | **Generic errors** | Server returns generic error messages; no provider details leaked |

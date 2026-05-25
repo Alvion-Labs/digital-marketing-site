@@ -1,10 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import Container from '@/components/global/Container';
 import Button from '@/components/global/Button';
 import { CheckIcon, LoadingSpinnerIcon } from '@/components/global/icons';
-import RecaptchaV2 from '@/components/global/RecaptchaV2';
+import RecaptchaV2, { type RecaptchaV2Handle } from '@/components/global/RecaptchaV2';
 import { CONTACT_INFO, MAILTO_LINK, WHATSAPP_LINK } from '@/lib/contact';
 
 interface FormState {
@@ -40,6 +40,7 @@ export default function Contact() {
   const [status, setStatus] = useState<SubmitStatus>('idle');
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const captchaRef = useRef<RecaptchaV2Handle>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -82,6 +83,8 @@ export default function Contact() {
       setStatus('success');
       setForm({ name: '', email: '', message: '' });
       setCaptchaToken(null);
+      // Reset captcha widget for next submission
+      captchaRef.current?.reset();
     } catch (error) {
       setStatus('error');
       setSubmitError(error instanceof Error ? error.message : 'Something went wrong. Please try again.');
@@ -170,7 +173,7 @@ export default function Contact() {
                   <p className="text-red-400 text-sm">{submitError || 'Something went wrong. Please try again.'}</p>
                 )}
                 <div className="mt-3">
-                  <RecaptchaV2 siteKey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ''} onVerify={handleCaptchaChange} />
+                  <RecaptchaV2 ref={captchaRef} siteKey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ''} onVerify={handleCaptchaChange} />
                 </div>
 
                 <Button
