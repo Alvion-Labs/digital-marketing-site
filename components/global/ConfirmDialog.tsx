@@ -25,10 +25,8 @@ export default function ConfirmDialog({
   onCancel,
   isLoading = false,
 }: ConfirmDialogProps) {
-  if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/65 px-4 backdrop-blur-sm">
+    <div className={`fixed inset-0 z-100 flex items-center justify-center bg-black/65 px-4 backdrop-blur-sm transition-opacity duration-150 ${isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
       <div className="w-full max-w-sm animate-in zoom-in-95 duration-200 rounded-3xl border border-white/10 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.28)]">
         <div className="p-6">
           <h2 className="mb-2 text-lg font-bold text-gray-900">{title}</h2>
