@@ -339,7 +339,7 @@ function parseDocData(html: string, rawText: string): ParsedDocData {
   const title = labeled.title || cleanLines[0] || '';
   const slug = toSlug(title);
   const plainText = cleanLines.join(' ');
-  const excerpt = (labeled.excerpt || plainText).slice(0, 160);
+  const excerpt = labeled.excerpt || plainText;
   const tocFromLabels = extractTocFromLabeledText(rawText);
   const toc = tocFromLabels.length > 0 ? tocFromLabels : getHeadingsFromHtml(html);
 
