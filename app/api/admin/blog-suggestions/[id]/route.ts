@@ -31,7 +31,7 @@ export async function PUT(req: NextRequest, context: ParamsContext) {
     const updatedSuggestion = await BlogSuggestionModel.findByIdAndUpdate(
       id,
       { status, adminNotes: sanitizeUserInput(typeof adminNotes === 'string' ? adminNotes : '') },
-      { new: true }
+      { returnDocument: 'after' }
     );
 
     if (!updatedSuggestion) {

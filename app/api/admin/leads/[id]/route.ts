@@ -32,7 +32,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     }
 
     await connectToDatabase();
-    const updated = await LeadModel.findByIdAndUpdate(id, { status }, { new: true }).lean();
+    const updated = await LeadModel.findByIdAndUpdate(id, { status }, { returnDocument: 'after' }).lean();
 
     if (!updated) return NextResponse.json({ error: 'Lead not found' }, { status: 404 });
 

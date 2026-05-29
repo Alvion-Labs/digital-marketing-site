@@ -63,7 +63,7 @@ export async function POST(req: Request) {
 
     const existing = await BlogModel.findOne({ slug: p.slug });
     if (existing) {
-      await BlogModel.findOneAndUpdate({ slug: p.slug }, doc, { new: true });
+      await BlogModel.findOneAndUpdate({ slug: p.slug }, doc, { returnDocument: 'after' });
       updated += 1;
     } else {
       await BlogModel.create(doc);

@@ -58,7 +58,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     publishedAt: body.publishedAt ?? existing.publishedAt ?? (shouldSetPublishedAt ? new Date() : existing.publishedAt),
   };
 
-  const updated = await BlogModel.findByIdAndUpdate(id, updatePayload, { new: true }).lean();
+  const updated = await BlogModel.findByIdAndUpdate(id, updatePayload, { returnDocument: 'after' }).lean();
   if (!updated) return NextResponse.json({ ok: false, error: 'Not found' }, { status: 404 });
   return NextResponse.json({ ok: true, blog: updated });
 }

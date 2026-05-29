@@ -60,7 +60,7 @@ export async function POST(request: Request) {
         intro,
       },
     },
-    { new: true, upsert: true, setDefaultsOnInsert: true }
+    { returnDocument: 'after', upsert: true, setDefaultsOnInsert: true }
   ).lean();
 
   return NextResponse.json({
