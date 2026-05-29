@@ -36,9 +36,12 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
     };
   }
 
+  const seoTitle = (post.metaTitle && post.metaTitle.trim()) || post.title;
+  const seoDescription = (post.metaDescription && post.metaDescription.trim()) || post.excerpt;
+
   return {
-    title: { absolute: post.title },
-    description: post.excerpt,
+    title: { absolute: seoTitle },
+    description: seoDescription,
     keywords: [post.category || 'digital marketing', 'digital marketing', 'marketing strategy', 'content marketing', post.title],
     authors: [{ name: post.author, url: 'https://alviondigital.in' }],
     creator: post.author,
@@ -55,8 +58,8 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
       },
     },
     openGraph: {
-      title: post.title,
-      description: post.excerpt,
+      title: seoTitle,
+      description: seoDescription,
       type: 'article',
       publishedTime: post.publishedAt as string | undefined,
       modifiedTime: (post as any).updatedAt || (post.publishedAt as string | undefined),
@@ -81,8 +84,8 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
     },
     twitter: {
       card: 'summary_large_image',
-      title: post.title,
-      description: post.excerpt,
+      title: seoTitle,
+      description: seoDescription,
       creator: '@alviondigital',
       images: post.thumbnail ? [`https://alviondigital.in${post.thumbnail}`] : ['https://alviondigital.in/twitter-image'],
     },
