@@ -25,6 +25,12 @@ module.exports = {
     additionalSitemaps: [
       'https://www.alviondigital.in/sitemap-0.xml',
     ],
+    transformRobotsTxt: async (_config, robotsTxt) => {
+      return robotsTxt
+        .split('\n')
+        .filter((line) => line.trim() !== '# Host' && !line.startsWith('Host: '))
+        .join('\n');
+    },
   },
   transform: async (config, path) => ({
     loc: path,
