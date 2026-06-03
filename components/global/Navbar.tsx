@@ -12,6 +12,7 @@ const navLinks = [
   { label: 'Home', href: '/#home' },
   { label: 'About Us', href: '/#about' },
   { label: 'Services', href: '/services' },
+  { label: 'Pricing', href: '/pricing' },
   { label: 'Blogs', href: '/blog' },
   { label: 'Contact', href: '/#contact' },
 ];
@@ -42,20 +43,6 @@ export default function Navbar() {
     }
   };
 
-  const handleNavClick = (href: string) => {
-    // Close mobile menu first
-    setMenuOpen(false);
-
-    // If it's a hash link, reuse the section handler (it handles navigation/scroll)
-    if (href.includes('#')) {
-      handleSectionClick(href);
-      return;
-    }
-
-    // Otherwise navigate normally
-    router.push(href);
-  };
-
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener('scroll', handleScroll);
@@ -79,7 +66,7 @@ export default function Navbar() {
       if (active && el.contains(active)) {
         try {
           active.blur();
-        } catch (_) {
+        } catch {
           // ignore
         }
       }

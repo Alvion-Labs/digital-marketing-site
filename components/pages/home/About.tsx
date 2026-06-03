@@ -50,7 +50,7 @@ export default function About() {
           </div>
 
           <div className="mt-10 text-center">
-            <Button href="/#contact" variant="primary" className="px-8 py-4 text-base">
+            <Button href="/#contact" variant="primary" size="lg">
               Let&apos;s Grow Your Brand
             </Button>
           </div>

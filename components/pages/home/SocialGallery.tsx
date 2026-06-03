@@ -151,7 +151,7 @@ export default function SocialGallery() {
         )}
 
         <div className="mt-12 flex justify-end">
-          <Button href="/#contact" variant="primary" className="px-8 py-3">
+          <Button href="/#contact" variant="primary" size="lg">
             Get Started
           </Button>
         </div>

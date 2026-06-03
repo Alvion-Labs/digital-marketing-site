@@ -1,4 +1,6 @@
 import Container from '@/components/global/Container';
+import Link from 'next/link';
+import Badge from '@/components/global/Badge';
 
 const services = [
   {
@@ -82,10 +84,7 @@ export default function ServicesPage() {
       <section className="relative overflow-hidden bg-gray-50/50 py-24 md:py-32">
         <Container>
           <div className="max-w-4xl text-center mx-auto">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-accent-from/20 bg-transparent text-accent-to text-sm font-medium mb-6">
-              <span className="w-2 h-2 rounded-full bg-accent-to animate-pulse" />
-              Our Services
-            </div>
+            <Badge ariaLabel="section label">Our Services</Badge>
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold leading-tight text-gray-900 mb-6">
               Everything you need to{' '}
               <span className="gradient-text">grow online</span>
@@ -103,7 +102,7 @@ export default function ServicesPage() {
       <div className="pt-16 pb-6 bg-white">
         <Container>
           <div className="text-center">
-            <p className="text-sm font-semibold uppercase tracking-[0.16em] text-accent-to">What we offer</p>
+            <Badge ariaLabel="section label" className="mb-2">What we offer</Badge>
             <h2 className="mt-3 text-3xl md:text-4xl font-extrabold text-gray-900">
               Our Services
             </h2>
@@ -193,12 +192,12 @@ export default function ServicesPage() {
 
               {/* Get Started button - below the row, right-aligned */}
               <div className="flex justify-end pt-20">
-                <a
+                <Link
                   href="/#contact"
                   className="w-full sm:w-auto inline-flex items-center justify-center rounded-full bg-linear-to-r from-accent-from to-accent-to px-6 py-3 text-sm font-semibold text-white shadow-md shadow-accent-from/15 hover:shadow-lg hover:shadow-accent-from/25 transition-all duration-300 hover:-translate-y-0.5"
                 >
                   Get Started
-                </a>
+                </Link>
               </div>
             </Container>
           </section>
@@ -221,12 +220,12 @@ export default function ServicesPage() {
             <p className="text-gray-700 text-lg mb-10 max-w-2xl mx-auto leading-relaxed">
               Let’s talk about your vision and create a plan that fits your budget and timeline to bring it to life with the best solutions.
             </p>
-            <a
+            <Link
               href="/#contact"
               className="inline-flex items-center justify-center rounded-full bg-linear-to-r from-accent-from to-accent-to px-8 py-4 text-base font-semibold text-white shadow-lg shadow-accent-from/20 hover:shadow-xl hover:shadow-accent-from/30 transition-all duration-300 hover:-translate-y-0.5"
             >
               Get in touch with our team
-            </a>
+            </Link>
           </div>
         </Container>
       </section>

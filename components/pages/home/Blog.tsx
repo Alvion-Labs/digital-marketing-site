@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import Container from '@/components/global/Container';
 import Button from '@/components/global/Button';
+import Badge from '@/components/global/Badge';
 import BlogCard from '@/components/pages/blog/BlogCard';
 import { getFeaturedBlogPosts } from '@/lib/blog';
 import { toBlogCardPost } from '@/lib/blogCard';
@@ -14,9 +15,7 @@ export default async function BlogSection() {
         <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between mb-14">
           <div className="max-w-2xl">
             <div className="inline-block mb-4">
-              <span className="px-4 py-2 rounded-full bg-transparent border border-accent-from/20 text-accent-to text-xs font-semibold uppercase tracking-widest">
-                Insights
-              </span>
+              <Badge ariaLabel="section label">Insights</Badge>
             </div>
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-black mt-3 mb-4">
               Latest blog articles
@@ -59,7 +58,7 @@ export default async function BlogSection() {
         </div>
 
         <div className="mt-12 flex justify-end">
-          <Button href="/#contact" variant="primary" className="px-8 py-3">
+          <Button href="/#contact" variant="primary" size="lg">
             Get Started
           </Button>
         </div>

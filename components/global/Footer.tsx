@@ -31,6 +31,7 @@ const quickLinks = [
   { label: 'Home', href: '/#home' },
   { label: 'About Us', href: '/#about' },
   { label: 'Services', href: '/services' },
+  { label: 'Pricing', href: '/pricing' },
   { label: 'Blog', href: '/blog' },
   { label: 'Contact', href: '/#contact' },
 ];
@@ -55,7 +56,7 @@ export default function Footer() {
               </div>
             </LogoLink>
             <p className="text-gray-700 text-sm leading-relaxed max-w-xs">
-              Crafting powerful digital experiences that grow your brand and drive real results.
+              Building powerful digital solutions that grow your brand and drive real results.
             </p>
             <div className="flex items-center gap-4 mt-5">
               {socialLinks.map((s) => (

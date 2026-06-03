@@ -1,5 +1,6 @@
 import Container from '@/components/global/Container';
 import Button from '@/components/global/Button';
+import Badge from '@/components/global/Badge';
 
 type Service = {
   title: string;
@@ -37,12 +38,7 @@ export default function Services() {
     <section id="services" className="py-24 bg-transparent">
       <Container>
         <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 rounded-full border border-accent-from/15 bg-white/80 px-4 py-2 shadow-sm shadow-accent-from/5 backdrop-blur-sm mb-4">
-            <span className="h-2.5 w-2.5 rounded-full bg-linear-to-r from-accent-from to-accent-to shadow-[0_0_0_4px_rgba(37,95,241,0.12)]" />
-            <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-accent-from">
-              What We Do
-            </span>
-          </div>
+          <Badge ariaLabel="section label" className="mb-4">What We Do</Badge>
           <h2 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-black mt-6 mb-4 leading-tight">
             Our Services
           </h2>
@@ -94,10 +90,10 @@ export default function Services() {
         </div>
 
         <div className="mt-16 flex flex-col sm:flex-row items-center sm:justify-end gap-4 w-full">
-          <Button href="/services" variant="outline" className="w-full sm:w-auto px-10 py-4 text-base">
+          <Button href="/services" variant="outline" size="lg" className="w-full sm:w-auto">
             View All Services →
           </Button>
-          <Button href="/#contact" variant="primary" className="w-full sm:w-auto px-10 py-4 text-lg">
+          <Button href="/#contact" variant="primary" size="lg" className="w-full sm:w-auto">
             Get Started Today
           </Button>
         </div>

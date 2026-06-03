@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react';
 import Container from '@/components/global/Container';
 import Button from '@/components/global/Button';
+import Badge from '@/components/global/Badge';
 import { CheckIcon, LoadingSpinnerIcon } from '@/components/global/icons';
 import RecaptchaV2, { type RecaptchaV2Handle } from '@/components/global/RecaptchaV2';
 import { CONTACT_INFO, MAILTO_LINK, WHATSAPP_LINK } from '@/lib/contact';
@@ -100,11 +101,7 @@ export default function Contact() {
     <section id="contact" className="py-24 bg-transparent">
       <Container>
         <div className="text-center mb-16">
-          <div className="inline-block mb-4">
-            <span className="px-4 py-2 rounded-full bg-transparent border border-accent-from/20 text-accent-to text-xs font-semibold uppercase tracking-widest">
-              Contact Us
-            </span>
-          </div>
+          <Badge ariaLabel="section label" className="mb-4">Contact Us</Badge>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-black mt-3 mb-5">
             Get In Touch
           </h2>

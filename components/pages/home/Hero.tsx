@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import Container from '@/components/global/Container';
+import Badge from '@/components/global/Badge';
 import Button from '@/components/global/Button';
 import { useEffect, useState } from 'react';
 
@@ -82,13 +83,10 @@ export default function Hero() {
       <div className="absolute inset-x-0 bottom-0 h-px bg-gray-100" />
 
       <Container className="relative z-10 text-center py-24 pt-32">
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-accent-from/20 bg-transparent text-accent-to text-sm font-medium mb-8">
-          <span className="w-2 h-2 rounded-full bg-accent-to animate-pulse" />
-          Digital Marketing Agency
-        </div>
+        <Badge ariaLabel="site type" className="mb-8">Digital Marketing Agency</Badge>
 
         <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold leading-tight mb-6 tracking-tight text-black">
-          Crafting Digital experiences{' '}
+          We Build Digital Solutions{' '}
           <span key={activePhraseIndex} className="gradient-text typing-text">
             {HERO_ROTATING_PHRASES[activePhraseIndex]}
           </span>
@@ -99,15 +97,16 @@ export default function Hero() {
         </p>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-          <Button variant="primary" onClick={() => handleScroll('#contact')} className="text-base px-8 py-4">
-            Get Started
-          </Button>
           <Button
             variant="secondary"
+            size="lg"
             onClick={() => handleScroll('#services')}
-            className="text-base px-8 py-4"
+            className="w-full sm:w-auto"
           >
             Our Services
+          </Button>
+          <Button variant="primary" size="lg" onClick={() => handleScroll('#contact')} className="w-full sm:w-auto">
+            Get Started
           </Button>
         </div>
 

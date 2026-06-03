@@ -34,7 +34,7 @@ export function getWebsiteSchema() {
     '@type': 'WebSite',
     name: 'Alvion Digital Marketing',
     url: 'https://alviondigital.in',
-    description: 'Crafting digital presence that actually works. Expert digital marketing services including social media management, SEO, and paid advertising.',
+    description: "Alvion Digital helps businesses increase their online visibility, attract qualified leads, and drive long-term growth through SEO, social media management, paid advertising, content marketing, and web development. Every strategy and proposal is built around each client's business, goals, and the results they want to achieve, so their investment goes only toward work that actually helps their business grow.",
     potentialAction: {
       '@type': 'SearchAction',
       target: {

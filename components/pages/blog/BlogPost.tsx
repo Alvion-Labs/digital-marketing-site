@@ -2,6 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import Container from '@/components/global/Container';
 import { formatBlogDate, type BlogPost as BlogPostType } from '@/lib/blog';
+import Badge from '@/components/global/Badge';
 import { XTwitterIcon, LinkedInIcon, FacebookIcon } from '@/components/global/icons';
 import RelatedPosts from '@/components/pages/blog/RelatedPosts';
 import TOC from '@/components/pages/blog/TOC';
@@ -9,6 +10,7 @@ import { sanitizeBlogHtml } from '@/lib/html';
 import { dedupeFaqEntries } from '@/lib/blog';
 import BlogTldrThumbnail from '@/components/pages/blog/BlogTldrThumbnail';
 import BlogRatingComponent from '@/components/pages/blog/BlogRatingComponent';
+import Button from '@/components/global/Button';
 
 interface BlogPostProps {
   post: BlogPostType;
@@ -66,9 +68,7 @@ export default function BlogPost({ post }: BlogPostProps) {
             </Link>
 
             <div className="flex flex-wrap gap-3 mb-8">
-              <span className="inline-flex items-center rounded-full border border-accent-from/20 bg-transparent px-5 py-2 text-sm font-semibold text-accent-to shadow-sm">
-                {post.category}
-              </span>
+              <Badge ariaLabel="post category">{post.category}</Badge>
             </div>
 
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold leading-[1.05] tracking-tight bg-linear-to-r from-accent-from to-accent-to bg-clip-text text-transparent mb-6">
@@ -244,15 +244,14 @@ export default function BlogPost({ post }: BlogPostProps) {
                 <div className="mt-12 pt-8 border-t border-gray-200">
                   <div className="rounded-2xl bg-linear-to-br from-accent-from/5 to-accent-to/5 p-8 md:p-10 text-center">
                     <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-4">Need help implementing this?</h3>
-                    <p className="text-gray-600 max-w-2xl mx-auto mb-8">
+                    <p className="text-gray-600 max-w-2xl mx-auto mb-4">
                       Our team can help you build this strategy into actionable results for your business.
                     </p>
-                    <Link
-                      href="/#contact"
-                      className="inline-flex items-center justify-center rounded-full bg-linear-to-r from-accent-from to-accent-to px-8 py-3.5 font-semibold text-white shadow-lg shadow-accent-from/20 hover:shadow-xl hover:shadow-accent-from/30 transition-all duration-300 hover:-translate-y-0.5"
-                    >
-                      Get in touch with our team
-                    </Link>
+                    <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
+                        <Button href="/#contact" variant="primary" size="lg" className="w-full sm:w-auto">
+                          Get in touch with our team
+                        </Button>
+                    </div>
                   </div>
                 </div>
               </div>

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Container from '@/components/global/Container';
-import BlogCard from '@/components/pages/blog/BlogCard';
+import Badge from '@/components/global/Badge';
+import Link from 'next/link';
 import TypingHeadline from '@/components/TypingHeadline';
 import Button from '@/components/global/Button';
 import { getAllBlogPosts } from '@/lib/blog';
@@ -24,10 +25,7 @@ export default async function BlogPage() {
         `}</style>
         <Container className="relative z-10">
           <div className="max-w-4xl text-center mx-auto">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-accent-from/20 bg-transparent text-accent-to text-sm font-medium mb-8">
-              <span className="w-2 h-2 rounded-full bg-accent-to animate-pulse" />
-              Blogs
-            </div>
+            <Badge ariaLabel="section label">Blogs</Badge>
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold leading-tight mt-3 mb-4">
               <span className="sr-only">Marketing ideas that actually work</span>
               <TypingHeadline
@@ -46,10 +44,10 @@ export default async function BlogPage() {
             </p>
 
             <div className="mt-8 flex flex-col sm:flex-row items-stretch sm:justify-center gap-4">
-              <Button href="#posts" variant="secondary" className="w-full sm:w-auto px-6 py-3">
+              <Button href="#posts" variant="secondary" size="lg" className="w-full sm:w-auto">
                 View latest posts
               </Button>
-              <Button href="/#contact" variant="primary" className="w-full sm:w-auto px-6 py-3">
+              <Button href="/#contact" variant="primary" size="lg" className="w-full sm:w-auto">
                 Get Started
               </Button>
             </div>
@@ -64,7 +62,7 @@ export default async function BlogPage() {
         <Container>
           <div className="mb-12 flex max-w-4xl flex-col gap-6 md:gap-8">
             <div className="flex flex-col gap-4">
-              <p className="text-sm font-semibold uppercase tracking-[0.16em] text-accent-to">Latest insights</p>
+              <Badge ariaLabel="section label" className="mb-0">Latest insights</Badge>
               <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight text-gray-950">
                 Fresh and simple marketing ideas
               </h2>
@@ -90,14 +88,11 @@ export default async function BlogPage() {
               Ready to put these ideas into action?
             </h2>
             <p className="text-gray-600 text-lg mb-10 max-w-2xl mx-auto leading-relaxed">
-              We don't just write about marketing strategies, we implement them for businesses like yours every day. Let's talk about how we can help you grow.
+              We don&apos;t just write about marketing strategies, we implement them for businesses like yours every day. Let&apos;s talk about how we can help you grow.
             </p>
-            <a
-              href="/#contact"
-              className="inline-flex items-center justify-center rounded-full bg-linear-to-r from-accent-from to-accent-to px-8 py-4 text-base font-semibold text-white shadow-lg shadow-accent-from/20 hover:shadow-xl hover:shadow-accent-from/30 transition-all duration-300 hover:-translate-y-0.5"
-            >
+            <Button href="/#contact" variant="primary" size="lg">
               Get in touch with our team
-            </a>
+            </Button>
           </div>
         </Container>
       </section>

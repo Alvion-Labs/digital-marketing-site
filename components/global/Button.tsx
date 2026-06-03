@@ -1,10 +1,12 @@
 'use client';
 
+import Link from 'next/link';
+
 interface ButtonProps {
   children: React.ReactNode;
   variant?: 'primary' | 'secondary' | 'outline' | 'danger';
   size?: 'sm' | 'md' | 'lg';
-  onClick?: (e?: React.MouseEvent) => void;
+  onClick?: (e?: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>) => void;
   type?: 'button' | 'submit' | 'reset';
   className?: string;
   href?: string;
@@ -25,8 +27,8 @@ export default function Button({
 
   const sizeMap: Record<string, string> = {
     sm: 'px-3 py-1.5 text-sm',
-    md: 'px-5 py-2 text-sm',
-    lg: 'px-6 py-3 text-base',
+    md: 'px-5 py-2 text-sm h-10',
+    lg: 'px-8 py-3.5 text-base h-12',
   };
 
   const variants: Record<string, string> = {
@@ -39,15 +41,25 @@ export default function Button({
   const classes = `${base} ${sizeMap[size]} ${variants[variant] ?? variants.primary} ${className}`.trim();
 
   if (href) {
+    const isInternal = href.startsWith('/');
+
+    if (isInternal) {
+      return (
+        <Link href={disabled ? '#' : href} className={classes} aria-disabled={disabled}>
+          {children}
+        </Link>
+      );
+    }
+
     return (
       <a
         href={disabled ? undefined : href}
         role="button"
         aria-disabled={disabled}
         tabIndex={disabled ? -1 : undefined}
-        onClick={(e) => {
+        onClick={(e: React.MouseEvent<HTMLAnchorElement>) => {
           if (disabled) e.preventDefault();
-          else onClick?.(e as any);
+          else onClick?.(e);
         }}
         className={classes}
       >
