@@ -158,6 +158,11 @@ export default function BlogPost({ post }: BlogPostProps) {
             )}
 
             <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+              {/* Sidebar - TOC - 1 column (hidden on mobile) - moved left */}
+              <div className="hidden md:block md:col-span-1">
+                <TOC items={(post as any)?.tableOfContents || []} />
+              </div>
+
               {/* Main Content - 3 columns */}
               <div className="md:col-span-3">
                 {/* Removed decorative banner to avoid occluding content */}
@@ -256,10 +261,7 @@ export default function BlogPost({ post }: BlogPostProps) {
                 </div>
               </div>
 
-              {/* Sidebar - TOC - 1 column (hidden on mobile) */}
-              <div className="hidden md:block md:col-span-1">
-                <TOC items={(post as any)?.tableOfContents || []} />
-              </div>
+              {/* (TOC moved to the left column above) */}
             </div>
             {/* Related posts */}
             <RelatedPosts category={post.category} currentSlug={post.slug} />
