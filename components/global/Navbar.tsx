@@ -8,11 +8,20 @@ import Container from './Container';
 import { Bars3Icon, XMarkIcon } from './icons';
 import LogoLink from './LogoLink';
 
-const navLinks = [
+type NavLink = { label: string; href: string };
+type NavGroup = { label: string; children: NavLink[] };
+
+const navLinks: (NavLink | NavGroup)[] = [
   { label: 'Home', href: '/#home' },
   { label: 'About Us', href: '/#about' },
   { label: 'Services', href: '/services' },
   { label: 'Pricing', href: '/pricing' },
+  {
+    label: 'Tools',
+    children: [
+      { label: 'Meta Preview', href: '/tools/seo-preview' },
+    ],
+  },
   { label: 'Blogs', href: '/blog' },
   { label: 'Contact', href: '/#contact' },
 ];
@@ -113,23 +122,48 @@ export default function Navbar() {
           </LogoLink>
 
           <ul className="hidden md:flex items-center gap-8">
-            {navLinks.map((link) => (
-              <li key={link.label}>
-                <Link
-                  href={link.href}
-                  onClick={(e) => {
-                    setMenuOpen(false);
-                    if (link.href.includes('#')) {
-                      e.preventDefault();
-                      handleSectionClick(link.href);
-                    }
-                  }}
-                  className="cursor-pointer text-sm font-medium text-gray-700 hover:text-black transition-colors duration-200 relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-px after:bg-linear-to-r after:from-accent-from after:to-accent-to hover:after:w-full after:transition-all after:duration-300"
-                >
-                  {link.label}
-                </Link>
-              </li>
-            ))}
+            {navLinks.map((link) => {
+              if ('children' in link) {
+                return (
+                  <li key={link.label} className="relative group">
+                    <span className="cursor-pointer text-sm font-medium text-gray-700 hover:text-black transition-colors duration-200 relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-px after:bg-linear-to-r after:from-accent-from after:to-accent-to group-hover:after:w-full after:transition-all after:duration-300 inline-block">
+                      {link.label}
+                    </span>
+                    <div className="absolute top-full left-0 pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 translate-y-1 group-hover:translate-y-0">
+                      <div className="bg-white rounded-xl border border-gray-200 shadow-lg py-2 min-w-[180px]">
+                        {link.children.map((child) => (
+                          <Link
+                            key={child.label}
+                            href={child.href}
+                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-black transition-colors"
+                          >
+                            {child.label}
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  </li>
+                );
+              }
+              const navLink = link as NavLink;
+              return (
+                <li key={navLink.label}>
+                  <Link
+                    href={navLink.href}
+                    onClick={(e) => {
+                      setMenuOpen(false);
+                      if (navLink.href.includes('#')) {
+                        e.preventDefault();
+                        handleSectionClick(navLink.href);
+                      }
+                    }}
+                    className="cursor-pointer text-sm font-medium text-gray-700 hover:text-black transition-colors duration-200 relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-px after:bg-linear-to-r after:from-accent-from after:to-accent-to hover:after:w-full after:transition-all after:duration-300"
+                  >
+                    {navLink.label}
+                  </Link>
+                </li>
+              );
+            })}
           </ul>
 
           <Link
@@ -157,7 +191,7 @@ export default function Navbar() {
         className="md:hidden glass border-t border-gray-200"
         aria-hidden={!menuOpen}
         style={{
-          maxHeight: menuOpen ? '420px' : '0px',
+          maxHeight: menuOpen ? '520px' : '0px',
           opacity: menuOpen ? 1 : 0,
           transform: menuOpen ? 'translateY(0)' : 'translateY(-6px)',
           transition: 'max-height 320ms ease, opacity 240ms ease, transform 240ms ease',
@@ -166,27 +200,57 @@ export default function Navbar() {
       >
         <Container>
           <ul className="py-4 flex flex-col gap-4">
-            {navLinks.map((link) => (
-              <li key={link.label}>
-                <Link
-                  href={link.href}
-                  onClick={(e) => {
-                    // Blur active element before hiding the menu to avoid aria-hidden focus violation
-                    if (document.activeElement instanceof HTMLElement) {
-                      document.activeElement.blur();
-                    }
-                    setMenuOpen(false);
-                    if (link.href.includes('#')) {
-                      e.preventDefault();
-                      handleSectionClick(link.href);
-                    }
-                  }}
-                  className="block cursor-pointer text-sm font-medium text-gray-700 hover:text-black transition-colors py-1"
-                >
-                  {link.label}
-                </Link>
-              </li>
-            ))}
+            {navLinks.map((link) => {
+              if ('children' in link) {
+                return (
+                  <li key={link.label}>
+                    <span className="block text-sm font-medium text-gray-400 py-1 cursor-default">
+                      {link.label}
+                    </span>
+                    <ul className="ml-3 mt-1 flex flex-col gap-2">
+                      {link.children.map((child) => (
+                        <li key={child.label}>
+                          <Link
+                            href={child.href}
+                            onClick={() => {
+                              if (document.activeElement instanceof HTMLElement) {
+                                document.activeElement.blur();
+                              }
+                              setMenuOpen(false);
+                            }}
+                            className="block cursor-pointer text-sm font-medium text-gray-700 hover:text-black transition-colors py-1"
+                          >
+                            {child.label}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </li>
+                );
+              }
+              const navLink = link as NavLink;
+              return (
+                <li key={navLink.label}>
+                  <Link
+                    href={navLink.href}
+                    onClick={(e) => {
+                      // Blur active element before hiding the menu to avoid aria-hidden focus violation
+                      if (document.activeElement instanceof HTMLElement) {
+                        document.activeElement.blur();
+                      }
+                      setMenuOpen(false);
+                      if (navLink.href.includes('#')) {
+                        e.preventDefault();
+                        handleSectionClick(navLink.href);
+                      }
+                    }}
+                    className="block cursor-pointer text-sm font-medium text-gray-700 hover:text-black transition-colors py-1"
+                  >
+                    {navLink.label}
+                  </Link>
+                </li>
+              );
+            })}
             <li>
               <Link
                 href="/#contact"

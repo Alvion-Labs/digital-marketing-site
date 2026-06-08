@@ -32,6 +32,7 @@ const quickLinks = [
   { label: 'About Us', href: '/#about' },
   { label: 'Services', href: '/services' },
   { label: 'Pricing', href: '/pricing' },
+  { label: 'SEO Preview Tool', href: '/tools/seo-preview' },
   { label: 'Blog', href: '/blog' },
   { label: 'Contact', href: '/#contact' },
 ];
