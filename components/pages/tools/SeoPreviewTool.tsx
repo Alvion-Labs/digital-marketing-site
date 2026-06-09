@@ -308,6 +308,31 @@ export default function SeoPreviewTool() {
               </div>
             </div>
           </div>
+
+          {/* Quick-reference cards */}
+          <div className="mt-12 grid gap-4 sm:grid-cols-3">
+            <div className="rounded-lg border border-gray-100 bg-gray-50/50 p-4">
+              <div className="flex items-center gap-2 mb-1">
+                <svg className="w-4 h-4 text-gray-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                <h4 className="text-sm font-semibold text-gray-900">Title length</h4>
+              </div>
+              <p className="text-xs text-gray-500">Keep around 50-63 characters so your title is less likely to truncate on desktop.</p>
+            </div>
+            <div className="rounded-lg border border-gray-100 bg-gray-50/50 p-4">
+              <div className="flex items-center gap-2 mb-1">
+                <svg className="w-4 h-4 text-gray-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h7" /></svg>
+                <h4 className="text-sm font-semibold text-gray-900">Description length</h4>
+              </div>
+              <p className="text-xs text-gray-500">Stay within 120-140 characters to make your snippet easier to scan in search results.</p>
+            </div>
+            <div className="rounded-lg border border-gray-100 bg-gray-50/50 p-4">
+              <div className="flex items-center gap-2 mb-1">
+                <svg className="w-4 h-4 text-gray-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                <h4 className="text-sm font-semibold text-gray-900">Device previews</h4>
+              </div>
+              <p className="text-xs text-gray-500">Toggle between desktop and mobile views; each has different SERP layouts.</p>
+            </div>
+          </div>
         </div>
       </Container>
 

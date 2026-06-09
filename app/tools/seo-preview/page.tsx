@@ -8,7 +8,7 @@ import { getBreadcrumbSchema } from '@/lib/seo/structuredData';
 
 const SITE_URL = 'https://www.alviondigital.in';
 const PAGE_URL = `${SITE_URL}/tools/seo-preview`;
-const PAGE_TITLE = 'Free SEO Preview Tool | Google SERP Snippet Checker';
+const PAGE_TITLE = 'Google SERP Preview Tool: Check SEO Titles & Meta Descriptions';
 const PAGE_DESCRIPTION =
   'Preview your SEO title and meta description in a Google-style result before publishing. Check desktop, mobile, title length, and snippet fit.';
 
@@ -16,13 +16,23 @@ export const metadata: Metadata = {
   title: PAGE_TITLE,
   description: PAGE_DESCRIPTION,
   keywords: [
-    'SEO preview tool',
+    'Meta preview tool',
     'SERP preview tool',
     'meta title checker',
     'meta description checker',
     'Google snippet preview',
+    'Meta title preview',
+    'Meta description preview',
     'SEO title preview',
+    'SEO description preview',
+    'Google search result preview',
+    'SERP snippet preview',
+    'Meta tag preview',
+    'SEO snippet preview',
   ],
+  authors: [{ name: 'Alvion Digital' }],
+  creator: 'Alvion Digital',
+  publisher: 'Alvion Digital',
   robots: {
     index: true,
     follow: true,

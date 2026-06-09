@@ -12,10 +12,10 @@ export default function SeoPreviewGuide() {
           <section>
             <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 leading-tight">What is a Meta Title?</h2>
             <p className="mt-4 text-base text-gray-600 leading-relaxed">
-              A meta title (also known as a title tag) is the clickable headline that appears in Google Search results, browser tabs, social shares, and bookmarks. It helps users and search engines understand the topic of your page and is one of the most important on-page SEO elements.
+              A meta title (also known as a title tag) is the clickable headline that appears in Google Search results, browser tabs, social shares, and bookmarks. It helps users and search engines understand the topic of your page and is one of the most important <a href="/blog/what-is-on-page-seo-understanding-the-basics-of-website-optimization" className="text-blue-600 no-underline font-bold">on-page SEO</a> elements.
             </p>
             <p className="mt-3 text-base text-gray-600 leading-relaxed">
-              For SEO, AI SEO, and digital marketing, the meta title plays a crucial role in improving visibility, increasing click-through rates (CTR), and helping search engines determine the relevance of your content.
+              For <a href="/blog/seo-complete-beginner-to-advanced-guide-for-2026#what-is-seo" className="text-blue-600 no-underline font-bold">SEO</a>, <a href="/blog/what-is-ai-seo-complete-beginner-guide#what-is-ai-seo" className="text-blue-600 no-underline font-bold">AI SEO</a>, and <a href="/blog/what-is-digital-marketing-complete-beginner-guide#what-is-digital-marketing" className="text-blue-600 no-underline font-bold">digital marketing</a>, the meta title plays a crucial role in improving visibility, increasing click-through rates (CTR), and helping search engines determine the relevance of your content.
             </p>
 
             <div className="mt-6 rounded-xl border border-gray-200 overflow-hidden bg-gray-50">
@@ -66,7 +66,7 @@ export default function SeoPreviewGuide() {
                   </li>
                   <li className="flex items-start gap-3">
                     <Image src="/icons/Green check Icon.webp" alt="" width={20} height={20} className="w-5 h-5 shrink-0 mt-0.5" />
-                    Add your brand name at the end (e.g., Alvion Digital).
+                    Add your brand name at the end (e.g., <a href="https://www.alviondigital.in" className="text-blue-600 no-underline font-bold">alvion digital</a>).
                   </li>
                   <li className="flex items-start gap-3">
                     <Image src="/icons/Green check Icon.webp" alt="" width={20} height={20} className="w-5 h-5 shrink-0 mt-0.5" />
@@ -146,7 +146,7 @@ export default function SeoPreviewGuide() {
           </section>
 
           <section>
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 leading-tight">Live SERP test 1</h2>
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 leading-tight">Live SERP Test</h2>
             <p className="mt-4 text-base text-gray-600 leading-relaxed">
               For our first test, we checked the preview tool against a live Google result using the same title and meta description. The screenshots below show the tool preview beside the matching SERP listing, so you can trust the preview as a practical review point before publishing.
             </p>
@@ -178,20 +178,6 @@ export default function SeoPreviewGuide() {
             </div>
           </section>
 
-          <div className="border-t border-gray-100 pt-8 grid gap-5 sm:grid-cols-3">
-            <div>
-              <h4 className="text-sm font-semibold text-gray-900">Title length</h4>
-              <p className="mt-1 text-sm text-gray-500">Keep around 50-63 characters so your title is less likely to truncate on desktop.</p>
-            </div>
-            <div>
-              <h4 className="text-sm font-semibold text-gray-900">Description length</h4>
-              <p className="mt-1 text-sm text-gray-500">Stay within 120-140 characters to make your snippet easier to scan in search results.</p>
-            </div>
-            <div>
-              <h4 className="text-sm font-semibold text-gray-900">Device previews</h4>
-              <p className="mt-1 text-sm text-gray-500">Toggle between desktop and mobile views; each has different SERP layouts.</p>
-            </div>
-          </div>
         </div>
       </Container>
     </>

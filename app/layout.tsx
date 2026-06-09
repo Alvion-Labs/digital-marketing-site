@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
     default: 'Digital Marketing Agency for Modern Businesses | Alvion Digital',
-    template: '%s | Alvion Digital Marketing',
+    template: '%s | Alvion Digital',
   },
   description:
     'At Alvion Digital, we help businesses to grow online, build a strong brand presence, and generate quality leads through SEO, social media marketing, paid ads, and high-performing websites backed by best industry practices for better ROI and long-term growth.',
