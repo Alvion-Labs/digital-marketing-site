@@ -13,7 +13,7 @@ const PAGE_DESCRIPTION =
   'See exactly how your SEO title and meta description will appear in Google search results before publishing.100% accuracy. Visit tool now!';
 
 export const metadata: Metadata = {
-  title: PAGE_TITLE,
+  title:{ absolute: PAGE_TITLE },
   description: PAGE_DESCRIPTION,
   keywords: [
     'Meta preview tool',

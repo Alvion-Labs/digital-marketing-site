@@ -98,7 +98,7 @@ export default function SeoPreviewTool() {
               <span className="text-[11px] font-semibold uppercase tracking-[0.22em]">SEO Preview Tool</span>
             </div>
             <h1 className="mt-5 text-3xl font-extrabold leading-tight text-gray-950 sm:text-4xl md:text-5xl">
-              Preview your Google search snippet before you publish
+              100% Match: Free Google Search Result Preview Tool
             </h1>
             <p className="mt-4 max-w-2xl text-base leading-7 text-gray-600 md:text-lg">
               Test your SEO title and meta description in a desktop or mobile SERP preview, then tune the length, clarity, and click appeal before the page goes live.
