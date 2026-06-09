@@ -10,29 +10,55 @@ type DeviceView = 'desktop' | 'mobile';
 const DEFAULT_TITLE = 'Digital Marketing Agency for Growth-Focused Brands';
 const DEFAULT_DESCRIPTION =
   'Preview how your title and description may appear in Google results before publishing, so your team can review the snippet with confidence.';
-const TITLE_TARGET = '50-63 chars';
-const DESCRIPTION_TARGET = '120-140 chars';
+const TITLE_TARGET = '40-58 chars';
+const DESCRIPTION_TARGET = '120-141 chars';
 
 function clampText(value: string, limit: number) {
   const text = value.trim();
   if (text.length <= limit) return text;
+
+  // Find the last space before or at the limit
   const truncated = text.slice(0, limit);
   const lastSpace = truncated.lastIndexOf(' ');
   if (lastSpace === -1) return `${truncated}…`;
-  return `${truncated.slice(0, lastSpace)} …`;
+
+  // Find the full word at the truncation boundary
+  const nextSpace = text.indexOf(' ', limit);
+  const word = nextSpace === -1 ? text.slice(lastSpace + 1) : text.slice(lastSpace + 1, nextSpace);
+  const wordPositionInTruncated = truncated.length - lastSpace - 1;
+  const wordMidpoint = word.length / 2;
+
+  let result;
+  if (wordPositionInTruncated < wordMidpoint) {
+    // Cut the word — end at previous word boundary
+    result = text.slice(0, lastSpace);
+  } else {
+    // Keep the whole word
+    const wordEnd = nextSpace === -1 ? text.length : nextSpace;
+    result = text.slice(0, wordEnd);
+    if (result.length > limit * 1.3) {
+      result = text.slice(0, lastSpace);
+    }
+  }
+
+  // Only add ellipsis if the result is shorter than the original text
+  if (result.length < text.length) {
+    return `${result} …`;
+  }
+  return result;
 }
 
 function getFitInfo(length: number) {
   if (length === 0) return { label: 'Empty', color: 'text-gray-400' };
-  if (length < 50) return { label: 'Short', color: 'text-amber-600' };
-  if (length > 63) return { label: 'Too long', color: 'text-red-500' };
+  if (length < 40) return { label: 'Short', color: 'text-amber-600' };
+  if (length > 58) return { label: 'Too long', color: 'text-red-500' };
   return { label: 'Good', color: 'text-emerald-600' };
 }
 
 function getDescFitInfo(length: number) {
   if (length === 0) return { label: 'Empty', color: 'text-gray-400' };
   if (length < 120) return { label: 'Short', color: 'text-amber-600' };
-  if (length > 140) return { label: 'Too long', color: 'text-red-500' };
+  if (length > 141) return { label: 'Too long', color: 'text-red-500' };
   return { label: 'Good', color: 'text-emerald-600' };
 }
 
@@ -46,16 +72,16 @@ export default function SeoPreviewTool() {
   const titleFit = getFitInfo(titleLength);
   const descFit = getDescFitInfo(descriptionLength);
 
-  const isLongTitle = titleLength > 63;
-  const isLongDesc = descriptionLength > 140;
+  const isLongTitle = titleLength > 58;
+  const isLongDesc = descriptionLength > 141;
 
   const allGood = useMemo(
     () => titleFit.label === 'Good' && descFit.label === 'Good',
     [titleFit.label, descFit.label],
   );
 
-  const titleDesktopLimit = 63;
-  const descDesktopLimit = 138;
+  const titleDesktopLimit = 58;
+  const descDesktopLimit = 141;
   const titleMobileLimit = 78; // Allow ~2 lines on mobile (approx 39 chars per line)
   const descMobileLimit = 110;
 
@@ -145,7 +171,7 @@ export default function SeoPreviewTool() {
                   <span className="text-right text-gray-400">{titleLength} / {TITLE_TARGET}</span>
                 </div>
                 {isLongTitle && (
-                  <p className="mt-1 text-xs text-red-500">Search engines may truncate titles over 63 characters.</p>
+                  <p className="mt-1 text-xs text-red-500">Search engines may truncate titles over 58 characters.</p>
                 )}
               </div>
 
@@ -176,7 +202,7 @@ export default function SeoPreviewTool() {
                   <span className="text-right text-gray-400">{descriptionLength} / {DESCRIPTION_TARGET}</span>
                 </div>
                 {isLongDesc && (
-                  <p className="mt-1 text-xs text-red-500">Search engines may truncate descriptions over 140 characters.</p>
+                  <p className="mt-1 text-xs text-red-500">Search engines may truncate descriptions over 141 characters.</p>
                 )}
               </div>
             </div>
@@ -258,7 +284,7 @@ export default function SeoPreviewTool() {
                       </h3>
 
                       {/* Description — Google's exact snippet color */}
-                      <p className="text-[#3c4043] leading-relaxed text-base">
+                      <p className="text-[#3c4043] leading-relaxed text-sm">
                         <>
                           <span className="text-[#70757a]">28 May 2026 — </span>
                           {clampText(description, descLimit)}
@@ -316,14 +342,14 @@ export default function SeoPreviewTool() {
                 <svg className="w-4 h-4 text-gray-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
                 <h4 className="text-sm font-semibold text-gray-900">Title length</h4>
               </div>
-              <p className="text-xs text-gray-500">Keep around 50-63 characters so your title is less likely to truncate on desktop.</p>
+              <p className="text-xs text-gray-500">Keep around 40-58 characters so your title is less likely to truncate on desktop.</p>
             </div>
             <div className="rounded-lg border border-gray-100 bg-gray-50/50 p-4">
               <div className="flex items-center gap-2 mb-1">
                 <svg className="w-4 h-4 text-gray-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h7" /></svg>
                 <h4 className="text-sm font-semibold text-gray-900">Description length</h4>
               </div>
-              <p className="text-xs text-gray-500">Stay within 120-140 characters to make your snippet easier to scan in search results.</p>
+              <p className="text-xs text-gray-500">Stay within 120-141 characters to make your snippet easier to scan in search results.</p>
             </div>
             <div className="rounded-lg border border-gray-100 bg-gray-50/50 p-4">
               <div className="flex items-center gap-2 mb-1">

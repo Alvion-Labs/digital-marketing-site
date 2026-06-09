@@ -8,9 +8,9 @@ import { getBreadcrumbSchema } from '@/lib/seo/structuredData';
 
 const SITE_URL = 'https://www.alviondigital.in';
 const PAGE_URL = `${SITE_URL}/tools/seo-preview`;
-const PAGE_TITLE = 'Google SERP Preview Tool: Check SEO Titles & Meta Descriptions';
+const PAGE_TITLE = '100% Match: Free Google Search Result Preview Tool';
 const PAGE_DESCRIPTION =
-  'Preview your SEO title and meta description in a Google-style result before publishing. Check desktop, mobile, title length, and snippet fit.';
+  'See exactly how your SEO title and meta description will appear in Google search results before publishing.100% accuracy. Visit tool now!';
 
 export const metadata: Metadata = {
   title: PAGE_TITLE,
