@@ -31,8 +31,8 @@ export async function POST(req: Request) {
     contentHTML: sanitizeBlogHtml(contentHTML),
     // conclusion must be plain text (pre-styled in rendering)
     conclusion: stripHtmlTags(body.conclusion || ''),
-    // TL;DR short summary
-    tldr: stripHtmlTags(body.tldr || ''),
+    // TL;DR support HTML content
+    tldr: sanitizeBlogHtml(body.tldr || ''),
     faqs: Array.isArray(body.faqs)
       ? dedupeFaqEntries(
           body.faqs.map((f: any) => ({

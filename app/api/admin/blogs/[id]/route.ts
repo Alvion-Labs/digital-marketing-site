@@ -43,8 +43,8 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     ...body,
     contentHTML: sanitizeBlogHtml(contentHTML),
     conclusion: stripHtmlTags(conclusionHtml),
-    // TL;DR short summary
-    tldr: stripHtmlTags(body.tldr ?? existing.tldr ?? ''),
+    // TL;DR support HTML content
+    tldr: sanitizeBlogHtml(body.tldr ?? existing.tldr ?? ''),
     faqs: Array.isArray(faqsBody)
       ? dedupeFaqEntries(
           faqsBody.map((f: any) => ({
