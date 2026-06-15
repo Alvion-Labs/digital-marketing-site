@@ -808,15 +808,34 @@ export default function BlogEditorImproved({ initial }: { initial?: Partial<Blog
                   <p className="text-xs text-gray-500 mt-2">{excerpt.length}/160 characters</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-gray-900 mb-2">TL;DR</label>
+                  <label className="block text-sm font-semibold text-gray-900 mb-2">TL;DR <span className="text-gray-400 font-normal">(HTML supported)</span></label>
                   <textarea
                     value={tldr}
                     onChange={(e) => setTldr(e.target.value)}
-                    placeholder="One-sentence TL;DR for this post"
-                    rows={2}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-accent-from focus:border-transparent transition-all resize-none bg-white"
+                    placeholder="<strong>TL;DR:</strong> Write your HTML summary here..."
+                    rows={4}
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-accent-from focus:border-transparent transition-all font-mono text-sm bg-gray-50"
                   />
-                  <p className="text-xs text-gray-500 mt-2">Short summary shown in lists</p>
+                  <div className="flex items-center justify-between mt-2">
+                    <p className="text-xs text-gray-500">Supports inline HTML, bold, links, etc.</p>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const preview = document.getElementById('tldr-preview');
+                        if (preview) {
+                          preview.classList.remove('hidden');
+                          preview.innerHTML = tldr || '<span class="text-gray-400">No content yet...</span>';
+                        }
+                      }}
+                      className="text-xs text-accent-from font-medium hover:underline"
+                    >
+                      Preview
+                    </button>
+                  </div>
+                  <div
+                    id="tldr-preview"
+                    className="mt-3 rounded-lg border border-dashed border-gray-200 bg-white p-3 text-sm leading-relaxed hidden"
+                  />
                 </div>
               </div>
             </div>

@@ -135,23 +135,23 @@ export default function BlogPost({ post }: BlogPostProps) {
         <Container>
           <div className="max-w-7xl mx-auto">
             {((post as any)?.tldr) && (
-              <div className="mb-10 rounded-2xl border border-emerald-100 bg-emerald-50/70 px-5 py-5 md:px-6 md:py-6 shadow-sm">
+              <div className="mb-10 rounded-[24px] bg-gray-50 px-5 py-5 md:px-6 md:py-6">
                 <div className="flex flex-col gap-4">
-                  <div className="flex items-center gap-3">
-                    <span className="inline-flex items-center rounded-full bg-emerald-100 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.15em] text-emerald-700">TL;DR</span>
-                    <h3 className="text-sm font-semibold text-gray-700">Quick summary</h3>
+                  <div className="flex items-center gap-2">
+                    <span className="inline-flex items-center justify-center rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold uppercase tracking-[0.15em] text-emerald-700">TL;DR</span>
+                    <h3 className="text-xs font-semibold text-gray-700 uppercase tracking-wider">Quick summary</h3>
                   </div>
 
-                  <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:gap-6">
+                  <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:gap-5">
                     {(post as any)?.thumbnail ? (
                       <BlogTldrThumbnail
                         src={(post as any).thumbnail}
                         alt={(post as any).title || 'thumbnail'}
-                        className="shrink-0 h-20 w-20 sm:h-24 sm:w-24 md:h-28 md:w-28"
+                        className="shrink-0 h-16 w-16 sm:h-20 sm:w-20 rounded-lg"
                       />
                     ) : null}
 
-                    <p className="text-sm leading-relaxed text-gray-900 md:text-base">{(post as any)?.tldr}</p>
+                    <div className="text-sm leading-relaxed text-gray-700 md:text-base blog-content" dangerouslySetInnerHTML={{ __html: (post as any)?.tldr || '' }} />
                   </div>
                 </div>
               </div>
