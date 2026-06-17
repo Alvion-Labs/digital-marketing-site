@@ -17,7 +17,7 @@ export const metadata: Metadata = {
     template: '%s | Alvion Digital',
   },
   description:
-    'Get more qualified leads, increase conversions, and grow revenue with SEO, paid ads, social media marketing, and high-performance websites.',
+    'Get more qualified leads and grow revenue with SEO, paid ads, social media marketing, and high-performance websites. Contact Us Now!',
   keywords: [
     'digital marketing agency',
     'social media management',
@@ -58,7 +58,7 @@ export const metadata: Metadata = {
     siteName: 'Alvion Digital Marketing',
     title: 'Digital Marketing Agency for Modern Businesses | Alvion Digital',
     description:
-      'Get more qualified leads, increase conversions, and grow revenue with SEO, paid ads, social media marketing, and high-performance websites.',
+      'Get more qualified leads and grow revenue with SEO, paid ads, social media marketing, and high-performance websites. Contact Us Now!',
     images: [
       {
         url: '/Alvion%20Logo%20landsacpe.webp',
@@ -72,7 +72,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Digital Marketing Agency for Modern Businesses | Alvion Digital',
     description:
-      'Get more qualified leads, increase conversions, and grow revenue with SEO, paid ads, social media marketing, and high-performance websites.',
+      'Get more qualified leads and grow revenue with SEO, paid ads, social media marketing, and high-performance websites. Contact Us Now!',
     images: ['/Alvion%20Logo%20landsacpe.webp'],
     creator: '@alviondigital',
   },
